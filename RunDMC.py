@@ -73,6 +73,8 @@ for i in range(sim_length):
     # that should remain
     remain_after_delete = np.argwhere(walkers*np.invert((potential_energies > reference_energy)*to_delete))
     
+    # Will thinks try the where() function. Check out the documentation and maybe figure out how this condition works?
+    
     # uses the argwhere() function to collect the non-zero elements of the given array
     # (if the potential energy is less than the reference energy AND the walker should be replicated) 
     # then the value in the boolean array should be a 1. Multiplying this by walkers gives the non-zero positions of the walkers
