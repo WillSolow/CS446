@@ -3,6 +3,7 @@
 # Diffusion Monte Carlo (DMC) Simulation
 # Script Style
 # Goal: approximate Schrodinger Equation for 2 or more atoms
+# This is a change
 
 # Imports
 import numpy as np
