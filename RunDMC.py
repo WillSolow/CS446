@@ -35,7 +35,7 @@ reduced_mass = (mass / (avogadro * electron_mass)) / 2
 walkers = equilibrium_position + (np.random.rand(n_walkers) - 0.5)
 
 # calculate the potential energy of a walker based on its distance from the equilibrium position of the system
-def potentialEnergy(x):
+def potential_energy(x):
     return .5 * k * (x - equilibrium_position)**2
 
 # simulation loop
@@ -63,23 +63,30 @@ for i in range(sim_length):
     prob_replicate = prob_delete - 1
     
     # calculate which walkers actually have the necessary potential energies to merit deletion or replication
-    to_delete = prob_delete > threshold
-    to_replicate = prob_replicate > threshold
-
+    to_delete = prob_delete > thresholds
+    to_replicate = prob_replicate > thresholds
+    
     # uses the argwhere() function to only collect the non-zero elements of the given array
     # use pointwise multiplication with the walkers array with:
     # (if the potential energy is greater than the reference energy AND the walker has probability deleted)
     # then boolean array should be a 1. Invert this and multiply with walkers to get the non-zero positions of the walkers
-    # that should remain
-    remain_after_delete = np.argwhere(walkers*np.invert((potential_energies > reference_energy)*to_delete))
+    # that should remain_after_delete
     
+    delete_walkers = walkers*np.invert( (potential_energies > reference_energy) * to_delete )
+    print(delete_walkers)
+    remain_after_delete = np.where(delete_walkers > 0)
+    print(remain_after_delete)
+     
     # Will thinks try the where() function. Check out the documentation and maybe figure out how this condition works?
     
     # uses the argwhere() function to collect the non-zero elements of the given array
     # (if the potential energy is less than the reference energy AND the walker should be replicated) 
     # then the value in the boolean array should be a 1. Multiplying this by walkers gives the non-zero positions of the walkers
     # that should be replicated
-    replications = np.argwhere(walkers*(potential_energies<reference_energy)*to_replicate)
+    replicate_walkers = walkers*(potential_energies < reference_energy)*to_replicate
+    print(replicate_walkers)
+    replications = np.where(replicate_walkers > 0)
+    print(replications)
     
     # getting rid of this line. Notice that the no change ones already appear in the remain_after_delete array, so having this array actually replicates them
     # noChange = np.argwhere(walkers*(potential_energies==referenceEnergy))
