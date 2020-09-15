@@ -9,11 +9,11 @@
 import numpy as np
 
 # Initial Constants
-dt = 10
+dt = 1
 
 sim_length = 10000
 
-n_walkers = 2
+n_walkers = 1000
 
 k = 1.0
 
@@ -39,7 +39,7 @@ def potential_energy(x):
     return .5 * k * (x - equilibrium_position)**2
 
 # simulation loop
-for i in range(sim_length):
+for i in range(int(sim_length/dt)):
     # print(f'wlk:{walkers}')
     # calculate the reference energy
     # based on the average of all the potential energies of the system
@@ -107,6 +107,10 @@ for i in range(sim_length):
     # note that if the walker was not replicated, it still appears in the remains after deletion array, effectively encompassing
     # the else statement in the given psuedocode 
     walkers = np.append(remain_after_delete, replications)
+    #print(walkers
+    if i % 10 == 0:
+        print("Reference Eneryg: " + str(reference_energy))
+        print("Num walkers: " + str(walkers.shape[0]))
     # print(f'walkers:{walkers}')
 
 
