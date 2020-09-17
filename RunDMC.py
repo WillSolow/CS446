@@ -58,7 +58,7 @@ for i in range(sim_length):
     print(propogation_lengths)
     # print(f'pln:{propogation_lengths}')
     # add the propogation length to the position of the current walkers
-    print("\n current walkers")
+    print(f"\n current walkers ({walkers.shape[0]})")
     print(walkers)
     walkers = walkers + propogation_lengths
     # print(f'wlk:{walkers}')
@@ -97,7 +97,7 @@ for i in range(sim_length):
     delete_walkers = walkers*np.invert( (potential_energies > reference_energy) * to_delete )
     # print(f'del:{delete_walkers}')
     remain_after_delete = walkers[delete_walkers > 0]
-    print("\nWalkers not deleted: ")
+    print(f"\nWalkers not deleted ({remain_after_delete.shape[0]}): ")
     print(remain_after_delete)
     # print(f'rem:{remain_after_delete}')
     # print(f'{remain_after_delete.shape}')
@@ -111,7 +111,7 @@ for i in range(sim_length):
     replicate_walkers = (potential_energies < reference_energy)*to_replicate
     # print(f'repl:{replicate_walkers}')
     replications = walkers[replicate_walkers > 0]
-    print("\n Replicated walkers")
+    print(f"\n Replicated walkers ({replications.shape[0]})")
     print(replications)
     # print(f'repld:{replications}')
     # print(f'{replications.shape}')
