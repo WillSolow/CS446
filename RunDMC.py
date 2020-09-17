@@ -9,18 +9,21 @@
 import numpy as np
 
 # Initial Constants
-dt = 1
+dt = 10
 
-sim_length = 10000
+# simulation length
+sim_length = 10
 
-n_walkers = 1000
+# number of initial walkers
+n_walkers = 2
 
+# spring constant
 k = 1.0
 
 # g/mol
 mass = 10
 
-# Equilibrium position of the system. 
+# Equilibrium position of the system in atomic units
 equilibrium_position = 5
 
 # Mass of an electron
@@ -34,12 +37,14 @@ reduced_mass = (mass / (avogadro * electron_mass)) / 2
 # get a uniform distribution about the equilibrium position
 walkers = equilibrium_position + (np.random.rand(n_walkers) - 0.5)
 
+print("#################### STARTING SIMULATION #########################")
+
 # calculate the potential energy of a walker based on its distance from the equilibrium position of the system
 def potential_energy(x):
     return .5 * k * (x - equilibrium_position)**2
-
+	
 # simulation loop
-for i in range(int(sim_length/dt)):
+for i in range(sim_length):
     # print(f'wlk:{walkers}')
     # calculate the reference energy
     # based on the average of all the potential energies of the system
@@ -48,14 +53,22 @@ for i in range(int(sim_length/dt)):
     
     # gets a normal distribution about 0 in the range sqrt(dt/mass) of the atom
     # recall in the model of a harmonic oscillator, only one mass matters
+    print("prop lengths")
     propogation_lengths = np.random.normal(0, np.sqrt(dt/mass), walkers.shape[0])
+    print(propogation_lengths)
     # print(f'pln:{propogation_lengths}')
     # add the propogation length to the position of the current walkers
+    print("\n current walkers")
+    print(walkers)
     walkers = walkers + propogation_lengths
     # print(f'wlk:{walkers}')
     # calculate the new potential energies of each walker in the system
     # returns an array of floats, one per walker
+    print("\n Prop length change")
+    print(walkers)
     potential_energies = potential_energy(walkers)
+    print("\n PotentialEnergies")
+    print(potential_energies)
     # print(f'pte:{potential_energies}')
     
     # calculates a random in range [0,1) for each walker in the system
@@ -84,6 +97,8 @@ for i in range(int(sim_length/dt)):
     delete_walkers = walkers*np.invert( (potential_energies > reference_energy) * to_delete )
     # print(f'del:{delete_walkers}')
     remain_after_delete = walkers[delete_walkers > 0]
+    print("\nWalkers not deleted: ")
+    print(remain_after_delete)
     # print(f'rem:{remain_after_delete}')
     # print(f'{remain_after_delete.shape}')
      
@@ -96,6 +111,8 @@ for i in range(int(sim_length/dt)):
     replicate_walkers = (potential_energies < reference_energy)*to_replicate
     # print(f'repl:{replicate_walkers}')
     replications = walkers[replicate_walkers > 0]
+    print("\n Replicated walkers")
+    print(replications)
     # print(f'repld:{replications}')
     # print(f'{replications.shape}')
     
@@ -108,9 +125,9 @@ for i in range(int(sim_length/dt)):
     # the else statement in the given psuedocode 
     walkers = np.append(remain_after_delete, replications)
     #print(walkers
-    if i % 10 == 0:
-        print("Reference Eneryg: " + str(reference_energy))
-        print("Num walkers: " + str(walkers.shape[0]))
+    print("Reference Eneryg: " + str(reference_energy))
+    print("Num walkers: " + str(walkers.shape[0]))
+    print("\n\n ######################### \n\n")
     # print(f'walkers:{walkers}')
 
 
