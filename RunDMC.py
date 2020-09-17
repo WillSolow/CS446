@@ -15,13 +15,13 @@ dt = 10
 sim_length = 10
 
 # number of initial walkers
-n_walkers = 2
+n_walkers = 100
 
 # spring constant
 k = 1.0
 
 # g/mol
-mass = 10
+mass_of_atom = 10
 
 # Equilibrium position of the system in atomic units
 equilibrium_position = 5
@@ -32,7 +32,7 @@ electron_mass = 9.10938970000e-28
 avogadro = 6.02213670000e+23
 
 # calculate the reduced mass of the system
-reduced_mass = (mass / (avogadro * electron_mass)) / 2
+reduced_mass = (mass_of_atom / (avogadro * electron_mass)) / 2
 
 # get a uniform distribution about the equilibrium position
 walkers = equilibrium_position + (np.random.rand(n_walkers) - 0.5)
@@ -54,7 +54,7 @@ for i in range(sim_length):
     # gets a normal distribution about 0 in the range sqrt(dt/mass) of the atom
     # recall in the model of a harmonic oscillator, only one mass matters
     print("prop lengths")
-    propogation_lengths = np.random.normal(0, np.sqrt(dt/mass), walkers.shape[0])
+    propogation_lengths = np.random.normal(0, np.sqrt(dt/reduced_mass), walkers.shape[0])
     print(propogation_lengths)
     # print(f'pln:{propogation_lengths}')
     # add the propogation length to the position of the current walkers
