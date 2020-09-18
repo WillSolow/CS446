@@ -3,8 +3,10 @@
 # Diffusion Monte Carlo (DMC) Simulation
 # Script Style
 # Goal: approximate Schrodinger Equation for 2 or more atoms
-# This implementation uses a truly 1-dimensional simulation for the distance between two walkers, and is modeled after a harmonic oscillator
+# This implementation uses a modified 1 dimensional system, now in 6 dimensions,
+#to simulate 2 atoms in 3D space. This has been updated from the first #simulation to account for the facct that each walker is now 6 
 
+# TODO UPDATE the calls to shape to get the correct outputs
 # Imports
 import numpy as np
 import matplotlib.pyplot as plt
@@ -12,20 +14,24 @@ import matplotlib.pyplot as plt
 # Initial Constants
 
 # Time step
-dt = 10
+dt = 1
 
 # simulation length
-sim_length = 10000
+sim_length = 1000
 
 # number of time steps for rolling average calculation
-n = 1000
+n = 10
 
 
 # number of initial walkers
-n_walkers = 1000
+n_walkers = 2
 
 # Equilibrium position of the system in atomic units
 equilibrium_position = 5
+
+# Dimensions in system. Two walkers is 6 dimensional as it takes 6 coordinates to
+# simulate the walker in 3 space
+system_dimensions = 6
 
 
 
@@ -46,7 +52,7 @@ atomic_mass = (mass_of_atom / (avogadro * electron_mass) )
 reduced_mass = (atomic_mass * atomic_mass) / (atomic_mass + atomic_mass)
 
 # get a uniform distribution about the equilibrium position
-walkers = equilibrium_position + (np.random.rand(n_walkers) - 0.5)
+walkers = equilibrium_position + (np.random.rand(n_walkers, system_dimensions) - 0.5)
 
 # constant for covergence of reference energy
 h=1
@@ -62,10 +68,11 @@ reference_converge = (np.zeros(sim_length) + 1) * ref_converge_num
 num_walkers = np.zeros(sim_length)
 init_walkers = (np.zeros(sim_length) + 1 )* n_walkers
 
-
 # calculate the potential energy of a walker based on its distance from the equilibrium position of the system
 def potential_energy(x):
-    return .5 * k * (x - equilibrium_position)**2
+	# calculate the distance in 3D space between the two atoms in each walker
+    distance = np.sqrt( (x[0]-x[3])**2 + (x[1]-x[4])**2 + (x[2]-x[5])**2)
+    return .5 * k * (distance - equilibrium_position)**2
 	
 # simulation loop
 for i in range(sim_length):
@@ -83,7 +90,7 @@ for i in range(sim_length):
     # gets a normal distribution about 0 in the range sqrt(dt/mass) of the atom
     # recall in the model of a harmonic oscillator, only the reduced mass matters
 	# add these randomized propogation lengths to each walker
-    propogation_lengths = np.random.normal(0, np.sqrt(dt/reduced_mass), walkers.shape[0])
+    propogation_lengths = np.random.normal(0, np.sqrt(dt/reduced_mass), (walkers.shape[0], system_dimensions))
     walkers = walkers + propogation_lengths
 	
 	
