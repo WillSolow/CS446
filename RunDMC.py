@@ -7,29 +7,39 @@
 
 # Imports
 import numpy as np
+import matplotlib.pyplot as plt
 
 # Initial Constants
-dt = 10
+
+# Time step
+dt = 1
 
 # simulation length
 sim_length = 1000
 
+# number of time steps for rolling average calculation
+n = 10
+
+
 # number of initial walkers
 n_walkers = 1000
 
-# spring constant
-k = 1.0
-
-# g/mol
-mass_of_atom = 10
-
 # Equilibrium position of the system in atomic units
 equilibrium_position = 5
+
+
+
+# spring constant
+k = 1.0
 
 # Mass of an electron
 electron_mass = 9.10938970000e-28
 # avogadro's constant
 avogadro = 6.02213670000e+23
+
+# g/mol
+mass_of_atom = 10
+
 
 # calculate the reduced mass of the system
 reduced_mass = (mass_of_atom / (avogadro * electron_mass)) / 2
@@ -37,7 +47,20 @@ reduced_mass = (mass_of_atom / (avogadro * electron_mass)) / 2
 # get a uniform distribution about the equilibrium position
 walkers = equilibrium_position + (np.random.rand(n_walkers) - 0.5)
 
-print("#################### STARTING SIMULATION #########################")
+# constant for covergence of reference energy
+h=1
+# calculate the convergence reference energy based on the given equation.
+ref_converge_num = .5*h*np.sqrt(k/reduced_mass)
+
+
+# create reference energy array for plotting
+reference_energy = np.zeros(sim_length)
+reference_converge = (np.zeros(sim_length) + 1) * ref_converge_num
+
+# create walker num array for plotting
+num_walkers = np.zeros(sim_length)
+init_walkers = (np.zeros(sim_length) + 1 )* n_walkers
+
 
 # calculate the potential energy of a walker based on its distance from the equilibrium position of the system
 def potential_energy(x):
@@ -48,7 +71,11 @@ for i in range(sim_length):
     # calculate the reference energy
     # based on the average of all the potential energies of the system
     # adjusted by a statistical value to account for very large or very small populations of walkers
-    reference_energy = np.mean( potential_energy(walkers) ) + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
+    reference_energy[i] = np.mean( potential_energy(walkers) ) + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
+
+	
+	# collect the current number of walkers for plotting purposes
+    num_walkers[i] = walkers.shape[0]
     
 	
 	
@@ -75,7 +102,7 @@ for i in range(sim_length):
     # notice that this is calculated for every walker in the system
 	# regardless of the potential energy of the walker
 	# Notice that this is actually the probability that a walker surives
-    prob_delete = np.exp(-(potential_energies-reference_energy)*dt)
+    prob_delete = np.exp(-(potential_energies-reference_energy[i])*dt)
 
 	# Takes prob_delete and normalizes it to the probability of replication
     # Notice that in the model these differ by -1
@@ -83,8 +110,10 @@ for i in range(sim_length):
 
 	
 	
-    # calculate which walkers actually have the necessary potential energies to merit deletion or 
-	# Notice that to_delete and to_replicate are equal, but for clarity purposes we separate them
+    # calculate which walkers actually have the necessary potential energies to merit deletion or replication
+	# these two arrays are not mutally exclusive, but below they are pointwise AND 
+	# with mutually exclusive energy statements to ensure that no walker will get
+	# both replicated and deleted at the same time
     to_delete = prob_delete > thresholds
     to_replicate = prob_replicate > thresholds
     
@@ -94,7 +123,7 @@ for i in range(sim_length):
     # (if the potential energy is greater than the reference energy AND the walker has probability deleted)
     # then boolean array should be a 1. Invert this and multiply with walkers to get the non-zero positions of the walkers
     # that should remain_after_delete
-    delete_walkers = walkers*np.invert( (potential_energies > reference_energy) * to_delete )
+    delete_walkers = np.invert( (potential_energies > reference_energy[i]) * to_delete )
 	
 	
 	# Truncates a shallow copy of the walkers array to store all the walkers that were not deleted
@@ -106,8 +135,11 @@ for i in range(sim_length):
     # (if the potential energy is less than the reference energy AND the walker should be replicated) 
     # then the value in the boolean array should be a 1. Multiplying this by walkers gives the non-zero positions of the walkers
     # that should be replicated
-    replicate_walkers = (potential_energies < reference_energy)*to_replicate
-    # print(f'repl:{replicate_walkers}')
+    replicate_walkers = (potential_energies < reference_energy[i])*to_replicate
+
+	
+	# Truncates a shallow copy of the walkres array to store only the walkers to be replicated
+	# repiclate_walkres > 0 is an ndarry of booleans
     replications = walkers[replicate_walkers > 0]
 
 	
@@ -119,14 +151,52 @@ for i in range(sim_length):
     walkers = np.append(remain_after_delete, replications)
 
 	
-	# print refernce energy and walkers at each time step
-	# TODO Graph using Matlib
-    print("Reference Energy: " + str(reference_energy))
-    print("Num walkers: " + str(walkers.shape[0]))
-    print("\n\n ######################### \n\n")
+# calculate the rolling average for n time steps
+ref_rolling_avg = np.zeros(sim_length)
+for i in range(sim_length):
+	# if i less than n, cannot calculate rolling average over the last n time steps
+    if i < n:
+        for j in range(i):
+            ref_rolling_avg[i] = ( ref_rolling_avg[i] - ( ref_rolling_avg[i] / (j+1) ) ) + (reference_energy[i-j] / (j+1) )
+    else: 
+        # calculate the rolling average by looping over the past n time steps and weighting them
+        for j in range(n):
+            ref_rolling_avg[i] = ( ref_rolling_avg[i] - ( ref_rolling_avg[i] / (j+1) ) ) + ( reference_energy[i-j] / (j+1) )
 
-h=1
-convergence_num = .5*h*np.sqrt(k/reduced_mass)
-print("Convergence num" + str(convergence_num))
+# plotting reference energy converging to zero-point energy
+plt.figure(1)
+plt.plot(reference_energy, label= 'Reference Energy')
+plt.plot(reference_converge, label= 'Zero Point Energy')
+plt.xlabel('Simulation Iteration')
+plt.ylabel('System Energy')
+plt.title('Convergence of Reference Energy')
+plt.legend()
+
+
+# plotting the rolling average of the reference energy converging to zero-point energy
+plt.figure(2)
+plt.plot(ref_rolling_avg, label= 'Reference Energy')
+plt.plot(reference_converge, label = 'Zero Point Energy')
+plt.xlabel('Simulation Iteration')
+plt.ylabel('System Energy')
+plt.title(str(n) + ' Step Rolling Average for Reference Energy')
+plt.legend()
+
+# plotting number of walkers over time
+plt.figure(3)
+plt.plot(num_walkers, label='Current Walkers')
+plt.plot(init_walkers, label='Initial Walkers')
+plt.xlabel('Simulation Iteration')
+plt.ylabel('Number of Walkers')
+plt.title('Number of Walkers Over Time')
+plt.legend()
+
+# plot histogram of walkers at final iteration
+plt.figure(4)
+plt.hist(walkers)
+plt.xlabel('Walker Position')
+plt.ylabel('Number of Walkers')
+plt.title('Walkers Final Position')
+plt.show()
 
 
