@@ -4,9 +4,8 @@
 # Script Style
 # Goal: approximate Schrodinger Equation for 2 or more atoms
 # This implementation uses a modified 1 dimensional system, now in 6 dimensions,
-#to simulate 2 atoms in 3D space. This has been updated from the first #simulation to account for the facct that each walker is now 6 
+# to simulate the CO bond for testing purposes
 
-# TODO UPDATE the calls to shape to get the correct outputs
 # Imports
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,20 +13,20 @@ import matplotlib.pyplot as plt
 # Initial Constants
 
 # Time step
-dt = 1
+dt = 10.0
 
 # simulation length
 sim_length = 10000
 
 # number of time steps for rolling average calculation
-n = 1000
+n = 100
 
 
 # number of initial walkers
 n_walkers = 1000
 
 # Equilibrium position of the system in atomic units
-equilibrium_position = 5
+bond_length = 0.59707
 
 # Dimensions in system. Two walkers is 6 dimensional as it takes 6 coordinates to
 # simulate the walker in 3 space
@@ -36,28 +35,30 @@ system_dimensions = 6
 
 
 # spring constant
-k = 1.0
+k = 1.2216
 
 # Mass of an electron
 electron_mass = 9.10938970000e-28
 # avogadro's constant
 avogadro = 6.02213670000e+23
 
-# g/mol
-mass_of_atom = 10
+# mass of carbon
+carbon_mass = 12.000
+# mass of oxygen
+oxygen_mass = 15.995
 
 
-# calculate the reduced mass of the system
-atomic_mass = (mass_of_atom / (avogadro * electron_mass) )
-reduced_mass = (atomic_mass * atomic_mass) / (atomic_mass + atomic_mass)
+
+# calculate the atomic mass of the system
+atomic_mass_carbon = carbon_mass / (avogadro * electron_mass)
+atomic_mass_oxygen = oxygen_mass / (avogadro * electron_mass)
 
 # get a uniform distribution about the equilibrium position
-walkers = equilibrium_position + (np.random.rand(n_walkers, system_dimensions) - 0.5)
+# first 3 columns are (x,y,z) of Carbon atom while last 3 are (x,y,z) of Oxygen atom
+walkers = bond_length + (np.random.rand(n_walkers, system_dimensions) - 0.5)
 
-# constant for covergence of reference energy
-h=1
 # calculate the convergence reference energy based on the given equation.
-ref_converge_num = .5*h*np.sqrt(k/atomic_mass)
+ref_converge_num = .00494317
 
 
 # create reference energy array for plotting
@@ -72,7 +73,7 @@ init_walkers = (np.zeros(sim_length) + 1 )* n_walkers
 def potential_energy(x):
 	# calculate the distance in 3D space between the two atoms in each walker
     distance = np.sqrt( (x[:,1]-x[:,3])**2 + (x[:,1]-x[:,4])**2 + (x[:,2]-x[:,5])**2)
-    return .5 * k * (distance - equilibrium_position)**2
+    return .5 * k * (distance - bond_length)**2
 	
 # simulation loop
 for i in range(sim_length):
@@ -90,8 +91,9 @@ for i in range(sim_length):
     # gets a normal distribution about 0 in the range sqrt(dt/mass) of the atom
     # recall in the model of a harmonic oscillator, only the reduced mass matters
 	# add these randomized propogation lengths to each walker
-    propogation_lengths = np.random.normal(0, np.sqrt(dt/atomic_mass), (walkers.shape[0], system_dimensions))
-    walkers = walkers + propogation_lengths
+    propogate_carbon = np.random.normal(0, np.sqrt(dt/atomic_mass_carbon), (walkers.shape[0], int(system_dimensions/2)))
+    propogate_oxygen = np.random.normal(0, np.sqrt(dt/atomic_mass_oxygen), (walkers.shape[0], int(system_dimensions/2)))
+    walkers = walkers + np.append(propogate_carbon, propogate_oxygen, axis=1)
 	
 	
     
@@ -181,7 +183,7 @@ distance = np.sqrt( (walkers[:,1]-walkers[:,3])**2 + (walkers[:,1]-walkers[:,4])
 plt.figure(1)
 plt.plot(reference_energy, label= 'Reference Energy')
 plt.plot(reference_converge, label= 'Zero Point Energy')
-plt.axis([0,sim_length,0,.1])
+plt.axis([0,sim_length,0,.01])
 plt.xlabel('Simulation Iteration')
 plt.ylabel('System Energy')
 plt.title('Convergence of Reference Energy')
@@ -192,7 +194,7 @@ plt.legend()
 plt.figure(2)
 plt.plot(ref_rolling_avg, label= 'Reference Energy')
 plt.plot(reference_converge, label = 'Zero Point Energy')
-plt.axis([0,sim_length,0,.1])
+plt.axis([0,sim_length,0,.01])
 plt.xlabel('Simulation Iteration')
 plt.ylabel('System Energy')
 plt.title(str(n) + ' Step Rolling Average for Reference Energy')
