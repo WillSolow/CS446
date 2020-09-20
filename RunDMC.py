@@ -3,12 +3,15 @@
 # Diffusion Monte Carlo (DMC) Simulation
 # Script Style
 # Goal: approximate Schrodinger Equation for 2 or more atoms
-# This implementation uses a truly 1-dimensional simulation for the distance between two walkers, and is modeled after a harmonic oscillator
+# This implementation uses a truly 1-dimensional simulation for the distance 
+# between two walkers, and is modeled after a harmonic oscillator
 
 # Imports
+
 import numpy as np
 import matplotlib.pyplot as plt
 
+##########################################################################
 # Initial Constants
 
 # Time step
@@ -49,7 +52,8 @@ reduced_mass = (atomic_mass * atomic_mass) / (atomic_mass + atomic_mass)
 walkers = equilibrium_position + (np.random.rand(n_walkers) - 0.5)
 
 # constant for covergence of reference energy
-h=1
+h = 1
+
 # calculate the convergence reference energy based on the given equation.
 ref_converge_num = .5*h*np.sqrt(k/reduced_mass)
 
@@ -60,10 +64,13 @@ reference_converge = (np.zeros(sim_length) + 1) * ref_converge_num
 
 # create walker num array for plotting
 num_walkers = np.zeros(sim_length)
-init_walkers = (np.zeros(sim_length) + 1 )* n_walkers
+init_walkers = (np.zeros(sim_length) + 1) * n_walkers
 
+##################################################################################
+# Simulation
 
-# calculate the potential energy of a walker based on its distance from the equilibrium position of the system
+# calculate the potential energy of a walker based on its distance 
+# from the equilibrium position of the system
 def potential_energy(x):
     return .5 * k * (x - equilibrium_position)**2
 	
@@ -71,98 +78,117 @@ def potential_energy(x):
 for i in range(sim_length):
     # calculate the reference energy
     # based on the average of all the potential energies of the system
-    # adjusted by a statistical value to account for very large or very small populations of walkers
-    reference_energy[i] = np.mean( potential_energy(walkers) ) + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
+    # adjusted by a statistical value to account for very large 
+    # or very small populations of walkers
+    reference_energy[i] = np.mean( potential_energy(walkers) ) \
+        + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
 
 	
-	# collect the current number of walkers for plotting purposes
+    # collect the current number of walkers for plotting purposes
     num_walkers[i] = walkers.shape[0]
     
 	
-	
-    # gets a normal distribution about 0 in the range sqrt(dt/mass) of the atom
+    # picks "jumps" in position for walker propogation	
+    # from a normal distribution about 0 in the range sqrt(dt/mass) of the atom
     # recall in the model of a harmonic oscillator, only the reduced mass matters
-	# add these randomized propogation lengths to each walker
-    propogation_lengths = np.random.normal(0, np.sqrt(dt/reduced_mass), walkers.shape[0])
+    # add these randomized propogation lengths to each walker
+    propogation_lengths = np.random.normal(0, np.sqrt(dt / reduced_mass), walkers.shape[0])
     walkers = walkers + propogation_lengths
 	
 	
     
     # calculate the new potential energies of each walker in the system
-    # returns an array of floats, one per walker
+    # returns an ndarray of floats, one per walker
     potential_energies = potential_energy(walkers)
 
     
-    # calculates a random in range [0,1) for each walker in the system
-	# used to calculate the chance of a walker being deleted or replicated 
+    # chooses from a uniform distribution in range [0,1) for each walker in the system
+    # used to calculate the chance of a walker being deleted or replicated 
     thresholds = np.random.rand(walkers.shape[0])
 	
 	
 	
     # calculates probability of a walker to be deleted
     # notice that this is calculated for every walker in the system
-	# regardless of the potential energy of the walker
-	# Notice that this is actually the probability that a walker surives
-    prob_delete = np.exp(-(potential_energies-reference_energy[i])*dt)
+    # regardless of the potential energy of the walker
+    # Notice that this is actually the probability that a walker surives
+    prob_delete = np.exp( -(potential_energies-reference_energy[i]) * dt)
 
-	# Takes prob_delete and normalizes it to the probability of replication
+    # Takes prob_delete and normalizes it to the probability of replication
     # Notice that in the model these differ by -1
     prob_replicate = prob_delete - 1
 
 	
 	
-    # calculate which walkers actually have the necessary potential energies to merit deletion or replication
-	# these two arrays are not mutally exclusive, but below they are pointwise AND 
-	# with mutually exclusive energy statements to ensure that no walker will get
-	# both replicated and deleted at the same time
+    # calculate which walkers actually have the necessary potential energies 
+    # to merit deletion or replication
+    # these two arrays are not mutally exclusive, but below they are pointwise AND 
+    # with mutually exclusive energy statements to ensure that no walker will get
+    # both replicated and deleted at the same time
     to_delete = prob_delete > thresholds
     to_replicate = prob_replicate > thresholds
     
 	
 	
     # use pointwise multiplication with the walkers array with:
-    # (if the potential energy is greater than the reference energy AND the walker has probability deleted)
-    # then boolean array should be a 1. Invert this and multiply with walkers to get the non-zero positions of the walkers
+    # (if the potential energy is greater than the reference energy 
+    # AND the walker has probability deleted)
+    # then boolean array should be a 1. Invert this and multiply with walkers 
+    # to get the non-zero positions of the walkers
     # that should remain_after_delete
     delete_walkers = np.invert( (potential_energies > reference_energy[i]) * to_delete )
 	
 	
-	# Truncates a shallow copy of the walkers array to store all the walkers that were not deleted
-	# delete_walkers > 0 is an ndarray of booleans
+    # Truncates a shallow copy of the walkers array to store all the walkers 
+    # that were not deleted
+    # delete_walkers > 0 is an ndarray of booleans
+    # and functions as a mask for the indices of walkers preserved
     remain_after_delete = walkers[delete_walkers > 0]
 
 	
 	
-    # (if the potential energy is less than the reference energy AND the walker should be replicated) 
-    # then the value in the boolean array should be a 1. Multiplying this by walkers gives the non-zero positions of the walkers
+    # (if the potential energy is less than the reference energy 
+    # AND the walker should be replicated) 
+    # then the value in the boolean array should be a 1. Multiplying this by walkers gives 
+    # the non-zero positions of the walkers
     # that should be replicated
     replicate_walkers = (potential_energies < reference_energy[i])*to_replicate
 
 	
-	# Truncates a shallow copy of the walkres array to store only the walkers to be replicated
-	# repiclate_walkres > 0 is an ndarry of booleans
+    # Truncates a shallow copy of the walkres array to store only the walkers 
+    # to be replicated
+    # repiclate_walkres > 0 is an ndarry of booleans
     replications = walkers[replicate_walkers > 0]
 
 	
 	
-    # concatenating the remaining after deletion and replications array gives exactly the walkers that weren't deleted (most of which were replicated)
-    # note that if the walker was not replicated, it still appears in the remains after deletion array, effectively encompassing
-    # the case where the threshold is equal to the probability of deletion or replication
-	# However, due to the stochastic nature of the system, this is unlikely to happen
+    # concatenating the remaining after deletion and replications array gives exactly the 
+    # walkers that weren't deleted (most of which were replicated)
+    # note that if the walker was not replicated, it still appears in the remains after  
+    # deletion array, effectively encompassing the case where the threshold is equal to 
+    # the probability of deletion or replication
+    # However, due to the stochastic nature of the system, this is unlikely to happen
     walkers = np.append(remain_after_delete, replications)
 
-	
+######################################################################################
+# Output
+
 # calculate the rolling average for n time steps
 ref_rolling_avg = np.zeros(sim_length)
+
 for i in range(sim_length):
 	# if i less than n, cannot calculate rolling average over the last n time steps
     if i < n:
         for j in range(i):
-            ref_rolling_avg[i] = ( ref_rolling_avg[i] - ( ref_rolling_avg[i] / (j+1) ) ) + (reference_energy[i-j] / (j+1) )
+            ref_rolling_avg[i] = ( ref_rolling_avg[i] - ( ref_rolling_avg[i] / (j+1) ) ) \
+                    + (reference_energy[i-j] / (j+1) )
     else: 
-        # calculate the rolling average by looping over the past n time steps and weighting them
+        # calculate the rolling average by looping over the past n time steps 
         for j in range(n):
-            ref_rolling_avg[i] = ( ref_rolling_avg[i] - ( ref_rolling_avg[i] / (j+1) ) ) + ( reference_energy[i-j] / (j+1) )
+            ref_rolling_avg[i] = ( ref_rolling_avg[i] - ( ref_rolling_avg[i] / (j+1) ) ) \
+                    + ( reference_energy[i-j] / (j+1) )
+
+
 
 # plotting reference energy converging to zero-point energy
 plt.figure(1)
@@ -172,7 +198,6 @@ plt.xlabel('Simulation Iteration')
 plt.ylabel('System Energy')
 plt.title('Convergence of Reference Energy')
 plt.legend()
-
 
 # plotting the rolling average of the reference energy converging to zero-point energy
 plt.figure(2)
@@ -199,5 +224,4 @@ plt.xlabel('Walker Position')
 plt.ylabel('Number of Walkers')
 plt.title('Walkers Final Position')
 plt.show()
-
 
