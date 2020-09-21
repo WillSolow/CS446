@@ -48,8 +48,12 @@ mass_of_atom = 10
 atomic_mass = (mass_of_atom / (avogadro * electron_mass) )
 reduced_mass = (atomic_mass * atomic_mass) / (atomic_mass + atomic_mass)
 
+
+
 # get a uniform distribution about the equilibrium position
 walkers = equilibrium_position + (np.random.rand(n_walkers) - 0.5)
+
+
 
 # constant for covergence of reference energy
 h = 1
@@ -65,6 +69,8 @@ reference_converge = (np.zeros(sim_length) + 1) * ref_converge_num
 # create walker num array for plotting
 num_walkers = np.zeros(sim_length)
 init_walkers = (np.zeros(sim_length) + 1) * n_walkers
+
+
 
 ##################################################################################
 # Simulation
