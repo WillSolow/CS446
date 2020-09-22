@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 dt = 1
 
 # simulation length
-sim_length = 10000
+sim_length = 1000
 
 # number of time steps for rolling average calculation
 n = 1000
@@ -75,7 +75,7 @@ init_walkers = (np.zeros(sim_length) + 1 )* n_walkers
 # calculate the potential energy of a walker based on its distance from the equilibrium position of the system
 def potential_energy(x):
     # calculate the distance in 3D space between the two atoms in each walker
-    distance = np.sqrt( (x[:,1]-x[:,3])**2 + (x[:,1]-x[:,4])**2 + (x[:,2]-x[:,5])**2)
+    distance = np.sqrt( (x[:,0]-x[:,3])**2 + (x[:,1]-x[:,4])**2 + (x[:,2]-x[:,5])**2)
     return .5 * k * (distance - equilibrium_position)**2
 	
 # simulation loop

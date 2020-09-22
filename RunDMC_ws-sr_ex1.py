@@ -158,7 +158,7 @@ for i in range(sim_length):
     # then the value in the boolean array should be a 1. Multiplying this by walkers gives 
     # the non-zero positions of the walkers
     # that should be replicated
-    replicate_walkers = (potential_energies < reference_energy[i])*to_replicate
+    replicate_walkers = (potential_energies < reference_energy[i]) * to_replicate
 
 	
     # Truncates a shallow copy of the walkres array to store only the walkers 
