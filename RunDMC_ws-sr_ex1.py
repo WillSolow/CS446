@@ -71,7 +71,6 @@ num_walkers = np.zeros(sim_length)
 init_walkers = (np.zeros(sim_length) + 1) * n_walkers
 
 
-
 ##################################################################################
 # Simulation
 
@@ -79,7 +78,7 @@ init_walkers = (np.zeros(sim_length) + 1) * n_walkers
 # from the equilibrium position of the system
 def potential_energy(x):
     return .5 * k * (x - equilibrium_position)**2
-	
+
 # simulation loop
 for i in range(sim_length):
     # calculate the reference energy
@@ -88,7 +87,7 @@ for i in range(sim_length):
     # or very small populations of walkers
     reference_energy[i] = np.mean( potential_energy(walkers) ) \
         + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
-
+    
 	
     # collect the current number of walkers for plotting purposes
     num_walkers[i] = walkers.shape[0]
@@ -107,6 +106,7 @@ for i in range(sim_length):
     # returns an ndarray of floats, one per walker
     potential_energies = potential_energy(walkers)
 
+
     
     # chooses from a uniform distribution in range [0,1) for each walker in the system
     # used to calculate the chance of a walker being deleted or replicated 
@@ -120,10 +120,12 @@ for i in range(sim_length):
     # Notice that this is actually the probability that a walker surives
     prob_delete = np.exp( -(potential_energies-reference_energy[i]) * dt)
 
+
     # Takes prob_delete and normalizes it to the probability of replication
     # Notice that in the model these differ by -1
     prob_replicate = prob_delete - 1
 
+	
 	
 	
     # calculate which walkers actually have the necessary potential energies 
@@ -131,7 +133,7 @@ for i in range(sim_length):
     # these two arrays are not mutally exclusive, but below they are pointwise AND 
     # with mutually exclusive energy statements to ensure that no walker will get
     # both replicated and deleted at the same time
-    to_delete = prob_delete > thresholds
+    to_delete = prob_delete < thresholds
     to_replicate = prob_replicate > thresholds
     
 	
@@ -143,6 +145,7 @@ for i in range(sim_length):
     # to get the non-zero positions of the walkers
     # that should remain_after_delete
     delete_walkers = np.invert( (potential_energies > reference_energy[i]) * to_delete )
+
 	
 	
     # Truncates a shallow copy of the walkers array to store all the walkers 
@@ -176,6 +179,7 @@ for i in range(sim_length):
     # However, due to the stochastic nature of the system, this is unlikely to happen
     walkers = np.append(remain_after_delete, replications)
 
+
 ######################################################################################
 # Output
 
@@ -200,6 +204,7 @@ for i in range(sim_length):
 plt.figure(1)
 plt.plot(reference_energy, label= 'Reference Energy')
 plt.plot(reference_converge, label= 'Zero Point Energy')
+plt.axis([0,sim_length,0,.01])
 plt.xlabel('Simulation Iteration')
 plt.ylabel('System Energy')
 plt.title('Convergence of Reference Energy')
@@ -209,6 +214,7 @@ plt.legend()
 plt.figure(2)
 plt.plot(ref_rolling_avg, label= 'Reference Energy')
 plt.plot(reference_converge, label = 'Zero Point Energy')
+plt.axis([0,sim_length,0,.01])
 plt.xlabel('Simulation Iteration')
 plt.ylabel('System Energy')
 plt.title(str(n) + ' Step Rolling Average for Reference Energy')

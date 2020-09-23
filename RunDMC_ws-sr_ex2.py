@@ -14,10 +14,10 @@ import matplotlib.pyplot as plt
 # Initial Constants
 
 # Time step
-dt = 1
+dt = 10
 
 # simulation length
-sim_length = 1000
+sim_length = 10000
 
 # number of time steps for rolling average calculation
 n = 1000
@@ -130,7 +130,7 @@ for i in range(sim_length):
     # these two arrays are not mutally exclusive, but below they are pointwise AND 
     # with mutually exclusive energy statements to ensure that no walker will get
     # both replicated and deleted at the same time
-    to_delete = prob_delete > thresholds
+    to_delete = prob_delete < thresholds
     to_replicate = prob_replicate > thresholds
     
 	
@@ -201,7 +201,7 @@ distance = np.sqrt( (walkers[:,1]-walkers[:,3])**2 + (walkers[:,1]-walkers[:,4])
 plt.figure(1)
 plt.plot(reference_energy, label= 'Reference Energy')
 plt.plot(reference_converge, label= 'Zero Point Energy')
-plt.axis([0,sim_length,0,.1])
+plt.axis([0,sim_length,0,.01])
 plt.xlabel('Simulation Iteration')
 plt.ylabel('System Energy')
 plt.title('Convergence of Reference Energy')
@@ -211,7 +211,7 @@ plt.legend()
 plt.figure(2)
 plt.plot(ref_rolling_avg, label= 'Reference Energy')
 plt.plot(reference_converge, label = 'Zero Point Energy')
-plt.axis([0,sim_length,0,.1])
+plt.axis([0,sim_length,0,.01])
 plt.xlabel('Simulation Iteration')
 plt.ylabel('System Energy')
 plt.title(str(n) + ' Step Rolling Average for Reference Energy')

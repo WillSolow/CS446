@@ -20,7 +20,7 @@ dt = 10.0
 sim_length = 10000
 
 # number of time steps for rolling average calculation
-n = 100
+n = 1000
 
 
 # number of initial walkers
@@ -76,7 +76,7 @@ init_walkers = (np.zeros(sim_length) + 1 )* n_walkers
 # calculate the potential energy of a walker based on its distance from the equilibrium position of the system
 def potential_energy(x):
 	# calculate the distance in 3D space between the two atoms in each walker
-    distance = np.sqrt( (x[:,1]-x[:,3])**2 + (x[:,1]-x[:,4])**2 + (x[:,2]-x[:,5])**2)
+    distance = np.sqrt( (x[:,0]-x[:,3])**2 + (x[:,1]-x[:,4])**2 + (x[:,2]-x[:,5])**2)
     return .5 * k * (distance - bond_length)**2
 	
 # simulation loop
@@ -133,7 +133,7 @@ for i in range(sim_length):
     # these two arrays are not mutally exclusive, but below they are pointwise AND 
     # with mutually exclusive energy statements to ensure that no walker will get
     # both replicated and deleted at the same time
-    to_delete = prob_delete > thresholds
+    to_delete = prob_delete < thresholds
     to_replicate = prob_replicate > thresholds
     
 	
