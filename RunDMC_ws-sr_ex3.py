@@ -61,6 +61,8 @@ walkers = bond_length + (np.random.rand(n_walkers, system_dimensions) - 0.5)
 # calculate the convergence reference energy based on the given equation.
 ref_converge_num = .00494317
 
+reduced_mass = (atomic_mass_carbon+atomic_mass_oxygen) / (atomic_mass_carbon*atomic_mass_oxygen)
+
 
 # create reference energy array for plotting
 reference_energy = np.zeros(sim_length)
@@ -108,7 +110,8 @@ for i in range(sim_length):
     # calculate the new potential energies of each walker in the system
     # returns an array of floats, one per walker
     potential_energies = potential_energy(walkers)
-
+	
+	
     
     # picks from a uniform distribution in range [0,1) for each walker in the system
     # used to calculate the chance of a walker being deleted or replicated 
@@ -230,11 +233,21 @@ plt.ylabel('Number of Walkers')
 plt.title('Number of Walkers Over Time')
 plt.legend()
 
-# plot histogram of walkers at final iteration
+# plot wave function 
 plt.figure(4)
+plt.scatter(distance, np.exp((-(distance-bond_length)**2) * np.sqrt(k*reduced_mass) / 2))
+plt.xlabel('Walker Distance')
+plt.ylabel('Oscillator')
+plt.title('Harmonic Oscillator Function')
+
+# plot histogram of walkers at final iteration
+plt.figure(5)
 plt.hist(distance)
 plt.xlabel('Walker Position')
 plt.ylabel('Number of Walkers')
 plt.title('Walkers Final Position')
 plt.show()
+
+
+
 

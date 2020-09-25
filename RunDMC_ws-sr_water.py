@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 dt = 10.0
 
 # simulation length
-sim_length = 10000
+sim_length = 1000
 
 # number of time steps for rolling average calculation
 n = 1000
@@ -30,15 +30,11 @@ n_walkers = 1000
 # Equilibrium position of the system in atomic units
 bond_length = 0.59707
 
-# number of molecules in the system
-# used in generating the walkers in the initial walkers array
-num_molecules = 2
-
-
-# cartesian coodinates constant. Always 3, used for clarity purposes
-coord_const = 3
-
-
+# To be used in ndarray of atom masses for each walker
+# mass of carbon
+carbon_mass = 12.000
+# mass of oxygen
+oxygen_mass = 15.995
 
 # spring constant
 k = 1.2216
@@ -48,21 +44,32 @@ electron_mass = 9.10938970000e-28
 # avogadro's constant
 avogadro = 6.02213670000e+23
 
-# mass of carbon
-carbon_mass = 12.000
-# mass of oxygen
-oxygen_mass = 15.995
-
-
-
 # calculate the atomic mass of the system
 atomic_mass_carbon = carbon_mass / (avogadro * electron_mass)
 atomic_mass_oxygen = oxygen_mass / (avogadro * electron_mass)
 
+# number of atoms in each molecule system
+# used in generating the walkers in the initial walkers array
+num_atoms = 2
+
+# the number of molecules in each walker. Is used to generate the correct 4D array size
+# can be generalized to systems where not all molecules are identical
+# is currently implemented under the assumption that all molecules are the same (in this case water molecules)
+num_molecules = 1
+
+# required user input. Records the masses of atoms in the order in which they appear in a walker
+# Used to generate the propogation lengths in each walker
+atom_walker_masses = np.array([atomic_mass_oxygen, atomic_mass_carbon])
+
+
+
+# cartesian coodinates constant. Always 3, used for clarity purposes
+coord_const = 3
+
+
 # get a uniform distribution about the equilibrium position for random walkers
-# Creates an n_walkers by coord_const by num_molecules ndarray where each walker is of size
-# coord_const by num_molecules, each row being the position of one atom
-walkers = bond_length + (np.random.rand(n_walkers, coord_const, num_molecules) - 0.5)
+# Creates a 4D array with dimesions of walkers by molecules by coord constant by num atoms
+walkers = bond_length + (np.random.rand(n_walkers, num_molecules, coord_const, num_atoms) - 0.5)
 
 # calculate the convergence reference energy based on the given equation.
 ref_converge_num = .00494317
@@ -79,10 +86,10 @@ init_walkers = (np.zeros(sim_length) + 1 )* n_walkers
 #######################################################################################
 # Simulation
 
-# calculate the potential energy of a walker based on its distance from the equilibrium position of the system
+# calculate the potential energy of a walker based on the position of its atoms or molecules inside of it and their distances from each other
 def potential_energy(x):
 	# calculate the distance in 3D space between the two atoms in each walker
-    distance = np.sqrt( (x[:,0,0]-x[:,0,1])**2 + (x[:,1,0]-x[:,1,1])**2 + (x[:,2,0]-x[:,2,1])**2)
+    distance = np.sqrt( (x[:,0,0,0]-x[:,0,0,1])**2 + (x[:,0,1,0]-x[:,0,1,1])**2 + (x[:,0,2,0]-x[:,0,2,1])**2)
     return .5 * k * (distance - bond_length)**2
 	
 # simulation loop
@@ -100,20 +107,16 @@ for i in range(sim_length):
     
 	
 	
-    # picks from a normal distribution about 0 in the range sqrt(dt/mass) of the atom
-    # recall in the model of a harmonic oscillator, only the reduced mass matters
-    # add these randomized propogation lengths to each walker
-    propogate_carbon = np.random.normal(0, np.sqrt(dt/atomic_mass_carbon), \
-            (walkers.shape[0], coord_const))
-    propogate_oxygen = np.random.normal(0, np.sqrt(dt/atomic_mass_oxygen), \
-            (walkers.shape[0], coord_const))
-    walkers = walkers + np.stack((propogate_carbon, propogate_oxygen), axis=-1)
+    propogate_oxygen = np.random.normal(0, np.sqrt(dt/atom_walker_masses[0]), \
+            (walkers.shape[0], num_molecules, coord_const))
+    propogate_carbon = np.random.normal(0, np.sqrt(dt/atom_walker_masses[1]), \
+            (walkers.shape[0], num_molecules, coord_const))
+    walkers = walkers + np.stack((propogate_oxygen, propogate_carbon), axis=-1)
 	
     
     # calculate the new potential energies of each walker in the system
     # returns an array of floats, one per walker
     potential_energies = potential_energy(walkers)
-	
 
     
     # picks from a uniform distribution in range [0,1) for each walker in the system
@@ -152,13 +155,11 @@ for i in range(sim_length):
     # that should remain_after_delete
     delete_walkers = np.invert( (potential_energies > reference_energy[i]) * to_delete )
 	
-	
-	
     # Truncates a shallow copy of the walkers array to store 
     # all the walkers that were not deleted
     # delete_walkers > 0 is an ndarray of booleans
     remain_after_delete = walkers[delete_walkers > 0]
-	
+
 	
     # (if the potential energy is less than the reference energy 
     # AND the walker should be replicated) 
@@ -182,6 +183,7 @@ for i in range(sim_length):
     # However, due to the stochastic nature of the system, this is unlikely to happen
     walkers = np.append(remain_after_delete, replications, axis=0)
 
+
 #####################################################################################
 # Output
 	
@@ -202,8 +204,8 @@ for i in range(sim_length):
 			
 
 # calculate the distance between the two atoms to be used in the histogram	
-distance = np.sqrt( (walkers[:,0,0]-walkers[:,0,1])**2 + (walkers[:,1,0]-walkers[:,1,1])**2 \
-    + (walkers[:,2,0]-walkers[:,2,1])**2)
+distance = np.sqrt( (walkers[:,0,0,0]-walkers[:,0,0,1])**2 + (walkers[:,0,1,0]- \
+        walkers[:,0,1,1])**2 + (walkers[:,0,2,0]-walkers[:,0,2,1])**2)
 
 
 
