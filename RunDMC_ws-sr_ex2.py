@@ -232,5 +232,16 @@ plt.hist(distance)
 plt.xlabel('Walker Position')
 plt.ylabel('Number of Walkers')
 plt.title('Walkers Final Position')
+
+# Normalization constant
+N = 1
+# plot wave function
+plt.figure(5)
+plt.scatter((distance-equilibrium_position), N * np.exp(-(distance-equilibrium_position)**2 * np.sqrt(k * reduced_mass) / 2))
+plt.xlabel('Walker Position')
+plt.ylabel('Oscillation')
+plt.title('Wave Function')
+
+
 plt.show()
 
