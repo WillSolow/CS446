@@ -193,7 +193,7 @@ for i in range(sim_length):
 			
 
 # calculate the distance between the two atoms to be used in the histogram	
-distance = np.sqrt( (walkers[:,1]-walkers[:,3])**2 + (walkers[:,1]-walkers[:,4])**2 + (walkers[:,2]-walkers[:,5])**2)
+distance = np.sqrt( (walkers[:,0]-walkers[:,3])**2 + (walkers[:,1]-walkers[:,4])**2 + (walkers[:,2]-walkers[:,5])**2)
 
 
 
@@ -201,7 +201,7 @@ distance = np.sqrt( (walkers[:,1]-walkers[:,3])**2 + (walkers[:,1]-walkers[:,4])
 plt.figure(1)
 plt.plot(reference_energy, label= 'Reference Energy')
 plt.plot(reference_converge, label= 'Zero Point Energy')
-plt.axis([0,sim_length,0,.01])
+plt.axis([0,sim_length,.003,.007])
 plt.xlabel('Simulation Iteration')
 plt.ylabel('System Energy')
 plt.title('Convergence of Reference Energy')
@@ -211,7 +211,7 @@ plt.legend()
 plt.figure(2)
 plt.plot(ref_rolling_avg, label= 'Reference Energy')
 plt.plot(reference_converge, label = 'Zero Point Energy')
-plt.axis([0,sim_length,0,.01])
+plt.axis([0,sim_length,.004,.006])
 plt.xlabel('Simulation Iteration')
 plt.ylabel('System Energy')
 plt.title(str(n) + ' Step Rolling Average for Reference Energy')
@@ -228,7 +228,7 @@ plt.legend()
 
 # plot histogram of walkers at final iteration
 plt.figure(4)
-plt.hist(distance)
+plt.hist(distance, bins=20)
 plt.xlabel('Walker Position')
 plt.ylabel('Number of Walkers')
 plt.title('Walkers Final Position')
