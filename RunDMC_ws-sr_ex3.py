@@ -234,7 +234,7 @@ plt.legend()
 
 # plot histogram of walkers at final iteration
 plt.figure(4)
-plt.hist(distance, bins=20)
+plt.hist(distance, bins=30)
 plt.xlabel('Walker Position')
 plt.ylabel('Number of Walkers')
 plt.title('Walkers Final Position')
@@ -243,7 +243,7 @@ plt.title('Walkers Final Position')
 N = 1
 # plot wave function
 plt.figure(5)
-plt.scatter((distance-equilibrium_position), N * np.exp(-(distance-equilibrium_position)**2 * np.sqrt(k * reduced_mass) / 2))
+plt.scatter((distance-bond_length), N * np.exp(-(distance-bond_length)**2 * np.sqrt(k * reduced_mass) / 2))
 plt.xlabel('Walker Position')
 plt.ylabel('Oscillation')
 plt.title('Wave Function')

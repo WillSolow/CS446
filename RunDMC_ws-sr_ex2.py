@@ -228,7 +228,7 @@ plt.legend()
 
 # plot histogram of walkers at final iteration
 plt.figure(4)
-plt.hist(distance, bins=20)
+plt.hist(distance, bins=30)
 plt.xlabel('Walker Position')
 plt.ylabel('Number of Walkers')
 plt.title('Walkers Final Position')
