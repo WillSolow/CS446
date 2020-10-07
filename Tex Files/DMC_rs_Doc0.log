@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 2.9.7300 64-bit) (preloaded format=pdflatex 2020.3.16)  7 OCT 2020 11:54
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 2.9.7300 64-bit) (preloaded format=pdflatex 2020.3.16)  7 OCT 2020 12:00
 entering extended mode
-**./DMC_rs_Doc1.tex
-(DMC_rs_Doc1.tex
+**./DMC_rs_Doc0.tex
+(DMC_rs_Doc0.tex
 LaTeX2e <2020-02-02> patch level 2
 L3 programming layer <2020-02-14>
 (C:\Users\wsolow\AppData\Roaming\MiKTeX\2.9\tex/latex/achemso\achemso.cls
@@ -633,24 +633,24 @@ Package: chemformula 2020/03/07 v4.15j typeset chemical compounds and reactions
 ) ("C:\Program Files\MiKTeX 2.9\tex/latex/base\fontenc.sty"
 Package: fontenc 2020/02/11 v2.0o Standard LaTeX package
 )
-(DMC_rs_Doc1.aux)
-\openout1 = `DMC_rs_Doc1.aux'.
+(DMC_rs_Doc0.aux)
+\openout1 = `DMC_rs_Doc0.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 81.
-LaTeX Font Info:    ... okay on input line 81.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 81.
-LaTeX Font Info:    ... okay on input line 81.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 81.
-LaTeX Font Info:    ... okay on input line 81.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 81.
-LaTeX Font Info:    ... okay on input line 81.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 81.
-LaTeX Font Info:    ... okay on input line 81.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 81.
-LaTeX Font Info:    ... okay on input line 81.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 81.
-LaTeX Font Info:    ... okay on input line 81.
-\openout3 = `acs-DMC_rs_Doc1.bib'.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 79.
+LaTeX Font Info:    ... okay on input line 79.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 79.
+LaTeX Font Info:    ... okay on input line 79.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 79.
+LaTeX Font Info:    ... okay on input line 79.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 79.
+LaTeX Font Info:    ... okay on input line 79.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 79.
+LaTeX Font Info:    ... okay on input line 79.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 79.
+LaTeX Font Info:    ... okay on input line 79.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 79.
+LaTeX Font Info:    ... okay on input line 79.
+\openout3 = `acs-DMC_rs_Doc0.bib'.
 
 
 *geometry* driver: auto-detecting
@@ -738,47 +738,38 @@ G,.JBIG2,.JB2,.eps]
 (grfext)             \AppendGraphicsExtensions on input line 504.
 )
 ABD: EveryShipout initializing macros
-LaTeX Font Info:    Trying to load font information for T1+cmss on input line 8
-1.
+LaTeX Font Info:    Trying to load font information for T1+cmss on input line 7
+9.
 
 ("C:\Program Files\MiKTeX 2.9\tex/latex/base\t1cmss.fd"
 File: t1cmss.fd 2019/12/16 v2.5j Standard LaTeX font definitions
-)
-
-Package natbib Warning: Citation `Abernethy2003' on page 1 undefined on input l
-ine 114.
-
-[1
+) [1
 
 {C:/Users/wsolow/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}]
-No file DMC_rs_Doc1.bbl.
-
-Package natbib Warning: There were undefined citations.
-
-[2] (DMC_rs_Doc1.aux) ) 
+No file DMC_rs_Doc0.bbl.
+[2] (DMC_rs_Doc0.aux) ) 
 Here is how much of TeX's memory you used:
- 17837 strings out of 481556
- 360831 string characters out of 2923631
- 592315 words of memory out of 3000000
- 32733 multiletter control sequences out of 15000+200000
- 549953 words of font info for 61 fonts, out of 3000000 for 9000
+ 17828 strings out of 481556
+ 360683 string characters out of 2923631
+ 592277 words of memory out of 3000000
+ 32726 multiletter control sequences out of 15000+200000
+ 547273 words of font info for 55 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 68i,8n,101p,1061b,502s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 68i,8n,101p,1004b,502s stack positions out of 5000i,500n,10000p,200000b,50000s
  <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfo
 ur/jknappen/ec/dpi600\ecbx1728.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fo
-nts/pk/ljfour/jknappen/ec/dpi600\ecbx0800.pk> <C:\Users\wsolow\AppData\Local\Mi
-KTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1095.pk> <C:\Users\wsolow\AppDa
-ta\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1095.pk> <C:\Users\w
-solow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1200.pk> 
+nts/pk/ljfour/jknappen/ec/dpi600\ecrm1095.pk> <C:\Users\wsolow\AppData\Local\Mi
+KTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1095.pk> <C:\Users\wsolow\AppDa
+ta\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1200.pk> <C:\Users\w
+solow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecss1200.pk> 
 <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ec
-ss1200.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/e
-c/dpi600\ecti1200.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour
-/jknappen/ec/dpi600\ecss1440.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\font
-s/pk/ljfour/jknappen/ec/dpi600\ecsx2074.pk><C:/Program Files/MiKTeX 2.9/fonts/t
-ype1/public/amsfonts/cm/cmsy10.pfb>
-Output written on DMC_rs_Doc1.pdf (2 pages, 92045 bytes).
+ti1200.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/e
+c/dpi600\ecss1440.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour
+/jknappen/ec/dpi600\ecsx2074.pk><C:/Program Files/MiKTeX 2.9/fonts/type1/public
+/amsfonts/cm/cmsy10.pfb>
+Output written on DMC_rs_Doc0.pdf (2 pages, 89845 bytes).
 PDF statistics:
- 268 PDF objects out of 1000 (max. 8388607)
+ 259 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 
