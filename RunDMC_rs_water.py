@@ -48,7 +48,7 @@ sim_length = 10000
 n_walkers = 1000
 
 # Number of time steps for rolling average calculation
-n = 1000
+rolling_avg = 1000
 
 
 ####################################################################################
@@ -138,13 +138,13 @@ for i in range(sim_length):
     
 	
 	# Propogates each atom in a normal distribution about its current position
-    propogate_oxygen = np.random.normal(0, np.sqrt(dt/atomic_mass_oxygen), \
+    propagate_oxygen = np.random.normal(0, np.sqrt(dt/atomic_mass_oxygen), \
             (walkers.shape[0], num_molecules, coord_const))
-    propogate_carbon = np.random.normal(0, np.sqrt(dt/atomic_mass_carbon), \
+    propagate_carbon = np.random.normal(0, np.sqrt(dt/atomic_mass_carbon), \
             (walkers.shape[0], num_molecules, coord_const))
 			
 	# Adds the propogation lengths to the 4D walker array
-    walkers = walkers + np.stack((propogate_oxygen, propogate_carbon), axis=-1)
+    walkers = walkers + np.stack((propagate_oxygen, propagate_carbon), axis=-1)
 	
     
 	
@@ -224,15 +224,16 @@ init_walkers = (np.zeros(sim_length) + 1 )* n_walkers
 # Calculate the rolling average for n time steps
 ref_rolling_avg = np.zeros(sim_length)
 for i in range(sim_length):
-    # If i less than n, cannot calculate rolling average over the last n time steps
+    # If i less than rolling_avg, cannot calculate rolling average over the last 
+	# rolling_avg time steps
 	# Instead, calculate average over the first i time steps
-    if i < n:
+    if i < rolling_avg:
         for j in range(i):
             ref_rolling_avg[i] = ( ref_rolling_avg[i] - ( ref_rolling_avg[i] / (j+1) ) ) \
                 + (reference_energy[i-j] / (j+1) )
     else: 
         # Calculate the rolling average by looping over the past n time steps 
-        for j in range(n):
+        for j in range(rolling_avg):
             ref_rolling_avg[i] = ( ref_rolling_avg[i] - ( ref_rolling_avg[i] / (j+1) ) ) \
                 + ( reference_energy[i-j] / (j+1) )
 
@@ -263,7 +264,7 @@ plt.plot(reference_converge, label = 'Zero Point Energy')
 plt.axis([0,sim_length,.0045,.0055])
 plt.xlabel('Simulation Iteration')
 plt.ylabel('System Energy')
-plt.title(str(n) + ' Step Rolling Average for Reference Energy')
+plt.title(str(rolling_avg) + ' Step Rolling Average for Reference Energy')
 plt.legend()
 
 
