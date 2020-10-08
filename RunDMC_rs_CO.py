@@ -68,7 +68,7 @@ n_bins = 50
 
 # Number of atoms in each molecule of the system
 # Used to initilize the walker array
-num_atoms = 3
+num_atoms = 2
 
 # Number of molecules in each walker
 # Used to initialize the walker array
@@ -78,42 +78,35 @@ num_molecules = 1
 
 # Atomic masses of atoms in system
 # Used to calculate the atomic masses in Atomic Mass Units
+carbon_mass = 12.000
 oxygen_mass = 15.995
-hydrogen_mass = 1.008
 
 
 
-# Equilibrium position of OH Bond
-bond_length = 1.8897
+# Equilibrium position of the system in atomic units
+bond_length = 0.59707
 
-# Equilibrium angle of the HOH bond in radians
-bond_angle = 112.0 * np.pi/180
-
-# Spring constant of the OH Bond
-kOH = 6.0275
-
-# Spring constant of the HOH bond angle
-kA = 0.1209
+# Spring constant of the atomic bond
+k = 1.2216
 
 # calculate the convergence reference energy based on the given equation.
 ref_converge_num = .00494317
 
 
 
-# Returns an array of masses in Atomic Mass Units, Oxygen is first followed by both Hydrogens
-atomic_masses = np.array[oxygen_mass, hydrogen_mass, hydrogen_mass] / (avogadro * electron_mass)
-
+# Calculates the atomic masses in Atomic Mass Units
+atomic_mass_carbon = carbon_mass / (avogadro * electron_mass)
+atomic_mass_oxygen = oxygen_mass / (avogadro * electron_mass)
 
 # Calculates the reduced mass of the system
 # Used when graphing the wave fuction
-reduced_mass = np.sum(atomic_masses) / (np.prod(atomic_masses)
+reduced_mass = (atomic_mass_carbon+atomic_mass_oxygen) / (atomic_mass_carbon*atomic_mass_oxygen)
 
 
-# TODO - figure out how to generate water molecules in the right shape
 # Initial 4D walker array
 # Returns a uniform distribution cenetered at the given bond length
 # Array axes are walkers, molecules, coordinates, and atoms
-walkers = bond_length + (np.random.rand(n_walkers, num_molecules, num_atoms, coord_const) - 0.25)
+walkers = bond_length + (np.random.rand(n_walkers, num_molecules, coord_const, num_atoms) - 0.25)
 
 
 #######################################################################################
@@ -127,28 +120,14 @@ num_walkers = np.zeros(sim_length)
 
 # Input: 4D Array of walkers
 # Output: 1D Array of potential energies for each walker
-# Calculates the potential energy of a walker based on the distance of bond lengths and 
-# bond angles from equilibrium
+# Calculates the potential energy of a walker based on the position of its atoms and 
+# molecules with respect to the distances from each other
 def potential_energy(x):
-    # Returns 2D array of distances between the Oxygen and Hydrogen atoms
-    distance = np.append(np.linalg.norm(x[:,:,0]-x[:,:,1],axis=2), \
-	        np.linalg.norm(x[:,:,0]-x[:,:,2],axis=2))
-    
-	# Calculates the potential energy of the bond lengths
-    bond_length_energies = np.sum(.5 * kOH * (distance-bond_length)**2)
-
-	# Returns the direction vectors for each of the OH bonds
-    vecOH_1 = x[:,:,0] - x[:,:,1]
-    vecOH_2 = x[:,:,2] - x[:,:,0]
-	
-	# Calculates the angle in radians between the two OH bond vectors
-    angle_HOH = np.arccos(np.dot(vecOH_1,vecOH_2) / (np.linalg.norm(vecOH_1) * np.linalg.norm(vecOH_2)))
-	
-	# Calculates the potential energy for the bond angle
-    bond_angle_energy = .5 * kA * (angle_HOH - bond_angle)**2
-	
-    return bond_length_energies + bond_angle_energy
-
+	# Calculate the distance between each atom
+    distance = np.sqrt( (x[:,0,0,0]-x[:,0,0,1])**2 + (x[:,0,1,0]-x[:,0,1,1])**2 + \
+	        (x[:,0,2,0]-x[:,0,2,1])**2)
+	# Calculate the potential energy based on the distance
+    return .5 * k * (distance - bond_length)**2
 	
 	
 	
@@ -157,7 +136,7 @@ def potential_energy(x):
 # walkers based on their potential energies with respect to the calculated reference energy
 for i in range(sim_length):
 
-    # Calculate the Reference Energy
+    # calculate the Reference Energy
 	# Energy is calculated based on the average of all potential energies of walkers.
 	# Is adjusted by a statistical value to account for large or small walker populations.
     reference_energy[i] = np.mean( potential_energy(walkers) ) \
