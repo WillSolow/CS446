@@ -58,6 +58,9 @@ n_walkers = 1000
 # Number of time steps for rolling average calculation
 rolling_avg = 1000
 
+# Number of bins for histogram. More bins is more precise
+n_bins = 50
+
 
 ####################################################################################
 # Molecule Model Constants
@@ -284,15 +287,14 @@ plt.ylabel('Number of Walkers')
 plt.title('Number of Walkers Over Time')
 plt.legend()
 
+# Calculate the walker distance from the equilibrium bond length
+# Negative is shorter than the bond length, positive is longer than bond length
+walker_pos = distance-bond_length
 
 # Plot a density histogram of the walkers at the final iteration of the simulation
 # Line of Best Fit ought to approximate wave function
-walker_pos = distance-bond_length
-bin_size = 0.01 # Approximate Bin Size
-n_bins = int( (walker_pos.max()-walker_pos.min())/bin_size ) # Number of Bins
-
 plt.figure(4)
-_, bins, _ = plt.hist(walker_pos, bins=n_bins,density=1)
+_, bins, _ = plt.hist(walker_pos, bins=n_bins, density=True)
 mu, sigma = st.norm.fit(walker_pos)
 best_fit_line = st.norm.pdf(bins,mu,sigma)
 plt.plot(bins,best_fit_line)
