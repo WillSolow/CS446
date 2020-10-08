@@ -16,6 +16,7 @@
 
 # Imports
 import numpy as np
+import scipy.stats as st
 import matplotlib.pyplot as plt
 
 ###################################################################################
@@ -285,8 +286,16 @@ plt.legend()
 
 
 # Plot a density histogram of the walkers at the final iteration of the simulation
+# Line of Best Fit ought to approximate wave function
+walker_pos = distance-bond_length
+bin_size = 0.01 # Approximate Bin Size
+n_bins = int( (walker_pos.max()-walker_pos.min())/bin_size ) # Number of Bins
+
 plt.figure(4)
-plt.hist(distance-bond_length, bins=40)
+_, bins, _ = plt.hist(walker_pos, bins=n_bins,density=1)
+mu, sigma = st.norm.fit(walker_pos)
+best_fit_line = st.norm.pdf(bins,mu,sigma)
+plt.plot(bins,best_fit_line)
 plt.xlabel('Walker Position')
 plt.ylabel('Number of Walkers')
 plt.title('Walkers Final Position')
