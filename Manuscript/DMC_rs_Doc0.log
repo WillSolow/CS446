@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 2.9.7300 64-bit) (preloaded format=pdflatex 2020.3.16)  7 OCT 2020 12:00
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 2.9.7300 64-bit) (preloaded format=pdflatex 2020.3.16)  7 OCT 2020 19:53
 entering extended mode
 **./DMC_rs_Doc0.tex
 (DMC_rs_Doc0.tex
@@ -743,33 +743,46 @@ LaTeX Font Info:    Trying to load font information for T1+cmss on input line 7
 
 ("C:\Program Files\MiKTeX 2.9\tex/latex/base\t1cmss.fd"
 File: t1cmss.fd 2019/12/16 v2.5j Standard LaTeX font definitions
-) [1
+)
 
-{C:/Users/wsolow/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}]
+Package natbib Warning: Citation `Anderson1975' on page 1 undefined on input li
+ne 112.
+
+[1
+
+{C:/Users/wsolow/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}] [2]
 No file DMC_rs_Doc0.bbl.
-[2] (DMC_rs_Doc0.aux) ) 
+
+Package natbib Warning: There were undefined citations.
+
+[3] (DMC_rs_Doc0.aux) ) 
 Here is how much of TeX's memory you used:
- 17828 strings out of 481556
- 360683 string characters out of 2923631
+ 17839 strings out of 481556
+ 360856 string characters out of 2923631
  592277 words of memory out of 3000000
- 32726 multiletter control sequences out of 15000+200000
- 547273 words of font info for 55 fonts, out of 3000000 for 9000
+ 32734 multiletter control sequences out of 15000+200000
+ 550728 words of font info for 62 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 68i,8n,101p,1004b,502s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 68i,8n,101p,1059b,502s stack positions out of 5000i,500n,10000p,200000b,50000s
  <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfo
-ur/jknappen/ec/dpi600\ecbx1728.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fo
-nts/pk/ljfour/jknappen/ec/dpi600\ecrm1095.pk> <C:\Users\wsolow\AppData\Local\Mi
-KTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1095.pk> <C:\Users\wsolow\AppDa
-ta\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1200.pk> <C:\Users\w
-solow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecss1200.pk> 
+ur/jknappen/ec/dpi600\ecbx1440.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fo
+nts/pk/ljfour/jknappen/ec/dpi600\ecbx1728.pk> <C:\Users\wsolow\AppData\Local\Mi
+KTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx0800.pk> <C:\Users\wsolow\AppDa
+ta\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1095.pk> <C:\Users\w
+solow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1095.pk> 
 <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ec
-ti1200.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/e
-c/dpi600\ecss1440.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour
-/jknappen/ec/dpi600\ecsx2074.pk><C:/Program Files/MiKTeX 2.9/fonts/type1/public
-/amsfonts/cm/cmsy10.pfb>
-Output written on DMC_rs_Doc0.pdf (2 pages, 89845 bytes).
+rm1200.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/e
+c/dpi600\ecss1200.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour
+/jknappen/ec/dpi600\ecti1200.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\font
+s/pk/ljfour/jknappen/ec/dpi600\ecss1440.pk> <C:\Users\wsolow\AppData\Local\MiKT
+eX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecsx2074.pk><C:/Program Files/MiKTeX 
+2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX 2.9/fonts
+/type1/public/amsfonts/cm/cmr8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/pub
+lic/amsfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsf
+onts/cm/cmsy8.pfb>
+Output written on DMC_rs_Doc0.pdf (3 pages, 122830 bytes).
 PDF statistics:
- 259 PDF objects out of 1000 (max. 8388607)
+ 302 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 

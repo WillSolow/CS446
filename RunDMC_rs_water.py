@@ -31,6 +31,13 @@ avogadro = 6.02213670000e+23
 # Always 3, used for clarity
 coord_const = 3
 
+# create a random seed for the number generator, can be changed to a constant value
+# for the purpose of replicability
+seed = np.random.randint(100000)
+
+# Set the seed for the pseudo-random number generator. 
+np.random.seed(seed)
+print('Seed used: ' + str(seed))
 
 ####################################################################################
 # Simulation Loop Constants
@@ -105,7 +112,6 @@ walkers = bond_length + (np.random.rand(n_walkers, num_molecules, coord_const, n
 # Create arrays to store values for plotting at each time step
 reference_energy = np.zeros(sim_length)
 num_walkers = np.zeros(sim_length)
-
 
 
 # Input: 4D Array of walkers
