@@ -84,10 +84,10 @@ hydrogen_mass = 1.008
 
 
 # Equilibrium position of OH Bond
-bond_length = 1.8897
+eq_bond_length = 1.8897
 
 # Equilibrium angle of the HOH bond in radians
-bond_angle = 112.0 * np.pi/180
+eq_bond_angle = 112.0 * np.pi/180
 
 # Spring constant of the OH Bond
 kOH = 6.0275
@@ -101,19 +101,19 @@ ref_converge_num = .00494317
 
 
 # Returns an array of masses in Atomic Mass Units, Oxygen is first followed by both Hydrogens
-atomic_masses = np.array[oxygen_mass, hydrogen_mass, hydrogen_mass] / (avogadro * electron_mass)
+atomic_masses = np.array([oxygen_mass, hydrogen_mass, hydrogen_mass]) / (avogadro * electron_mass)
 
 
 # Calculates the reduced mass of the system
 # Used when graphing the wave fuction
-reduced_mass = np.sum(atomic_masses) / (np.prod(atomic_masses)
+reduced_mass = np.sum(atomic_masses) / (np.prod(atomic_masses))
 
 
 # TODO - figure out how to generate water molecules in the right shape
 # Initial 4D walker array
 # Returns a uniform distribution cenetered at the given bond length
 # Array axes are walkers, molecules, coordinates, and atoms
-walkers = bond_length + (np.random.rand(n_walkers, num_molecules, num_atoms, coord_const) - 0.25)
+walkers = eq_bond_length + (np.random.rand(n_walkers, num_molecules, num_atoms, coord_const) - 0.25)
 
 
 #######################################################################################
@@ -129,25 +129,29 @@ num_walkers = np.zeros(sim_length)
 # Output: 1D Array of potential energies for each walker
 # Calculates the potential energy of a walker based on the distance of bond lengths and 
 # bond angles from equilibrium
+# Currently assumes that there is no interaction between molecules in a walker
 def potential_energy(x):
-    # Returns 2D array of distances between the Oxygen and Hydrogen atoms
-    distance = np.append(np.linalg.norm(x[:,:,0]-x[:,:,1],axis=2), \
-	        np.linalg.norm(x[:,:,0]-x[:,:,2],axis=2))
-    
-	# Calculates the potential energy of the bond lengths
-    bond_length_energies = np.sum(.5 * kOH * (distance-bond_length)**2)
-
-	# Returns the direction vectors for each of the OH bonds
-    vecOH_1 = x[:,:,0] - x[:,:,1]
-    vecOH_2 = x[:,:,2] - x[:,:,0]
+    # Return the two OH vectors
+	# Used to calculate the distance and angle in a molecule
+    OH_vectors = x[:,:,np.newaxis,0]-x[:,:,1:]
 	
-	# Calculates the angle in radians between the two OH bond vectors
-    angle_HOH = np.arccos(np.dot(vecOH_1,vecOH_2) / (np.linalg.norm(vecOH_1) * np.linalg.norm(vecOH_2)))
+    # Returns the two distances between the Oxygen atom and Hydrogen atom
+	# for each molecule in each walker. 
+    distances = np.linalg.norm(OH_vectors, axis=3)
 	
-	# Calculates the potential energy for the bond angle
-    bond_angle_energy = .5 * kA * (angle_HOH - bond_angle)**2
+	# Calculates the bond angle in the HOH bond
+	# Computes the arccosine of the dot product between the two vectors, by normalizing the
+	# vectors to magnitude of 1
+    bond_angle = np.arccos(np.sum(OH_vectors[:,:,0]*-OH_vectors[:,:,1], axis=2) \
+	        / np.prod(distances, axis=2))
+			
+	# Calculates the potential energies based on the distance and bond angle
+    pe_bond_lengths = .5 * kOH * (distances - eq_bond_length)**2
+    pe_bond_angle = .5 * kA * (bond_angle - eq_bond_angle)**2
 	
-    return bond_length_energies + bond_angle_energy
+	# Sums the potential energy of the bond lengths with the bond angle to get potential energy
+	# of one molecule, then summing to get potential energy of each walker
+    return np.sum(np.sum(pe_bond_lengths, axis = 2)+pe_bond_angle, axis=1)
 
 	
 	
@@ -166,16 +170,14 @@ for i in range(sim_length):
 	
     # Current number of walkers
     num_walkers[i] = walkers.shape[0]
-    
-	
-	# Propogates each atom in a normal distribution about its current position
-    propagate_oxygen = np.random.normal(0, np.sqrt(dt/atomic_mass_oxygen), \
-            (walkers.shape[0], num_molecules, coord_const))
-    propagate_carbon = np.random.normal(0, np.sqrt(dt/atomic_mass_carbon), \
-            (walkers.shape[0], num_molecules, coord_const))
+
+	# Propogates each coordinate of each atom in each molecule of each walker within a normal
+	# distribution given by the atomic mass of each atom. 
+    propogations = np.random.normal(0, np.sqrt(dt/np.transpose(np.tile(atomic_masses), \ 
+	        (walkers.shape[0], num_molecules, coord_const, 1)), (0, 1, 3, 2)))
 			
 	# Adds the propogation lengths to the 4D walker array
-    walkers = walkers + np.stack((propagate_oxygen, propagate_carbon), axis=-1)
+    walkers = walkers + propogations
 	
     
 	

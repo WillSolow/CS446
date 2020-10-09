@@ -117,6 +117,7 @@ def PotentialEnergySingleWater(OHHpositions):
 	#This could definitely be streamlined/sped up as some of the functions are being computed repeatedly 
 	#(the norm of the OH vectors, for instance)
 
+	
 #This is 3 walkers with three different configurations of the atoms
 print("Testing Potential for walkers with single water")
 sample1WaterWalkers=[[[0.0,0.0,0.0],[0.0,1.0,0.0],[0.0,0.0,3.0]],
