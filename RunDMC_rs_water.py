@@ -50,7 +50,7 @@ print('Seed used: ' + str(seed))
 dt = 10.0
 
 # Number of time steps in a simulation
-sim_length = 10000
+sim_length = 1000
 
 # Number of initial walkers
 n_walkers = 1000
@@ -173,8 +173,8 @@ for i in range(sim_length):
 
 	# Propogates each coordinate of each atom in each molecule of each walker within a normal
 	# distribution given by the atomic mass of each atom. 
-    propogations = np.random.normal(0, np.sqrt(dt/np.transpose(np.tile(atomic_masses), \ 
-	        (walkers.shape[0], num_molecules, coord_const, 1)), (0, 1, 3, 2)))
+    propogations = np.random.normal(0, np.sqrt(dt/np.transpose(np.tile(atomic_masses, \
+	        (walkers.shape[0], num_molecules, coord_const, 1)), (0, 1, 3, 2))))
 			
 	# Adds the propogation lengths to the 4D walker array
     walkers = walkers + propogations
@@ -274,8 +274,8 @@ for i in range(sim_length):
 
 # Calculate the distance between the atoms in the system
 # Used in the histogram and wave function plot	
-distance = np.sqrt( (walkers[:,0,0,0]-walkers[:,0,0,1])**2 + (walkers[:,0,1,0]- \
-        walkers[:,0,1,1])**2 + (walkers[:,0,2,0]-walkers[:,0,2,1])**2)
+#distance = np.sqrt( (walkers[:,0,0,0]-walkers[:,0,0,1])**2 + (walkers[:,0,1,0]- \
+        #walkers[:,0,1,1])**2 + (walkers[:,0,2,0]-walkers[:,0,2,1])**2)
 
 	
 
@@ -312,18 +312,18 @@ plt.legend()
 
 # Calculate the walker distance from the equilibrium bond length
 # Negative is shorter than the bond length, positive is longer than bond length
-walker_pos = distance-bond_length
+#walker_pos = distance-eq_bond_length
 
 # Plot a density histogram of the walkers at the final iteration of the simulation
 # Line of Best Fit ought to approximate wave function
-plt.figure(4)
-_, bins, _ = plt.hist(walker_pos, bins=n_bins, density=True)
-mu, sigma = st.norm.fit(walker_pos)
-best_fit_line = st.norm.pdf(bins,mu,sigma)
-plt.plot(bins,best_fit_line)
-plt.xlabel('Walker Position')
-plt.ylabel('Density of Walkers')
-plt.title('Density of Walker Position')
+#plt.figure(4)
+#_, bins, _ = plt.hist(walker_pos, bins=n_bins, density=True)
+#mu, sigma = st.norm.fit(walker_pos)
+#best_fit_line = st.norm.pdf(bins,mu,sigma)
+#plt.plot(bins,best_fit_line)
+#plt.xlabel('Walker Position')
+#plt.ylabel('Density of Walkers')
+#plt.title('Density of Walker Position')
 
 plt.show()
 
