@@ -50,7 +50,7 @@ print('Seed used: ' + str(seed))
 dt = 10.0
 
 # Number of time steps in a simulation
-sim_length = 1000
+sim_length = 5000
 
 # Number of initial walkers
 n_walkers = 1000
@@ -80,6 +80,7 @@ num_molecules = 1
 # Used to calculate the atomic masses in Atomic Mass Units
 oxygen_mass = 15.995
 hydrogen_mass = 1.008
+HOH_bond_angle = 112.0
 
 
 
@@ -87,7 +88,7 @@ hydrogen_mass = 1.008
 eq_bond_length = 1.8897
 
 # Equilibrium angle of the HOH bond in radians
-eq_bond_angle = 112.0 * np.pi/180
+eq_bond_angle = HOH_bond_angle * np.pi/180
 
 # Spring constant of the OH Bond
 kOH = 6.0275
@@ -100,7 +101,8 @@ ref_converge_num = .00494317
 
 
 
-# Returns an array of masses in Atomic Mass Units, Oxygen is first followed by both Hydrogens
+# Returns an array of masses in Atomic Mass Units, Oxygen is first followed by both 
+# Hydrogens
 atomic_masses = np.array([oxygen_mass, hydrogen_mass, hydrogen_mass]) / (avogadro * electron_mass)
 
 
@@ -132,22 +134,22 @@ num_walkers = np.zeros(sim_length)
 # Currently assumes that there is no interaction between molecules in a walker
 def potential_energy(x):
     # Return the two OH vectors
-	# Used to calculate the distance and angle in a molecule
+	# Used to calculate the bond lengths and angle in a molecule
     OH_vectors = x[:,:,np.newaxis,0]-x[:,:,1:]
 	
-    # Returns the two distances between the Oxygen atom and Hydrogen atom
-	# for each molecule in each walker. 
-    distances = np.linalg.norm(OH_vectors, axis=3)
+    # Returns the lengths of each OH bond vector for each molecule 
+	# in each walker. 
+    lengths = np.linalg.norm(OH_vectors, axis=3)
 	
 	# Calculates the bond angle in the HOH bond
 	# Computes the arccosine of the dot product between the two vectors, by normalizing the
 	# vectors to magnitude of 1
-    bond_angle = np.arccos(np.sum(OH_vectors[:,:,0]*-OH_vectors[:,:,1], axis=2) \
-	        / np.prod(distances, axis=2))
+    angle = np.arccos(np.sum(OH_vectors[:,:,0]*-OH_vectors[:,:,1], axis=2) \
+	        / np.prod(lengths, axis=2))
 			
-	# Calculates the potential energies based on the distance and bond angle
-    pe_bond_lengths = .5 * kOH * (distances - eq_bond_length)**2
-    pe_bond_angle = .5 * kA * (bond_angle - eq_bond_angle)**2
+	# Calculates the potential energies based on the magnitude vector and bond angle
+    pe_bond_lengths = .5 * kOH * (lengths - eq_bond_length)**2
+    pe_bond_angle = .5 * kA * (angle - eq_bond_angle)**2
 	
 	# Sums the potential energy of the bond lengths with the bond angle to get potential energy
 	# of one molecule, then summing to get potential energy of each walker
@@ -165,17 +167,19 @@ for i in range(sim_length):
 	# Energy is calculated based on the average of all potential energies of walkers.
 	# Is adjusted by a statistical value to account for large or small walker populations.
     reference_energy[i] = np.mean( potential_energy(walkers) ) \
-            + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
-
-	
+        + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
+		
     # Current number of walkers
     num_walkers[i] = walkers.shape[0]
 
+	
 	# Propogates each coordinate of each atom in each molecule of each walker within a normal
-	# distribution given by the atomic mass of each atom. 
+	# distribution given by the atomic mass of each atom.
+    # Returns a 4D array in the shape of walkers with the standard deviation depending on the
+    # atomic mass of each atom	
     propogations = np.random.normal(0, np.sqrt(dt/np.transpose(np.tile(atomic_masses, \
-	        (walkers.shape[0], num_molecules, coord_const, 1)), (0, 1, 3, 2))))
-			
+	    (walkers.shape[0], num_molecules, coord_const, 1)), (0, 1, 3, 2))))
+		
 	# Adds the propogation lengths to the 4D walker array
     walkers = walkers + propogations
 	
@@ -283,7 +287,7 @@ for i in range(sim_length):
 plt.figure(1)
 plt.plot(reference_energy, label= 'Reference Energy')
 plt.plot(reference_converge, label='Zero Point Energy')
-plt.axis([0,sim_length,.003,.007])
+plt.axis([0,sim_length,.04,.08])
 plt.xlabel('Simulation Iteration')
 plt.ylabel('System Energy')
 plt.title('Convergence of Reference Energy')
@@ -291,10 +295,13 @@ plt.legend()
 
 
 # Plot the rolling average of the reference energy throughout the simulation
+for i in range(ref_rolling_avg.shape[0]):
+    print('Timestep ' + str(i)+ ': ' + str(ref_rolling_avg[i]))
+
 plt.figure(2)
 plt.plot(ref_rolling_avg, label= 'Reference Energy')
 plt.plot(reference_converge, label = 'Zero Point Energy')
-plt.axis([0,sim_length,.0045,.0055])
+plt.axis([0,sim_length,.05,.07])
 plt.xlabel('Simulation Iteration')
 plt.ylabel('System Energy')
 plt.title(str(rolling_avg) + ' Step Rolling Average for Reference Energy')
