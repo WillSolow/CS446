@@ -69,11 +69,11 @@ n_bins = 50
 
 # Number of atoms in each molecule of the system
 # Used to initilize the walker array
-num_atoms = 3
+atoms = np.array([3, 2])
 
 # Number of molecules in each walker
 # Used to initialize the walker array
-num_molecules = 1
+num_molecules = atom.shape[0]
 
 
 
@@ -81,6 +81,7 @@ num_molecules = 1
 # Used to calculate the atomic masses in Atomic Mass Units
 oxygen_mass = 15.995
 hydrogen_mass = 1.008
+carbon_mass = 12.000
 HOH_bond_angle = 112.0
 
 
