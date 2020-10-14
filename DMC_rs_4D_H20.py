@@ -84,7 +84,7 @@ HOH_bond_angle = 112.0
 
 
 
-# Equilibrium position of OH Bond
+# Equilibrium length of OH Bond
 eq_bond_length = 1.8897
 
 # Equilibrium angle of the HOH bond in radians
@@ -96,7 +96,7 @@ kOH = 6.0275
 # Spring constant of the HOH bond angle
 kA = 0.1209
 
-# calculate the convergence reference energy based on the given equation.
+# Calculate the convergence reference energy based on the given equation.
 ref_converge_num = .00494317
 
 
@@ -111,7 +111,6 @@ atomic_masses = np.array([oxygen_mass, hydrogen_mass, hydrogen_mass]) / (avogadr
 reduced_mass = np.sum(atomic_masses) / (np.prod(atomic_masses))
 
 
-# TODO - figure out how to generate water molecules in the right shape
 # Initial 4D walker array
 # Returns a uniform distribution cenetered at the given bond length
 # Array axes are walkers, molecules, coordinates, and atoms
@@ -173,15 +172,15 @@ for i in range(sim_length):
     num_walkers[i] = walkers.shape[0]
 
 	
-	# Propogates each coordinate of each atom in each molecule of each walker within a normal
+	# Propagates each coordinate of each atom in each molecule of each walker within a normal
 	# distribution given by the atomic mass of each atom.
     # Returns a 4D array in the shape of walkers with the standard deviation depending on the
     # atomic mass of each atom	
-    propogations = np.random.normal(0, np.sqrt(dt/np.transpose(np.tile(atomic_masses, \
+    propagations = np.random.normal(0, np.sqrt(dt/np.transpose(np.tile(atomic_masses, \
 	    (walkers.shape[0], num_molecules, coord_const, 1)), (0, 1, 3, 2))))
 		
-	# Adds the propogation lengths to the 4D walker array
-    walkers = walkers + propogations
+	# Adds the propagation lengths to the 4D walker array
+    walkers = walkers + propagations
 	
     
 	
@@ -258,7 +257,8 @@ reference_converge = (np.zeros(sim_length) + 1) * ref_converge_num
 # Create walker num array for plotting
 init_walkers = (np.zeros(sim_length) + 1 )* n_walkers	
 	
-# Calculate the rolling average for n time steps
+
+# Calculate the rolling average for rolling_avg time steps
 ref_rolling_avg = np.zeros(sim_length)
 for i in range(sim_length):
     # If i less than rolling_avg, cannot calculate rolling average over the last 
@@ -269,7 +269,7 @@ for i in range(sim_length):
             ref_rolling_avg[i] = ( ref_rolling_avg[i] - ( ref_rolling_avg[i] / (j+1) ) ) \
                 + (reference_energy[i-j] / (j+1) )
     else: 
-        # Calculate the rolling average by looping over the past n time steps 
+        # Calculate the rolling average by looping over the past rolling_avg time steps 
         for j in range(rolling_avg):
             ref_rolling_avg[i] = ( ref_rolling_avg[i] - ( ref_rolling_avg[i] / (j+1) ) ) \
                 + ( reference_energy[i-j] / (j+1) )

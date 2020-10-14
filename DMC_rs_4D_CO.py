@@ -85,13 +85,13 @@ oxygen_mass = 15.995
 
 
 
-# Equilibrium position of the system in atomic units
+# Equilibrium length of the system in atomic units
 bond_length = 0.59707
 
 # Spring constant of the atomic bond
 k = 1.2216
 
-# calculate the convergence reference energy based on the given equation.
+# Experimentally calculated reference energy
 ref_converge_num = .00494317
 
 
@@ -138,7 +138,7 @@ def potential_energy(x):
 # walkers based on their potential energies with respect to the calculated reference energy
 for i in range(sim_length):
 
-    # calculate the Reference Energy
+    # Calculate the Reference Energy
 	# Energy is calculated based on the average of all potential energies of walkers.
 	# Is adjusted by a statistical value to account for large or small walker populations.
     reference_energy[i] = np.mean( potential_energy(walkers) ) \
@@ -149,13 +149,13 @@ for i in range(sim_length):
     num_walkers[i] = walkers.shape[0]
     
 	
-	# Propogates each atom in a normal distribution about its current position
+	# Proagates each atom in a normal distribution about its current position
     propagate_oxygen = np.random.normal(0, np.sqrt(dt/atomic_mass_oxygen), \
             (walkers.shape[0], num_molecules, coord_const))
     propagate_carbon = np.random.normal(0, np.sqrt(dt/atomic_mass_carbon), \
             (walkers.shape[0], num_molecules, coord_const))
 			
-	# Adds the propogation lengths to the 4D walker array
+	# Adds the propagation lengths to the 4D walker array
     walkers = walkers + np.stack((propagate_oxygen, propagate_carbon), axis=-1)
 	
     
@@ -232,8 +232,9 @@ reference_converge = (np.zeros(sim_length) + 1) * ref_converge_num
 
 # Create walker num array for plotting
 init_walkers = (np.zeros(sim_length) + 1 )* n_walkers	
-	
-# Calculate the rolling average for n time steps
+
+
+# Calculate the rolling average for rolling_avg time steps
 ref_rolling_avg = np.zeros(sim_length)
 for i in range(sim_length):
     # If i less than rolling_avg, cannot calculate rolling average over the last 
@@ -244,7 +245,7 @@ for i in range(sim_length):
             ref_rolling_avg[i] = ( ref_rolling_avg[i] - ( ref_rolling_avg[i] / (j+1) ) ) \
                 + (reference_energy[i-j] / (j+1) )
     else: 
-        # Calculate the rolling average by looping over the past n time steps 
+        # Calculate the rolling average by looping over the past rolling_avg time steps 
         for j in range(rolling_avg):
             ref_rolling_avg[i] = ( ref_rolling_avg[i] - ( ref_rolling_avg[i] / (j+1) ) ) \
                 + ( reference_energy[i-j] / (j+1) )
@@ -256,7 +257,9 @@ for i in range(sim_length):
 distance = np.sqrt( (walkers[:,0,0,0]-walkers[:,0,0,1])**2 + (walkers[:,0,1,0]- \
         walkers[:,0,1,1])**2 + (walkers[:,0,2,0]-walkers[:,0,2,1])**2)
 
-	
+# Calculate the walker distance from the equilibrium bond length
+# Negative is shorter than the bond length, positive is longer than bond length
+walker_pos = distance-bond_length	
 
 # Plot the reference energy throughout the simulation
 plt.figure(1)
@@ -289,9 +292,6 @@ plt.ylabel('Number of Walkers')
 plt.title('Number of Walkers Over Time')
 plt.legend()
 
-# Calculate the walker distance from the equilibrium bond length
-# Negative is shorter than the bond length, positive is longer than bond length
-walker_pos = distance-bond_length
 
 # Plot a density histogram of the walkers at the final iteration of the simulation
 # Line of Best Fit ought to approximate wave function
