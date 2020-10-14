@@ -8,7 +8,7 @@
 # array is utilized as a main data structure for storing the coordinates of each atom 
 # in each molecule in each walker. 
 
-# To Run: Navigate to file in terminal directory and type 'python rundmc_rs_water.py'
+# To Run: Navigate to file in terminal directory and type 'python dmc_rs_4D_H20.py'
 
 # Output: Graphs for the reference energy, the n-step rolling average, and the number 
 # of walkers at each time step, as well as a density histogram of the walker distance
@@ -231,7 +231,7 @@ for i in range(sim_length):
 	# Gives a boolean array of indices of the walkres that are replicated
 	# Calculates if a walker is replicated by if its potential energy is less than
 	# the reference energy and if its threshold is below the prob_replicate threshold.
-    walkers_to_replicate = (potential_energies < reference_energy[i])*to_replicate
+    walkers_to_replicate = (potential_energies < reference_energy[i]) * to_replicate
 	
 	# Returns the walkers that are to be replicated
     walkers_after_replication = walkers[walkers_to_replicate]

@@ -7,8 +7,10 @@
 # ground state energy of a system of molecules. In this particular implementation, a 4D
 # array is utilized as a main data structure for storing the coordinates of each atom 
 # in each molecule in each walker. 
+# Here, we model the Carbon Monoxide (CO) bond, comparing it to our 2D array based 
+# implementation
 
-# To Run: Navigate to file in terminal directory and type 'python rundmc_rs_water.py'
+# To Run: Navigate to file in terminal directory and type 'python DMC_rs_4D_CO.py'
 
 # Output: Graphs for the reference energy, the n-step rolling average, and the number 
 # of walkers at each time step, as well as a density histogram of the walker distance
