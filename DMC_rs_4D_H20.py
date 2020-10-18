@@ -26,7 +26,7 @@ import matplotlib.pyplot as plt
 # Mass of an electron
 electron_mass = 9.10938970000e-28
 # Avogadro's constant
-avogadro = 6.02213670000e+23
+avogadro = 6.02213670000e23
 
 # Number of coordinates
 # Always 3, used for clarity
@@ -78,23 +78,23 @@ num_molecules = 1
 
 # Atomic masses of atoms in system
 # Used to calculate the atomic masses in Atomic Mass Units
-oxygen_mass = 15.995
-hydrogen_mass = 1.008
+oxygen_mass = 15.99491461957
+hydrogen_mass = 1.007825
 HOH_bond_angle = 112.0
 
 
 
 # Equilibrium length of OH Bond
-eq_bond_length = 1.8897
+eq_bond_length = 1.0 / 0.529177
 
 # Equilibrium angle of the HOH bond in radians
 eq_bond_angle = HOH_bond_angle * np.pi/180
 
 # Spring constant of the OH Bond
-kOH = 6.0275
+kOH = 1059.162 * (1.0 / 0.529177)**2 * (4.184 / 2625.5)
 
 # Spring constant of the HOH bond angle
-kA = 0.1209
+kA = 75.90 * (4.184 / 2625.5)
 
 # Calculate the convergence reference energy based on the given equation.
 ref_converge_num = .00494317
@@ -106,15 +106,11 @@ ref_converge_num = .00494317
 atomic_masses = np.array([oxygen_mass, hydrogen_mass, hydrogen_mass]) / (avogadro * electron_mass)
 
 
-# Calculates the reduced mass of the system
-# Used when graphing the wave fuction
-reduced_mass = np.sum(atomic_masses) / (np.prod(atomic_masses))
-
 
 # Initial 4D walker array
 # Returns a uniform distribution cenetered at the given bond length
 # Array axes are walkers, molecules, coordinates, and atoms
-walkers = eq_bond_length + (np.random.rand(n_walkers, num_molecules, num_atoms, coord_const) - 0.25)
+walkers = eq_bond_length + (np.random.rand(n_walkers, num_molecules, num_atoms, coord_const) - .5)
 
 
 #######################################################################################
