@@ -199,3 +199,11 @@ print("Testing Potential for walkers with two waters")
 print("Result: ",PotentialEnergyManyWaters(sample2WaterWalkers))
 print("End test. \n \n")
 print("SR Result: ", potential_energy(sample2WaterWalkers))
+print("End test 1.\n\n\n")
+
+print('\n\nNew test:\n\n')
+test = eq_bond_length + np.random.rand(10, 2, 3, 3)
+print("Madison result: ", PotentialEnergyManyWaters(test))
+print('\n\n')
+print("SR result: ", potential_energy(test))
+

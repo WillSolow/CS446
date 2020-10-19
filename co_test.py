@@ -7,8 +7,10 @@
 # ground state energy of a system of molecules. In this particular implementation, a 4D
 # array is utilized as a main data structure for storing the coordinates of each atom 
 # in each molecule in each walker. 
+# Here, we model the Carbon Monoxide (CO) bond, comparing it to our 2D array based 
+# implementation
 
-# To Run: Navigate to file in terminal directory and type 'python dmc_rs_4D_H20.py'
+# To Run: Navigate to file in terminal directory and type 'python DMC_rs_4D_CO.py'
 
 # Output: Graphs for the reference energy, the n-step rolling average, and the number 
 # of walkers at each time step, as well as a density histogram of the walker distance
@@ -26,7 +28,7 @@ import matplotlib.pyplot as plt
 # Mass of an electron
 electron_mass = 9.10938970000e-28
 # Avogadro's constant
-avogadro = 6.02213670000e23
+avogadro = 6.02213670000e+23
 
 # Number of coordinates
 # Always 3, used for clarity
@@ -50,7 +52,7 @@ print('Seed used: ' + str(seed))
 dt = 10.0
 
 # Number of time steps in a simulation
-sim_length = 5000
+sim_length = 10000
 
 # Number of initial walkers
 n_walkers = 1000
@@ -66,6 +68,10 @@ n_bins = 50
 # Molecule Model Constants
 
 
+# Number of atoms in each molecule of the system
+# Used to initilize the walker array
+num_atoms = 2
+
 # Number of molecules in each walker
 # Used to initialize the walker array
 num_molecules = 1
@@ -74,39 +80,34 @@ num_molecules = 1
 
 # Atomic masses of atoms in system
 # Used to calculate the atomic masses in Atomic Mass Units
-oxygen_mass = 15.99491461957
-hydrogen_mass = 1.007825
-HOH_bond_angle = 112.0
+carbon_mass = 12.000
+oxygen_mass = 15.995
 
 
 
-# Equilibrium length of OH Bond
-eq_bond_length = 1.0 / 0.529177
+# Equilibrium length of the system in atomic units
+bond_length = 0.59707
 
-# Equilibrium angle of the HOH bond in radians
-eq_bond_angle = HOH_bond_angle * np.pi/180
+# Spring constant of the atomic bond
+k = 1.2216
 
-# Spring constant of the OH Bond
-kOH = 1059.162 * (1.0 / 0.529177)**2 * (4.184 / 2625.5)
-
-# Spring constant of the HOH bond angle
-kA = 75.90 * (4.184 / 2625.5)
-
-# Calculate the convergence reference energy based on the given equation.
+# Experimentally calculated reference energy
 ref_converge_num = .00494317
 
 
 
-# Returns an array of masses in Atomic Mass Units, Oxygen is first followed by both 
-# Hydrogens
-atomic_masses = np.array([oxygen_mass, hydrogen_mass, hydrogen_mass]) / (avogadro * electron_mass)
+# Calculates the atomic masses in Atomic Mass Units
+atomic_masses = np.array([oxygen_mass, carbon_mass]) / (avogadro * electron_mass)
 
+# Calculates the reduced mass of the system
+# Used when graphing the wave fuction
+reduced_mass = np.sum(atomic_masses) / np.prod(atomic_masses)
 
 
 # Initial 4D walker array
 # Returns a uniform distribution cenetered at the given bond length
 # Array axes are walkers, molecules, coordinates, and atoms
-walkers = np.random.rand(n_walkers, num_molecules, atomic_masses.shape[0], coord_const) - .5
+walkers = bond_length + (np.random.rand(n_walkers, num_molecules, num_atoms, coord_const) - 0.5)
 
 
 #######################################################################################
@@ -120,32 +121,15 @@ num_walkers = np.zeros(sim_length)
 
 # Input: 4D Array of walkers
 # Output: 1D Array of potential energies for each walker
-# Calculates the potential energy of a walker based on the distance of bond lengths and 
-# bond angles from equilibrium
-# Currently assumes that there is no interaction between molecules in a walker
+# Calculates the potential energy of a walker based on the position of its atoms and 
+# molecules with respect to the distances from each other
 def potential_energy(x):
-    # Return the two OH vectors
-	# Used to calculate the bond lengths and angle in a molecule
-    OH_vectors = x[:,:,np.newaxis,0]-x[:,:,1:]
-	
-    # Returns the lengths of each OH bond vector for each molecule 
-	# in each walker. 
-    lengths = np.linalg.norm(OH_vectors, axis=3)
-	
-	# Calculates the bond angle in the HOH bond
-	# Computes the arccosine of the dot product between the two vectors, by normalizing the
-	# vectors to magnitude of 1
-    angle = np.arccos(np.sum(OH_vectors[:,:,0]*-OH_vectors[:,:,1], axis=2) \
-	        / np.prod(lengths, axis=2))
-			
-	# Calculates the potential energies based on the magnitude vector and bond angle
-    pe_bond_lengths = .5 * kOH * (lengths - eq_bond_length)**2
-    pe_bond_angle = .5 * kA * (angle - eq_bond_angle)**2
-	
-	# Sums the potential energy of the bond lengths with the bond angle to get potential energy
-	# of one molecule, then summing to get potential energy of each walker
-    return np.sum(np.sum(pe_bond_lengths, axis = 2)+pe_bond_angle, axis=1)
-
+	# Calculate the distance between each atom
+    distance = np.linalg.norm(x[:,:,0]-x[:,:,1], axis=2).flatten()
+	#np.sqrt( (x[:,0,0,0]-x[:,0,1,0])**2 + (x[:,0,0,1]-x[:,0,1,1])**2 + \
+    #    (x[:,0,0,0]-x[:,0,1,2])**2)
+	# Calculate the potential energy based on the distance
+    return .5 * k * (distance - bond_length)**2
 	
 	
 	
@@ -158,21 +142,24 @@ for i in range(sim_length):
 	# Energy is calculated based on the average of all potential energies of walkers.
 	# Is adjusted by a statistical value to account for large or small walker populations.
     reference_energy[i] = np.mean( potential_energy(walkers) ) \
-        + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
-		
-    # Current number of walkers
-    num_walkers[i] = walkers.shape[0]
+            + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
 
 	
-	# Propagates each coordinate of each atom in each molecule of each walker within a normal
-	# distribution given by the atomic mass of each atom.
-    # Returns a 4D array in the shape of walkers with the standard deviation depending on the
-    # atomic mass of each atom	
+    # Current number of walkers
+    num_walkers[i] = walkers.shape[0]
+    
+	
+	# Proagates each atom in a normal distribution about its current position
+    #propagate_oxygen = np.random.normal(0, np.sqrt(dt/atomic_masses[0]), \
+    #        (walkers.shape[0], num_molecules, coord_const))
+    #propagate_carbon = np.random.normal(0, np.sqrt(dt/atomic_masses[1]), \
+    #        (walkers.shape[0], num_molecules, coord_const))
+
     propagations = np.random.normal(0, np.sqrt(dt/np.transpose(np.tile(atomic_masses, \
 	    (walkers.shape[0], num_molecules, coord_const, 1)), (0, 1, 3, 2))))
 		
 	# Adds the propagation lengths to the 4D walker array
-    walkers = walkers + propagations
+    walkers = walkers + propagations #np.stack((propagate_oxygen, propagate_carbon), axis=-1)
 	
     
 	
@@ -222,7 +209,7 @@ for i in range(sim_length):
 	# Gives a boolean array of indices of the walkres that are replicated
 	# Calculates if a walker is replicated by if its potential energy is less than
 	# the reference energy and if its threshold is below the prob_replicate threshold.
-    walkers_to_replicate = (potential_energies < reference_energy[i]) * to_replicate
+    walkers_to_replicate = (potential_energies < reference_energy[i])*to_replicate
 	
 	# Returns the walkers that are to be replicated
     walkers_after_replication = walkers[walkers_to_replicate]
@@ -248,7 +235,7 @@ reference_converge = (np.zeros(sim_length) + 1) * ref_converge_num
 
 # Create walker num array for plotting
 init_walkers = (np.zeros(sim_length) + 1 )* n_walkers	
-	
+
 
 # Calculate the rolling average for rolling_avg time steps
 ref_rolling_avg = np.zeros(sim_length)
@@ -268,17 +255,19 @@ for i in range(sim_length):
 
 			
 
-# Calculate the distance between one of the OH vectors
+# Calculate the distance between the atoms in the system
 # Used in the histogram and wave function plot	
-OH_vector_lengths = np.linalg.norm(walkers[:,0,0]-walkers[:,0,1],axis=1)
+distance = np.linalg.norm(walkers[:,:,0]-walkers[:,:,1],axis=2).flatten()
 
-	
+# Calculate the walker distance from the equilibrium bond length
+# Negative is shorter than the bond length, positive is longer than bond length
+walker_pos = distance-bond_length	
 
 # Plot the reference energy throughout the simulation
 plt.figure(1)
 plt.plot(reference_energy, label= 'Reference Energy')
 plt.plot(reference_converge, label='Zero Point Energy')
-plt.axis([0,sim_length,.04,.08])
+plt.axis([0,sim_length,.003,.007])
 plt.xlabel('Simulation Iteration')
 plt.ylabel('System Energy')
 plt.title('Convergence of Reference Energy')
@@ -286,13 +275,10 @@ plt.legend()
 
 
 # Plot the rolling average of the reference energy throughout the simulation
-for i in range(ref_rolling_avg.shape[0]):
-    print('Timestep ' + str(i)+ ': ' + str(ref_rolling_avg[i]))
-
 plt.figure(2)
 plt.plot(ref_rolling_avg, label= 'Reference Energy')
 plt.plot(reference_converge, label = 'Zero Point Energy')
-plt.axis([0,sim_length,.05,.07])
+plt.axis([0,sim_length,.0045,.0055])
 plt.xlabel('Simulation Iteration')
 plt.ylabel('System Energy')
 plt.title(str(rolling_avg) + ' Step Rolling Average for Reference Energy')
@@ -308,16 +294,12 @@ plt.ylabel('Number of Walkers')
 plt.title('Number of Walkers Over Time')
 plt.legend()
 
-# Calculate the walker distance from the equilibrium bond length
-# Negative is shorter than the bond length, positive is longer than bond length
-OH_positions = OH_vector_lengths-eq_bond_length
-print(OH_positions.shape)
 
 # Plot a density histogram of the walkers at the final iteration of the simulation
 # Line of Best Fit ought to approximate wave function
 plt.figure(4)
-_, bins, _ = plt.hist(OH_positions, bins=n_bins, density=True)
-mu, sigma = st.norm.fit(OH_positions)
+_, bins, _ = plt.hist(walker_pos, bins=n_bins, density=True)
+mu, sigma = st.norm.fit(walker_pos)
 best_fit_line = st.norm.pdf(bins,mu,sigma)
 plt.plot(bins,best_fit_line)
 plt.xlabel('Walker Position')
