@@ -97,18 +97,17 @@ ref_converge_num = .00494317
 
 
 # Calculates the atomic masses in Atomic Mass Units
-atomic_mass_carbon = carbon_mass / (avogadro * electron_mass)
-atomic_mass_oxygen = oxygen_mass / (avogadro * electron_mass)
+atomic_masses = np.array([oxygen_mass, carbon_mass]) / (avogadro * electron_mass)
 
 # Calculates the reduced mass of the system
 # Used when graphing the wave fuction
-reduced_mass = (atomic_mass_carbon*atomic_mass_oxygen) / (atomic_mass_carbon+atomic_mass_oxygen)
+reduced_mass = np.prod(atomic_masses) / np.sum(atomic_masses)
 
 
 # Initial 4D walker array
 # Returns a uniform distribution cenetered at the given bond length
 # Array axes are walkers, molecules, coordinates, and atoms
-walkers = bond_length + (np.random.rand(n_walkers, num_molecules, coord_const, num_atoms) - 0.25)
+walkers = bond_length + (np.random.rand(n_walkers, num_molecules, num_atoms, coord_const) - 0.5)
 
 
 #######################################################################################
@@ -126,9 +125,8 @@ num_walkers = np.zeros(sim_length)
 # molecules with respect to the distances from each other
 def potential_energy(x):
 	# Calculate the distance between each atom
-    distance = np.sqrt( (x[:,0,0,0]-x[:,0,0,1])**2 + (x[:,0,1,0]-x[:,0,1,1])**2 + \
-	        (x[:,0,2,0]-x[:,0,2,1])**2)
-	# Calculate the potential energy based on the distance
+    distance = np.linalg.norm(x[:,:,0]-x[:,:,1], axis=2).flatten()
+	
     return .5 * k * (distance - bond_length)**2
 	
 	
@@ -150,13 +148,16 @@ for i in range(sim_length):
     
 	
 	# Proagates each atom in a normal distribution about its current position
-    propagate_oxygen = np.random.normal(0, np.sqrt(dt/atomic_mass_oxygen), \
-            (walkers.shape[0], num_molecules, coord_const))
-    propagate_carbon = np.random.normal(0, np.sqrt(dt/atomic_mass_carbon), \
-            (walkers.shape[0], num_molecules, coord_const))
-			
+    #propagate_oxygen = np.random.normal(0, np.sqrt(dt/atomic_masses[0]), \
+    #        (walkers.shape[0], num_molecules, coord_const))
+    #propagate_carbon = np.random.normal(0, np.sqrt(dt/atomic_masses[1]), \
+    #        (walkers.shape[0], num_molecules, coord_const))
+
+    propagations = np.random.normal(0, np.sqrt(dt/np.transpose(np.tile(atomic_masses, \
+	    (walkers.shape[0], num_molecules, coord_const, 1)), (0, 1, 3, 2))))
+		
 	# Adds the propagation lengths to the 4D walker array
-    walkers = walkers + np.stack((propagate_oxygen, propagate_carbon), axis=-1)
+    walkers = walkers + propagations #np.stack((propagate_oxygen, propagate_carbon), axis=-1)
 	
     
 	
@@ -254,13 +255,11 @@ for i in range(sim_length):
 
 # Calculate the distance between the atoms in the system
 # Used in the histogram and wave function plot	
-distance = np.sqrt( (walkers[:,0,0,0]-walkers[:,0,0,1])**2 + (walkers[:,0,1,0]- \
-        walkers[:,0,1,1])**2 + (walkers[:,0,2,0]-walkers[:,0,2,1])**2)
+distance = np.linalg.norm(walkers[:,:,0]-walkers[:,:,1],axis=2).flatten()
 
-		
 # Calculate the walker distance from the equilibrium bond length
 # Negative is shorter than the bond length, positive is longer than bond length
-walker_pos = distance - bond_length
+walker_pos = distance-bond_length	
 
 
 
@@ -275,11 +274,11 @@ integral_value, error = integrate.quad(wave_func, -np.inf, np.inf)
 N = 1 / integral_value
 
 
-
 # Get the range to graph the wave function in
 # Step is .001, which is usually a good smooth value
 x = np.arange(walker_pos.min(), walker_pos.max(), step = .001)
-	
+
+
 
 # Plot the reference energy throughout the simulation
 plt.figure(1)
@@ -319,7 +318,7 @@ plt.hist(walker_pos, bins=n_bins, density=True)
 plt.plot(x, N*np.exp(-(x**2)*np.sqrt(k*reduced_mass)/2), label = 'Wave Function')
 plt.xlabel('Walker Position')
 plt.ylabel('Density of Walkers')
-plt.title('Wave Function with Normalization Constant ' + str(N))
+plt.title('Density of Walker Position')
 plt.legend()
 
 plt.show()
