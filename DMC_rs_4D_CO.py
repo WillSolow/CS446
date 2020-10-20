@@ -18,8 +18,8 @@
 
 # Imports
 import numpy as np
-import scipy.stats as st
 import matplotlib.pyplot as plt
+import scipy.integrate as integrate
 
 ###################################################################################
 # Scientific Constants
@@ -102,7 +102,7 @@ atomic_mass_oxygen = oxygen_mass / (avogadro * electron_mass)
 
 # Calculates the reduced mass of the system
 # Used when graphing the wave fuction
-reduced_mass = (atomic_mass_carbon+atomic_mass_oxygen) / (atomic_mass_carbon*atomic_mass_oxygen)
+reduced_mass = (atomic_mass_carbon*atomic_mass_oxygen) / (atomic_mass_carbon+atomic_mass_oxygen)
 
 
 # Initial 4D walker array
@@ -257,9 +257,29 @@ for i in range(sim_length):
 distance = np.sqrt( (walkers[:,0,0,0]-walkers[:,0,0,1])**2 + (walkers[:,0,1,0]- \
         walkers[:,0,1,1])**2 + (walkers[:,0,2,0]-walkers[:,0,2,1])**2)
 
+		
 # Calculate the walker distance from the equilibrium bond length
 # Negative is shorter than the bond length, positive is longer than bond length
-walker_pos = distance-bond_length	
+walker_pos = distance - bond_length
+
+
+
+# Part of the wave function. Used in integration to solve for the normalization constant
+# under the assumption that the integral should be 1.
+wave_func = lambda x: np.exp(-(x**2)*np.sqrt(k*reduced_mass)/2)
+
+# Get the integral of the wave function and the error
+integral_value, error = integrate.quad(wave_func, -np.inf, np.inf)
+
+# Calculate the Normalization constant
+N = 1 / integral_value
+
+
+
+# Get the range to graph the wave function in
+# Step is .001, which is usually a good smooth value
+x = np.arange(walker_pos.min(), walker_pos.max(), step = .001)
+	
 
 # Plot the reference energy throughout the simulation
 plt.figure(1)
@@ -294,15 +314,13 @@ plt.legend()
 
 
 # Plot a density histogram of the walkers at the final iteration of the simulation
-# Line of Best Fit ought to approximate wave function
 plt.figure(4)
-_, bins, _ = plt.hist(walker_pos, bins=n_bins, density=True)
-mu, sigma = st.norm.fit(walker_pos)
-best_fit_line = st.norm.pdf(bins,mu,sigma)
-plt.plot(bins,best_fit_line)
+plt.hist(walker_pos, bins=n_bins, density=True)
+plt.plot(x, N*np.exp(-(x**2)*np.sqrt(k*reduced_mass)/2), label = 'Wave Function')
 plt.xlabel('Walker Position')
 plt.ylabel('Density of Walkers')
-plt.title('Density of Walker Position')
+plt.title('Wave Function with Normalization Constant ' + str(N))
+plt.legend()
 
 plt.show()
 

@@ -17,6 +17,7 @@
 # Imports
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.integrate as integrate
 
 ###################################################################################
 # Scientific Constants
@@ -88,7 +89,7 @@ atomic_mass_oxygen = oxygen_mass / (avogadro * electron_mass)
 
 # Calculates the reduced mass of the system
 # Used when graphing the wave fuction
-reduced_mass = (atomic_mass_carbon+atomic_mass_oxygen) / (atomic_mass_carbon*atomic_mass_oxygen)
+reduced_mass = (atomic_mass_carbon*atomic_mass_oxygen) / (atomic_mass_carbon+atomic_mass_oxygen)
 
 
 
@@ -232,12 +233,33 @@ for i in range(sim_length):
                     + ( reference_energy[i-j] / (j+1) )
 
 					
+					
 # Calculate the distance between the two atoms to be used in the histogram	
 distance = np.sqrt( (walkers[:,0]-walkers[:,3])**2 + (walkers[:,1]-walkers[:,4])**2 + (walkers[:,2]-walkers[:,5])**2)
+
 
 # Calculate the walker distance from the equilibrium bond length
 # Negative is shorter than the bond length, positive is longer than bond length
 walker_pos = distance-eq_bond_length	
+
+
+
+# Part of the wave function. Used in integration to solve for the normalization constant
+# under the assumption that the integral should be 1.
+wave_func = lambda x: np.exp(-(x**2)*np.sqrt(k*reduced_mass)/2)
+
+# Get the integral of the wave function and the error
+integral_value, error = integrate.quad(wave_func, -np.inf, np.inf)
+
+# Calculate the Normalization constant
+N = 1 / integral_value
+
+
+
+# Get the range to graph the wave function in
+# Step is .001, which is usually a good smooth value
+x = np.arange(walker_pos.min(), walker_pos.max(), step = .001)
+
 
 
 # Plot the reference energy throughout the simulation
@@ -272,9 +294,11 @@ plt.legend()
 # Plot a density histogram of walkers at final iteration
 plt.figure(4)
 plt.hist(walker_pos, bins=n_bins, density=True)
+plt.plot(x, N*np.exp(-(x**2)*np.sqrt(k*reduced_mass)/2), label = 'Wave Function')
 plt.xlabel('Walker Position')
 plt.ylabel('Number of Walkers')
-plt.title('Walkers Final Position')
+plt.title('Wave Function with Normalization Constant ' + str(N))
+plt.legend()
 
 
 plt.show()

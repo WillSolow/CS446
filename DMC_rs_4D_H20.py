@@ -16,8 +16,9 @@
 
 # Imports
 import numpy as np
-import scipy.stats as st
 import matplotlib.pyplot as plt
+import scipy.integrate as integrate
+
 
 ###################################################################################
 # Scientific Constants
@@ -100,6 +101,10 @@ ref_converge_num = .00494317
 # Returns an array of masses in Atomic Mass Units, Oxygen is first followed by both 
 # Hydrogens
 atomic_masses = np.array([oxygen_mass, hydrogen_mass, hydrogen_mass]) / (avogadro * electron_mass)
+
+
+# Calculate the reduced mass of the system
+reduced_mass = np.prod(atomic_masses) / np.sum(atomic_masses)
 
 
 
@@ -270,7 +275,28 @@ for i in range(sim_length):
 
 # Calculate the distance between one of the OH vectors
 # Used in the histogram and wave function plot	
-OH_vector_lengths = np.linalg.norm(walkers[:,0,0]-walkers[:,0,1],axis=1)
+OH_vector_length = np.linalg.norm(walkers[:,0,0]-walkers[:,0,1],axis=1)
+
+
+# Center the bond length about zero for graphing in the histogram
+OH_positions = OH_vector_length - eq_bond_length
+
+
+
+# Part of the wave function. Used in integration to solve for the normalization constant
+# under the assumption that the integral should be 1.
+wave_func = lambda x: np.exp(-(x**2)*np.sqrt(kOH*reduced_mass)/2)
+
+# Get the integral of the wave function and the error
+integral_value, error = integrate.quad(wave_func, -np.inf, np.inf)
+
+# Calculate the Normalization constant
+N = 1 / integral_value
+
+
+# Get the range to graph the wave function in
+# Step is .001, which is usually a good smooth value
+x = np.arange(OH_positions.min(), OH_positions.max(), step = .001)
 
 	
 
@@ -308,21 +334,15 @@ plt.ylabel('Number of Walkers')
 plt.title('Number of Walkers Over Time')
 plt.legend()
 
-# Calculate the walker distance from the equilibrium bond length
-# Negative is shorter than the bond length, positive is longer than bond length
-OH_positions = OH_vector_lengths-eq_bond_length
-print(OH_positions.shape)
 
 # Plot a density histogram of the walkers at the final iteration of the simulation
-# Line of Best Fit ought to approximate wave function
 plt.figure(4)
-_, bins, _ = plt.hist(OH_positions, bins=n_bins, density=True)
-mu, sigma = st.norm.fit(OH_positions)
-best_fit_line = st.norm.pdf(bins,mu,sigma)
-plt.plot(bins,best_fit_line)
+plt.hist(OH_positions, bins=n_bins, density=True)
+plt.plot(x, N*np.exp(-(x**2)*np.sqrt(kOH*reduced_mass)/2), label = 'Wave Function')
 plt.xlabel('Walker Position')
 plt.ylabel('Density of Walkers')
-plt.title('Density of Walker Position')
+plt.title('Wave Function with Normalization Constant ' + str(N))
+plt.legend()
 
 plt.show()
 

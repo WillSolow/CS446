@@ -294,7 +294,7 @@ plt.hist(walker_pos, bins=n_bins, density=True)
 plt.plot(x, N*np.exp(-(x**2)*np.sqrt(k*reduced_mass)/2), label = 'Wave Function')
 plt.xlabel('Walker Position')
 plt.ylabel('Number of Walkers')
-plt.title('Walkers Final Position')
+plt.title('Wave Function with Normalization Constant ' + str(N))
 plt.legend()
 
 
