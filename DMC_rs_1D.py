@@ -19,6 +19,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.integrate as integrate
 
 ###################################################################################
 # Scientific Constants
@@ -228,7 +229,29 @@ for i in range(sim_length):
             ref_rolling_avg[i] = ( ref_rolling_avg[i] - ( ref_rolling_avg[i] / (j+1) ) ) \
                     + ( reference_energy[i-j] / (j+1) )
 
+
+					
+# Calculate the offset of the walker position about zero
 walker_pos = walkers-eq_length
+
+
+					
+# Part of the wave function. Used in integration to solve for the normalization constant
+# under the assumption that the integral should be 1.
+wave_func = lambda x: np.exp(-(x**2)*np.sqrt(k*reduced_mass)/2)
+
+# Get the integral of the wave function and the error
+integral_value, error = integrate.quad(wave_func, -np.inf, np.inf)
+
+# Calculate the Normalization constant
+N = 1 / integral_value
+
+
+
+# Get the range to graph the wave function in
+# Step is .001, which is usually a good smooth value
+x = np.arange(walker_pos.min(), walker_pos.max(), step = .001)
+
 
 # Plot the reference energy throughout the simulation
 plt.figure(1)
@@ -262,9 +285,11 @@ plt.legend()
 # Plot a density histogram of walkers at final iteration
 plt.figure(4)
 plt.hist(walker_pos, bins=n_bins, density=True)
+plt.plot(x, N*np.exp(-(x**2)*np.sqrt(k*reduced_mass)/2), label = 'Wave Function')
 plt.xlabel('Walker Position')
 plt.ylabel('Number of Walkers')
 plt.title('Walkers Final Position')
+plt.legend()
 
 
 plt.show()
