@@ -8,7 +8,7 @@
 # array is utilized as a main data structure for storing the coordinates of each atom 
 # in each molecule in each walker. 
 
-# To Run: Navigate to file in terminal directory and type 'python dmc_rs_4D_H20.py'
+# To Run: Navigate to file in terminal directory and type 'python dmc_rs_4D_H2O.py'
 
 # Output: Graphs for the reference energy, the n-step rolling average, and the number 
 # of walkers at each time step, as well as a density histogram of the walker distance
@@ -54,7 +54,7 @@ dt = 10.0
 sim_length = 5000
 
 # Number of initial walkers
-n_walkers = 1000
+n_walkers = 2000
 
 # Number of time steps for rolling average calculation
 rolling_avg = 1000
@@ -111,7 +111,8 @@ reduced_mass = np.prod(atomic_masses) / np.sum(atomic_masses)
 # Initial 4D walker array
 # Returns a uniform distribution cenetered at the given bond length
 # Array axes are walkers, molecules, coordinates, and atoms
-walkers = np.random.rand(n_walkers, num_molecules, atomic_masses.shape[0], coord_const) - .5
+walkers = (np.random.rand(n_walkers, num_molecules, atomic_masses.shape[0], \
+    coord_const) - .5) 
 
 
 #######################################################################################
