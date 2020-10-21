@@ -48,13 +48,13 @@ print('Seed used: ' + str(seed))
 # Time step 
 # Used to calculate the distance an atom moves in a time step
 # Smaller time step means less movement in a given time step
-dt = 10.0
+dt = 1.0
 
 # Number of time steps in a simulation
 sim_length = 5000
 
 # Number of initial walkers
-n_walkers = 2000
+n_walkers = 1000
 
 # Number of time steps for rolling average calculation
 rolling_avg = 1000
@@ -104,7 +104,11 @@ atomic_masses = np.array([oxygen_mass, hydrogen_mass, hydrogen_mass]) / (avogadr
 
 
 # Calculate the reduced mass of the system
-reduced_mass = np.prod(atomic_masses) / np.sum(atomic_masses)
+# Note that as the wave function is being graphed for an OH vector, we only consider the
+# reduced mass of the OH vector system
+reduced_mass = (atomic_masses[0]*atomic_masses[1])/(atomic_masses[0]+atomic_masses[1])
+# Legacy code
+# reduced_mass = np.prod(atomic_masses) / np.sum(atomic_masses)
 
 
 
@@ -313,9 +317,6 @@ plt.legend()
 
 
 # Plot the rolling average of the reference energy throughout the simulation
-for i in range(ref_rolling_avg.shape[0]):
-    print('Timestep ' + str(i)+ ': ' + str(ref_rolling_avg[i]))
-
 plt.figure(2)
 plt.plot(ref_rolling_avg, label= 'Reference Energy')
 plt.plot(reference_converge, label = 'Zero Point Energy')
