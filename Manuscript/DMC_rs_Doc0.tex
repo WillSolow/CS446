@@ -115,6 +115,8 @@ We~\cite{Anderson1975} give an overview of the Diffusion Monte Carlo (DMC) algor
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Start the main part of the manuscript here.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
 \section{Related Work}
 
 This semester, we code a python based implementation of the Diffusion Monte Carlo algorithm originally presented in Anderson 1975. Our implementation of the DMC algorithm can be directly attributed to Anderson's work, as he was one of the first to propose such a method. At the time, other methods were seen as more computationally efficient for a given level of accuracy. We take Anderson's algorithm and refine it in the scope of being efficient for computing the ground level energy and bond strength of Clathrate Hydrates. 
@@ -122,7 +124,9 @@ While Anderson was initially only concerned with the calculation of the ground e
 As Anderson points out, the Schrodinger Equation is only analytically solvable for certain, small systems. His DMC algorithm provides such a way to approximate solutions to complex systems. The best solution to modelling Clathrate Hydrates, given the lack of an analytical solution, is an open question. We hope to build off of Anderson's work to provide a computationally efficient method for the solution of this problem.
 
 
-\section{Discussion}
+\section{Modeling}
+\subsection{The Model}
+\subsection{Implementation}
 \subsection{Code Validation}
 
 In any implementation of an algorithm, rigorous testing is required to ensure that the code is producing accurate results. Ideally, data generated from a simulation would be corroborated with data collected experimentally. However, due to the nature of the study of particles, outside of the simplest systems, it is difficult to accurately calculate the ground state energy. As such, results generated from the DMC algorithm cannot be verified against real world data. 
@@ -130,6 +134,12 @@ In any implementation of an algorithm, rigorous testing is required to ensure th
 Instead, we turn to manual validation of the code. An outline of the process is as follows: a set of walkers is generated. The validator calculates the potential energy and the reference energy. Using a randomly generated set of thresholds, the validator determines which walkers should be deleted and replicated, and then compares the final array to the final array produced by the algorithm. To be sure of correctness, this process was repeated multiple times with sets of ten walkers over five time steps. These groups of calculations should be comprehensive enough to validate the correctness of the algorithm due to the stochastic nature of the simulation, and generalize well to larger groups of walkers. 
 
 As a final measure, the implementaion of the DMC algorithm was tested to model the carbon monoxide bond, given that the Zero-Point energy of the CO bond is well known. When tested over multiple simulations, the 1,000 step rolling average varied on the order of  $1\cdot10^{-4}$, with a variance on the order of $1\cdot10^{-3}$. Based on prior DMC implementations, this amount of inaccuracy is normal.  
+
+\section{Simulations}
+
+\section{Discussion}
+
+\section{Conclusion}
 % Everything After this comes later
 %\section{Results and discussion}
 %
