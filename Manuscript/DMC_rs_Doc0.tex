@@ -116,7 +116,7 @@ We~\cite{Anderson1975} give an overview of the Diffusion Monte Carlo (DMC) algor
 %% Start the main part of the manuscript here.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
-
+We introduce an efficient, generalizable, and validated implementation of the Diffusion Monte Carlo (DMC) algorithm utilizing NumPy. We discuss the problems faced in the world of Computational Sciences in writing validated, efficient, and widely usable code and how our implementation of the DMC algorithm furthers the work in these areas. 
 \section{Related Work}
 
 This semester, we code a python based implementation of the Diffusion Monte Carlo algorithm originally presented in Anderson 1975. Our implementation of the DMC algorithm can be directly attributed to Anderson's work, as he was one of the first to propose such a method. At the time, other methods were seen as more computationally efficient for a given level of accuracy. We take Anderson's algorithm and refine it in the scope of being efficient for computing the ground level energy and bond strength of Clathrate Hydrates. 
@@ -126,7 +126,15 @@ As Anderson points out, the Schrodinger Equation is only analytically solvable f
 
 \section{Modeling}
 \subsection{The Model}
+The DMC model is not novel. It~\cite{Anderson1975} was first introduced over 40 years ago and has been refined since. At a high level, the model takes an array of walkers, each representing a possible state of the system, and propagates the atoms in each walker. After propagation, the potential energy of each system is calculated. Systems with potential energy that is too high are deleted, while systems with reasonable potential energy are replicated. Given the pseudo-randomness leveraged in code-based implementations of the DMC algorithm, this serves to approximate every possible configuration of the system, within the bounds that it would normally exist in nature.
+
+Over time, the rolling average the potential energy of all systems that are valid converge to the zero point energy, or the ground state energy of the system. This produces an approximate solution of the Schrodinger equation, which is what the DMC algorithm is modelling. 
 \subsection{Implementation}
+In our implementation of DMC, we write a script-based implementation in Python, relying heavily on the NumPy library, which provides vectorization for fast operations on large matrices. The most important variable in the code is a 4D array which stores the positions of each atom in each molecule in each walker. As we move through the simulation loop of the algorithm, we operate on the walker array to delete and replicate walkers as required by the algorithm.
+
+Notably, the function that calculates potential energy is drastically different from molecular system to molecular system, so the main simulation loop uses calls to the potential energy fucntion for the purpose of extendability. From system to system, the only other varying part of our code is how we propagate each walker. This could potentially change with each system, although we hope to find a data structure that allows our code to remain effiicient without needing to change how the walkers are propagated at each step. Otherwise, the entire model is controlled by the initial variables of the simulation.
+
+Through the simulation loop, rely heavily on the broadcasting features of NumPy to different array dimensions to figure out which walkers are to be deleted or replicated. We like to think that this is done quite cleanly, and do it in a mere 11 lines of code after the walkers are propagated. This efficiency is appealing and has been why we are hesitant to walkk away from the 4D array based implementation that we provide. 
 \subsection{Code Validation}
 
 In any implementation of an algorithm, rigorous testing is required to ensure that the code is producing accurate results. Ideally, data generated from a simulation would be corroborated with data collected experimentally. However, due to the nature of the study of particles, outside of the simplest systems, it is difficult to accurately calculate the ground state energy. As such, results generated from the DMC algorithm cannot be verified against real world data. 
@@ -138,6 +146,11 @@ As a final measure, the implementaion of the DMC algorithm was tested to model t
 \section{Simulations}
 
 \section{Discussion}
+When creating a piece of code in the field of Computational Science, its worth is often based on how extendable it is to other projects of interest. In the case of our work, we provide a fast, script based implementation of the DMC algorithm by leveraging the vectorization provided in the NumPy library. Currently, our work relies on the assumption that the molecules in the modeled system are homogeneous. Clearly, this is not a particularly extendable piece of code, as there are many other interesting systems made up of hetereogeneous molecules. 
+
+This begs us to consider how to create generalizable code that can be used in a variety of circumstances without sacrificing efficiency. Observe that NumPy works well when dealing with arrays of many dimensions. As soon as we change the sizes of the molecules in a walker, the dimensions of our array are no longer even, and so NumPy cannot cleanly vectorize the solution in the 4D data structure that we have presented up to this point. From a programming point of view, it would not be particularly difficult to represent each walker on a singular array dimesion. However, this also reduces the extendablility of our code as it makes the potential energy function extraordinarily difficult to calculate, given that each molecule and atom corresponds to a particular index on the same array dimesion. 
+
+We hope that the users of our code are domain experts, and want to create a scientific instrument that is easy and intuitive for them to use. As such, we continue to try and refine our ideas to create an implementation of DMC that balances both efficiency and ease of use. 
 
 \section{Conclusion}
 % Everything After this comes later
