@@ -62,7 +62,7 @@
 %% optional argument to \title.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \title[An \textsf{achemso} demo]
-  {Small Assignment 10/7 - Code Validation}
+  {Small Assignment 10/30 - Code Validation}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Some journals require a list of abbreviations or keywords to be
@@ -116,7 +116,11 @@ We~\cite{Anderson1975} give an overview of the Diffusion Monte Carlo (DMC) algor
 %% Start the main part of the manuscript here.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
-We introduce an efficient, generalizable, and validated implementation of the Diffusion Monte Carlo (DMC) algorithm utilizing NumPy. We discuss the problems faced in the world of Computational Sciences in writing validated, efficient, and widely usable code and how our implementation of the DMC algorithm furthers the work in these areas. 
+We introduce an efficient, generalizable, and validated implementation of the Diffusion Monte Carlo (DMC) algorithm utilizing NumPy. We discuss the problems faced in the world of Computational Sciences in writing validated, efficient, and widely usable code and how our implementation of the DMC algorithm furthers the work in these areas. On the topic of efficiency, we compare an Object-Oriented approach with a scripting approach, and discuss the pros and cons of each implementation in the context of verifiability, efficiency and generalizability. 
+
+The Shrodinger equation is near-impossible to solve for complicated molecular systems. To date, the DMC algorithm is one of the best proposed algorithms for creating a tight approximation of the Schrodinger equation for complex systems. Given the complexity of the DMC algorithm and its potential for time growth in large systems, studying faster implementations of it is an important area of research. When it comes to computational studies, time barriers often prevent work from being done as the computer is required to analyze a large amount of possible simulations.
+
+However, a fast implementation is not valuable unless it is correct. We provide techniques for how we validated our work and hope that these techniques and practices can be a staple of all work done in the Computational Science field. 
 \section{Related Work}
 
 This semester, we code a python based implementation of the Diffusion Monte Carlo algorithm originally presented in Anderson 1975. Our implementation of the DMC algorithm can be directly attributed to Anderson's work, as he was one of the first to propose such a method. At the time, other methods were seen as more computationally efficient for a given level of accuracy. We take Anderson's algorithm and refine it in the scope of being efficient for computing the ground level energy and bond strength of Clathrate Hydrates. 
