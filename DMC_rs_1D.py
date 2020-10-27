@@ -52,7 +52,7 @@ dt = 10.0
 sim_length = 5000
 
 # Number of initial walkers
-n_walkers = 1000
+n_walkers = 10000
 
 # Number of time steps for rolling average calculation
 rolling_avg = 1000
@@ -124,7 +124,7 @@ for i in range(sim_length):
 	# Energy is calculated based on the average of all potential energies of walkers.
 	# Is adjusted by a statistical value to account for large or small walker populations.
     reference_energy[i] = np.mean( potential_energy(walkers) ) \
-        + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
+        + (1.0 - (walkers.shape[0] / (1.0*n_walkers)) ) / ( 2.0*dt )
     
 	
     # Current number of walkers

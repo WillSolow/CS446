@@ -2,6 +2,7 @@
 # CS446 Fall 2020
 # Diffusion Monte Carlo (DMC) Simulation
 # Script Style
+# Last Updated 10/27/20
 
 # This program runs a Diffusion Monte Carlo simulation to find an approximation for the
 # ground state energy of a system of molecules. In this particular implementation, a 4D
@@ -49,13 +50,13 @@ print('Seed used: ' + str(seed))
 # Time step 
 # Used to calculate the distance an atom moves in a time step
 # Smaller time step means less movement in a given time step
-dt = .1
+dt = 10
 
 # Number of time steps in a simulation
-sim_length = 12000
+sim_length = 5000
 
 # Number of initial walkers
-n_walkers = 10000
+n_walkers = 1000
 
 # Number of time steps for rolling average calculation
 rolling_avg = 1000
@@ -169,7 +170,7 @@ for i in range(sim_length):
 	# Energy is calculated based on the average of all potential energies of walkers.
 	# Is adjusted by a statistical value to account for large or small walker populations.
     reference_energy[i] = np.mean( potential_energy(walkers) ) \
-        + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
+        + (1.0 - (walkers.shape[0] / 1.0*n_walkers) ) / ( 2.0*dt )
 		
     # Current number of walkers
     num_walkers[i] = walkers.shape[0]
@@ -179,8 +180,14 @@ for i in range(sim_length):
 	# distribution given by the atomic mass of each atom.
     # Returns a 4D array in the shape of walkers with the standard deviation depending on the
     # atomic mass of each atom	
-    propagations = np.random.normal(0, np.sqrt(dt/np.transpose(np.tile(atomic_masses, \
-	    (walkers.shape[0], num_molecules, coord_const, 1)), (0, 1, 3, 2))))
+	
+    #propagations = np.random.normal(0, np.sqrt(dt/np.transpose(np.tile(atomic_masses, \
+	#    (walkers.shape[0], num_molecules, coord_const, 1)), (0, 1, 3, 2))))
+    propagate_atoms = [np.random.normal(0, np.sqrt(dt/atomic_masses[i]), (walkers.shape[0],\
+	    num_molecules, coord_const)) for i in range(atomic_masses.shape[0])]
+	    
+    
+    propagations = np.stack(propagate_atoms, axis = 2)
 		
 	# Adds the propagation lengths to the 4D walker array
     walkers = walkers + propagations
