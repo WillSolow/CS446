@@ -17,6 +17,8 @@
 
 # Imports
 
+import sys
+import platform
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.integrate as integrate
@@ -33,6 +35,7 @@ avogadro = 6.02213670000e+23
 # create a random seed for the number generator, can be changed to a constant value
 # for the purpose of replicability
 seed = np.random.randint(100000)
+seed = 46508
 
 # Set the seed for the pseudo-random number generator. 
 np.random.seed(seed)
@@ -92,7 +95,10 @@ reduced_mass = (atomic_mass * atomic_mass) / (atomic_mass + atomic_mass)
 ref_converge_num = .5*h*np.sqrt(k/reduced_mass)
 
 
-
+np.set_printoptions(suppress = True)
+np.set_printoptions(precision=8)
+print('Python Version: ', sys.version_info.major)
+print('Python Release: ', platform.python_version())
 # Initial walker array
 # Returns a uniform distriubtion centered at the equilibrium 
 walkers = eq_length + (np.random.rand(n_walkers) - 0.5)
@@ -123,7 +129,9 @@ for i in range(sim_length):
 	# Calculate the Reference Energy
 	# Energy is calculated based on the average of all potential energies of walkers.
 	# Is adjusted by a statistical value to account for large or small walker populations.
-    reference_energy[i] = np.mean( potential_energy(walkers) ) \
+    print('\n\nAverage of Walker PE: ', np.mean(potential_energy(walkers)))
+    
+    reference_energy[i] = np.mean(potential_energy(walkers) ) \
         + (1.0 - (walkers.shape[0] / (1.0*n_walkers)) ) / ( 2.0*dt )
     print('\n\nReference Energy: ', reference_energy[i])
 	
@@ -136,7 +144,7 @@ for i in range(sim_length):
 	
 	# Adds the propogation lengths to the walker array
     walkers = walkers + propogation_lengths
-
+    print('\n\nWalkers after Propagations: ', walkers)
 	
 	
     
@@ -210,5 +218,6 @@ for i in range(sim_length):
 	# of equal potential and reference energy, the walker is neither replicated nor deleted. 
     walkers = np.append(walkers_after_delete, walkers_after_replication)
     print('\n\nWalkers after simulation ' + str(i) + ': ', walkers)
+    print('\n\n\n##################################################\n\n\n')
 
 
