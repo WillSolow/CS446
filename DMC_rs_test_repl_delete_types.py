@@ -1,30 +1,58 @@
+# Will Solow, Skye Rhomberg
+# CS446 Fall 2020
+# Diffusion Monte Carlo (DMC) Simulation
+# Script Style
+# Updated 10/29/2020
+
+# This code prints to a text file the result of many deletions and replication of 
+# arbitrary walkers. The purpose of this code is to validate that the vectorized 
+# replication and deletion method used in the DMC algorithm is correct in choosing the right
+# walkers to replicate or delete. 
+
 # NOTE: Print to a file, not to the command line or you will ruin your day
 
 import numpy as np
 
 # Initial Constants
 electron_mass = 9.10938970000e-28
+
 avogadro = 6.02213670000e23
+
+
 oxygen_mass = 15.99491461957
 hydrogen_mass = 1.007825
+
+# Calculate the atomic masses of the atoms in a molecule
 atomic_masses = np.array([oxygen_mass, hydrogen_mass, hydrogen_mass]) / (avogadro * electron_mass)
 
 # Testing Sizes
+# Input: Number of walkers, flag for fprint statement
+# Output: A string that states whether the replications are correct or not
 def test_del_repl(wlk_size=4,verbose='True'):
+
+    # Initialize the dimension of the 4D walker array
     n_walkers, num_molecules, coord_const = wlk_size,3,3
     print(f'Testing Replications & Deletions: {n_walkers} walkers, {num_molecules} waters')
 
 
-    # Sample Walker Array
+	
+    # Initialize the walker array with random values in the range [-.5, 5)
     walkers = (np.random.rand(n_walkers, num_molecules, atomic_masses.shape[0], \
         coord_const) - .5) 
     print(f'Initial Walker Array (Random):\n{walkers}\n' if verbose else '')
     print(f'Walker Array Specs:\n\tshape: {walkers.shape}\n\ttype: {walkers.dtype}\n')
 
-    # Sample Probabilities
+	
+	
+    # Create sample thresholds and probabilities to mimic that in the DMC algorithm
+	# The purpose is to show that the replication and deletion conditions are mutually
+	# exclusive
     thresholds = np.random.rand(walkers.shape[0])
     prob_delete = np.random.uniform(0.25,1.5,walkers.shape[0])
     prob_replicate = prob_delete - 1
+	
+	
+	
     # Sample Potential Energies: True --> Potential Energy > Ref Energy
     pot_vs_ref = np.random.choice([True,False],walkers.shape[0])
     print( 
@@ -36,6 +64,8 @@ def test_del_repl(wlk_size=4,verbose='True'):
             f'type: {pot_vs_ref.dtype}\n'
         ) )
 
+		
+		
     # Candidates for Deletion/Replication should be mutually exclusive
     to_delete = prob_delete < thresholds
     to_replicate = prob_replicate > thresholds
@@ -45,8 +75,11 @@ def test_del_repl(wlk_size=4,verbose='True'):
             f'Replication (p_r > thres): {to_replicate}, type: {to_replicate.dtype}\n'
         ) ) 
 
+		
+		
     # Walkers Deleted: Pot > Ref AND del < thres 
     walkers_to_remain = np.invert( (pot_vs_ref) * to_delete )
+	
     # Should be all the rest
     walkers_after_delete = walkers[walkers_to_remain]
     print(
@@ -59,8 +92,11 @@ def test_del_repl(wlk_size=4,verbose='True'):
             f'type: {walkers_after_delete.dtype}\n'
         ) )
 
+		
+		
     # Walkers Replicated: Pot < Ref AND repl > thres
     walkers_to_replicate = ( np.invert(pot_vs_ref) ) * to_replicate
+	
     # Should be ONLY replications
     walkers_replicated = walkers[walkers_to_replicate]
     print(
@@ -72,11 +108,15 @@ def test_del_repl(wlk_size=4,verbose='True'):
             f'type: {walkers_replicated.dtype}\n'
         ) )
 
+		
+
     # New Walkers
     new_walkers = np.append(walkers_after_delete, walkers_replicated, axis=0)
     print(f'New Walker Array:\n{new_walkers}' if verbose else '')
     print(f'New Array Specs:\n\tshape: {new_walkers.shape}\n\ttype: {new_walkers.dtype}\n')
 
+	
+	
     # Test Conditions:
     repl_ex_del = all(b==False for b in np.invert(walkers_to_remain)*walkers_to_replicate)
     num_correct = np.sum(walkers_to_remain)+np.sum(walkers_to_replicate)==new_walkers.shape[0]
