@@ -37,7 +37,8 @@ coord_const = 3
 # create a random seed for the number generator, can be changed to a constant value
 # for the purpose of replicability
 seed = np.random.randint(100000)
-seed = 81716
+# Set the seed manually for replicability purposes over multiple simulations
+# seed = 81716
 
 # Set the seed for the pseudo-random number generator. 
 np.random.seed(seed)
@@ -170,7 +171,7 @@ for i in range(sim_length):
 	# Energy is calculated based on the average of all potential energies of walkers.
 	# Is adjusted by a statistical value to account for large or small walker populations.
     reference_energy[i] = np.mean( potential_energy(walkers) ) \
-        + (1.0 - (walkers.shape[0] / 1.0*n_walkers) ) / ( 2.0*dt )
+        + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
 		
     # Current number of walkers
     num_walkers[i] = walkers.shape[0]
@@ -180,14 +181,16 @@ for i in range(sim_length):
 	# distribution given by the atomic mass of each atom.
     # Returns a 4D array in the shape of walkers with the standard deviation depending on the
     # atomic mass of each atom	
-	
-    #propagations = np.random.normal(0, np.sqrt(dt/np.transpose(np.tile(atomic_masses, \
-	#    (walkers.shape[0], num_molecules, coord_const, 1)), (0, 1, 3, 2))))
-    propagate_atoms = [np.random.normal(0, np.sqrt(dt/atomic_masses[i]), (walkers.shape[0],\
-	    num_molecules, coord_const)) for i in range(atomic_masses.shape[0])]
-	    
-    
-    propagations = np.stack(propagate_atoms, axis = 2)
+    propagations = np.random.normal(0, np.sqrt(dt/np.transpose(np.tile(atomic_masses, \
+	    (walkers.shape[0], num_molecules, coord_const, 1)), (0, 1, 3, 2))))
+		
+	# Propagates each coordinate of each atom in each molecule of each walker within a normal
+	 #distribution given by the atomic mass of each atom.
+	# This method  does the same as above but it is a little more straightforward to see the 
+	# correctness. Both return the same results, and the above is faster
+    #propagate_atoms = [np.random.normal(0, np.sqrt(dt/atomic_masses[i]), (walkers.shape[0],\
+	#    num_molecules, coord_const)) for i in range(atomic_masses.shape[0])]
+	#propagations = np.stack(propagate_atoms, axis = 2)
 		
 	# Adds the propagation lengths to the 4D walker array
     walkers = walkers + propagations
