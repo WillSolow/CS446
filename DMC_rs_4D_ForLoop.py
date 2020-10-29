@@ -17,6 +17,7 @@
 
 # Imports
 import numpy as np
+import time
 import matplotlib.pyplot as plt
 import scipy.integrate as integrate
 
@@ -115,13 +116,6 @@ reduced_mass = (atomic_masses[0]*atomic_masses[1])/(atomic_masses[0]+atomic_mass
 
 
 
-# Initial 4D walker array
-# Returns a uniform distribution cenetered at the given bond length
-# Array axes are walkers, molecules, coordinates, and atoms
-walkers = (np.random.rand(n_walkers, num_molecules, atomic_masses.shape[0], \
-    coord_const) - .5) 
-
-
 #######################################################################################
 # Simulation
 
@@ -185,206 +179,347 @@ def potential_energy_M(positions):
 		for jWat in range(iWat,nWaters): 
 			intERmolecularEnergy=intERmolecularEnergy+PotentialEnergyTwoWaters(positions[:,iWat],positions[:,jWat])
 
-	print("Sum IntRAmolecular Energy: ",intRAmolecularEnergy)
+	#print("Sum IntRAmolecular Energy: ",intRAmolecularEnergy)
 	potentialEnergy=intRAmolecularEnergy+intERmolecularEnergy
 	return potentialEnergy	
 	
+def PotentialEnergyTwoWaters(water1pos, water2pos):
+	#NOT YET IMPLEMENTED!! Until implemented this will return zeros which correspond to the waters not interacting 
+	#with each other
+	(nWalkers,nAtoms,nCartesian)=water1pos.shape
+	return np.zeros(nWalkers)
+	
+def PotentialEnergySingleWater(OHHpositions):
+	#This calculates the potential energy of a single water molecule.  A walker might be made up of many
+	#water molecules.  You'd calculate the energy of each discrete water molecule and sum those energies together.
+	#This is done in the function PotentialEnergyManyWaters, above.
+
+	#The structure of OHHpositions is [nWalkers,nAtoms,3]
+	#where nWalkers is how many walkers you are calculating the PE for
+	#nAtoms is the number of atoms in water (always 3)
+	#and the last is 3 for the number of cartesian coordinates
+
+	#The first atom is assumed to be Oxygen
+	#The second and third atoms are assumed to be the two Hydrogens
+
+	#The potential energy of water is the sum of the PE from the two OH 
+	#bond lengths and the H-O-H bond angle
+
+	#Bondlength #1
+	rOH1=np.linalg.norm(OHHpositions[:,0,:]-OHHpositions[:,1,:],axis=1)
+	#Energy due to Bond length #1
+	rOHeq=1.0 /0.529177 #equilibrium bond length in atomic units of distance
+	kb= 1059.162 *(1.0/0.529177)**2 * (4.184/2625.5)# spring constant in atomic units of energy per (atomic units of distance)^2
+
+	potROH1=kb/2.0 *(rOH1-rOHeq)**2
+	
+	#print('equilibrium distance: ',rOHeq)
+	#print("rOH1: ",rOH1, " atomic units of distance")
+	#print("potROH1: ", potROH1)
+
+	#Bondlength #2
+	rOH2=np.linalg.norm(OHHpositions[:,0]-OHHpositions[:,2],axis=1)
+	#Energy due to Bond length #2
+	#we reuse rOHeq and kb for potROH2 because they are the same type of bond (an OH bond)
+	potROH2=kb/2.0 *(rOH2-rOHeq)**2
+
+	#print("rOH2: ",rOH2, " atomic units of distance")
+	#print("potROH2: ", potROH2)
+	#angle of H-O-H bond angle (O is the vertex) determined using cos^-1 which is (in TeX):
+	#\theta = \arccos \left( \frac{\vec{OH_1}\cdot \vec{OH_2}}{ \|\vec{OH_1}\| \, \|\vec{OH_2}\|}\right)
+	#as far as I know, np.arccos cannot handle my
+	aHOH=[]
+	for walkerPos in OHHpositions:
+		vecOH_1=walkerPos[0]-walkerPos[1]
+		vecOH_2=walkerPos[2]-walkerPos[0]
+		cosAngle=np.dot(vecOH_1,vecOH_2)/(np.linalg.norm(vecOH_1)*np.linalg.norm(vecOH_2))
+		aHOH.append(np.arccos(cosAngle))
+
+	aHOH=np.array(aHOH)
+	ka=75.90*(4.184/2625.5) #spring constant in atomic units of energy per (rad)^2
+	aHOHeq= 112.0 * np.pi/180.0 #equilibrium HOH bond angle in radians
+	potAHOH=ka/2.0*(aHOH-aHOHeq)**2
+
+	#print('equilibrium bond angle: ',aHOHeq)	
+	#print("aHOH: ",aHOH, " radians")
+	#print("aHOH: ",aHOH*180.0/np.pi, " degrees")	
+
+	#print("pot: ", potAHOH)
+
+	potentialEnergy=potROH1+potROH2+potAHOH
+	#print("intra molecular potential ",potentialEnergy)
+	return potentialEnergy
 	
 
-# Simulation loop
-# Iterates over the walkers array, propogating each walker. Deletes and replicates those 
-# walkers based on their potential energies with respect to the calculated reference energy
-for i in range(sim_length):
-
-    # Calculate the Reference Energy
-	# Energy is calculated based on the average of all potential energies of walkers.
-	# Is adjusted by a statistical value to account for large or small walker populations.
-    reference_energy[i] = np.mean( potential_energy(walkers) ) \
-        + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
+# Input: Boolean - if true used SR vectorized PE, if false use Madison PE function
+# Output: Time taken to complete computation
+# Runs a simulation with vectorized techniques
+def vectorized_loop(vec_PE):
+    # Reset the seed each loop to ensure that simulations are the same
+    np.random.seed(seed)
+	
+	
+    # Initial 4D walker array
+    # Returns a uniform distribution cenetered at the given bond length
+    # Array axes are walkers, molecules, coordinates, and atoms
+    walkers = (np.random.rand(n_walkers, num_molecules, atomic_masses.shape[0], \
+        coord_const) - .5) 
+	
+	# Calculate the start time of the program to be used when calculating efficiency
+    start_time = time.time()
+	
+	
+    # Simulation loop
+    # Iterates over the walkers array, propogating each walker. Deletes and replicates those 
+    # walkers based on their potential energies with respect to the calculated reference energy
+    for i in range(sim_length):
+    
+        # Calculate the Reference Energy
+	    # Energy is calculated based on the average of all potential energies of walkers.
+	    # Is adjusted by a statistical value to account for large or small walker populations.
+        if vec_PE:
+            reference_energy[i] = np.mean( potential_energy_SR(walkers) ) \
+                + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
+        else:
+            reference_energy[i] = np.mean( potential_energy_M(walkers) ) \
+                + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
 		
-    # Current number of walkers
-    num_walkers[i] = walkers.shape[0]
+        # Current number of walkers
+        num_walkers[i] = walkers.shape[0]
 
 	
-	# Propagates each coordinate of each atom in each molecule of each walker within a normal
-	# distribution given by the atomic mass of each atom.
-    # Returns a 4D array in the shape of walkers with the standard deviation depending on the
-    # atomic mass of each atom	
-    propagations = np.random.normal(0, np.sqrt(dt/np.transpose(np.tile(atomic_masses, \
-	    (walkers.shape[0], num_molecules, coord_const, 1)), (0, 1, 3, 2))))
+	    # Propagates each coordinate of each atom in each molecule of each walker within a normal
+	    # distribution given by the atomic mass of each atom.
+        # Returns a 4D array in the shape of walkers with the standard deviation depending on the
+        # atomic mass of each atom	
+        propagations = np.random.normal(0, np.sqrt(dt/np.transpose(np.tile(atomic_masses, \
+	       (walkers.shape[0], num_molecules, coord_const, 1)), (0, 1, 3, 2))))
 		
-	# Propagates each coordinate of each atom in each molecule of each walker within a normal
-	 #distribution given by the atomic mass of each atom.
-	# This method  does the same as above but it is a little more straightforward to see the 
-	# correctness. Both return the same results, and the above is faster
-    #propagate_atoms = [np.random.normal(0, np.sqrt(dt/atomic_masses[i]), (walkers.shape[0],\
-	#    num_molecules, coord_const)) for i in range(atomic_masses.shape[0])]
-	#propagations = np.stack(propagate_atoms, axis = 2)
+	    # Propagates each coordinate of each atom in each molecule of each walker within a normal
+	     #distribution given by the atomic mass of each atom.
+	    # This method  does the same as above but it is a little more straightforward to see the 
+	    # correctness. Both return the same results, and the above is faster
+        #propagate_atoms = [np.random.normal(0, np.sqrt(dt/atomic_masses[i]), (walkers.shape[0],\
+	    #    num_molecules, coord_const)) for i in range(atomic_masses.shape[0])]
+	    #propagations = np.stack(propagate_atoms, axis = 2)
 		
-	# Adds the propagation lengths to the 4D walker array
-    walkers = walkers + propagations
+	    # Adds the propagation lengths to the 4D walker array
+        walkers = walkers + propagations
 	
     
 	
-	# Calculates the potential energy of each walker in the system
-    potential_energies = potential_energy(walkers)
+	    # Calculates the potential energy of each walker in the system
+        if vec_PE:
+            potential_energies = potential_energy_SR(walkers)
+        else:
+            potential_energies = potential_energy_M(walkers)
 
     
 	
-	# Gives a uniform distribution in the range [0,1) associated with each walker
-    # in the system
-    # Used to calculate the chance that a walker is deleted or replicated	
-    thresholds = np.random.rand(walkers.shape[0])
+	    # Gives a uniform distribution in the range [0,1) associated with each walker
+        # in the system
+        # Used to calculate the chance that a walker is deleted or replicated	
+        thresholds = np.random.rand(walkers.shape[0])
 	
 	
-	# Calculates a probability for each walker that it is deleted
-    # This is actually the probability that a walker is not deleted
-    prob_delete = np.exp(-(potential_energies-reference_energy[i])*dt)
+	    # Calculates a probability for each walker that it is deleted
+        # This is actually the probability that a walker is not deleted
+        prob_delete = np.exp(-(potential_energies-reference_energy[i])*dt)
 
-	# Calculates a probability for each walker that it is replicated
-	# In the model it is based off of prob_delete
-    prob_replicate = prob_delete - 1
+	    # Calculates a probability for each walker that it is replicated
+	    # In the model it is based off of prob_delete
+        prob_replicate = prob_delete - 1
 
 	
 	
-	# Returns a boolean array of which walkers have a chance of surviving or being deleted
-	# Based on the above probabilities and thresholds calculated for each walker
-    # calculate which walkers actually have the necessary potential energies.
-	# These two arrays are not mutually exclusive, but the calculations below ensure
-	# that no walker is both deleted and replicated in the same time step.
-    to_delete = prob_delete < thresholds
-    to_replicate = prob_replicate > thresholds
+	    # Returns a boolean array of which walkers have a chance of surviving or being deleted
+	    # Based on the above probabilities and thresholds calculated for each walker
+        # calculate which walkers actually have the necessary potential energies.
+	    # These two arrays are not mutually exclusive, but the calculations below ensure
+	    # that no walker is both deleted and replicated in the same time step.
+        to_delete = prob_delete < thresholds
+        to_replicate = prob_replicate > thresholds
     
 	
 	
-	# Gives a boolean array of indices of the walkers that are not deleted
-	# Calculates if a walker is deleted by if its potential energy is greater than
-	# the reference energy and if its threshold is above the prob_delete threshold.
-	# Notice that walkers_to_remain is mutually exclusive from walkers_to_replicate
-	# as the potential energy calculate is exclusive.
-    walkers_to_remain = np.invert( (potential_energies > reference_energy[i]) * to_delete )
+	    # Gives a boolean array of indices of the walkers that are not deleted
+	    # Calculates if a walker is deleted by if its potential energy is greater than
+	    # the reference energy and if its threshold is above the prob_delete threshold.
+	    # Notice that walkers_to_remain is mutually exclusive from walkers_to_replicate
+	    # as the potential energy calculate is exclusive.
+        walkers_to_remain = np.invert( (potential_energies > reference_energy[i]) * to_delete )
 	
-	# Returns the walkers that remain after deletion
-    walkers_after_delete = walkers[walkers_to_remain]
+	    # Returns the walkers that remain after deletion
+        walkers_after_delete = walkers[walkers_to_remain]
 
-	
-	
-	# Gives a boolean array of indices of the walkres that are replicated
-	# Calculates if a walker is replicated by if its potential energy is less than
-	# the reference energy and if its threshold is below the prob_replicate threshold.
-    walkers_to_replicate = (potential_energies < reference_energy[i]) * to_replicate
-	
-	# Returns the walkers that are to be replicated
-    walkers_after_replication = walkers[walkers_to_replicate]
 	
 	
+	    # Gives a boolean array of indices of the walkers that are replicated
+	    # Calculates if a walker is replicated by if its potential energy is less than
+	    # the reference energy and if its threshold is below the prob_replicate threshold.
+        walkers_to_replicate = (potential_energies < reference_energy[i]) * to_replicate
 	
-	# Returns the new walker array
-	# Concatenates the walkers that were not deleted with the walkers that are to be 
-	# replicated. Since a replicated walker was not deleted, concatenating these two 
-	# arrays serves to replicated a walker. 
-	# Notice that if the potential energy is equal the reference energy, the walker 
-	# will appear in the walkers_after_delete array but not in the 
-	# walkers_after_replication array. This serves to ensure that in the unlikely case 
-	# of equal potential and reference energy, the walker is neither replicated nor deleted. 
-    walkers = np.append(walkers_after_delete, walkers_after_replication, axis=0)
-
-
-#####################################################################################
-# Output
+	    # Returns the walkers that are to be replicated
+        walkers_after_replication = walkers[walkers_to_replicate]
 	
-# Create reference energy array for plotting
-reference_converge = (np.zeros(sim_length) + 1) * ref_converge_num
-
-# Create walker num array for plotting
-init_walkers = (np.zeros(sim_length) + 1 )* n_walkers	
 	
-
-# Calculate the rolling average for rolling_avg time steps
-ref_rolling_avg = np.zeros(sim_length)
-for i in range(sim_length):
-    # If i less than rolling_avg, cannot calculate rolling average over the last 
-	# rolling_avg time steps
-	# Instead, calculate average over the first i time steps
-    if i < rolling_avg:
-        for j in range(i):
-            ref_rolling_avg[i] = ( ref_rolling_avg[i] - ( ref_rolling_avg[i] / (j+1) ) ) \
-                + (reference_energy[i-j] / (j+1) )
-    else: 
-        # Calculate the rolling average by looping over the past rolling_avg time steps 
-        for j in range(rolling_avg):
-            ref_rolling_avg[i] = ( ref_rolling_avg[i] - ( ref_rolling_avg[i] / (j+1) ) ) \
-                + ( reference_energy[i-j] / (j+1) )
-
-			
-
-# Calculate the distance between one of the OH vectors
-# Used in the histogram and wave function plot	
-OH_vector_length = np.linalg.norm(walkers[:,0,0]-walkers[:,0,1],axis=1)
-
-
-# Center the bond length about zero for graphing in the histogram
-OH_positions = OH_vector_length - eq_bond_length
-
-
-
-# Part of the wave function. Used in integration to solve for the normalization constant
-# under the assumption that the integral should be 1.
-wave_func = lambda x: np.exp(-(x**2)*np.sqrt(kOH*reduced_mass)/2)
-
-# Get the integral of the wave function and the error
-integral_value, error = integrate.quad(wave_func, -np.inf, np.inf)
-
-# Calculate the Normalization constant
-N = 1 / integral_value
-
-
-# Get the range to graph the wave function in
-# Step is .001, which is usually a good smooth value
-x = np.arange(OH_positions.min(), OH_positions.max(), step = .001)
+	
+	    # Returns the new walker array
+	    # Concatenates the walkers that were not deleted with the walkers that are to be 
+	    # replicated. Since a replicated walker was not deleted, concatenating these two 
+	    # arrays serves to replicated a walker. 
+	    # Notice that if the potential energy is equal the reference energy, the walker 
+	    # will appear in the walkers_after_delete array but not in the 
+	    # walkers_after_replication array. This serves to ensure that in the unlikely case 
+	    # of equal potential and reference energy, the walker is neither replicated nor deleted. 
+        walkers = np.append(walkers_after_delete, walkers_after_replication, axis=0)
+	
+	# return the difference between the start time and current time to get time elapsed
+	# in seconds
+    return (time.time()-start_time)
+	
+	
+	
+# Input: Boolean - if true used SR vectorized PE, if false use Madison PE function
+# Output: Time taken to complete computation
+# Runs a DMC simulation without vectorized techniques
+def unvectorized_loop(vec_PE):
+    # Reset the seed each loop to ensure that simulations are the same
+    np.random.seed(seed)
+	
+	
+    # Initial 4D walker array
+    # Returns a uniform distribution cenetered at the given bond length
+    # Array axes are walkers, molecules, coordinates, and atoms
+    walkers = (np.random.rand(n_walkers, num_molecules, atomic_masses.shape[0], \
+        coord_const) - .5) 
+	
+	# Calculate the start time of the program to be used when calculating efficiency
+    start_time = time.time()
+	
+	
+    # Simulation loop
+    # Iterates over the walkers array, propogating each walker. Deletes and replicates those 
+    # walkers based on their potential energies with respect to the calculated reference energy
+    for i in range(sim_length):
+    
+        # Calculate the Reference Energy
+	    # Energy is calculated based on the average of all potential energies of walkers.
+	    # Is adjusted by a statistical value to account for large or small walker populations.
+        if vec_PE:
+            reference_energy[i] = np.mean( potential_energy_SR(walkers) ) \
+                + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
+        else:
+            reference_energy[i] = np.mean( potential_energy_M(walkers) ) \
+                + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
+		
+        # Current number of walkers
+        num_walkers[i] = walkers.shape[0]
 
 	
+	    # Propagates each coordinate of each atom in each molecule of each walker within a normal
+	    # distribution given by the atomic mass of each atom.
+        # Returns a 4D array in the shape of walkers with the standard deviation depending on the
+        # atomic mass of each atom	
+        propagations = np.random.normal(0, np.sqrt(dt/np.transpose(np.tile(atomic_masses, \
+	       (walkers.shape[0], num_molecules, coord_const, 1)), (0, 1, 3, 2))))
+		
+	    # Propagates each coordinate of each atom in each molecule of each walker within a normal
+	     #distribution given by the atomic mass of each atom.
+	    # This method  does the same as above but it is a little more straightforward to see the 
+	    # correctness. Both return the same results, and the above is faster
+        #propagate_atoms = [np.random.normal(0, np.sqrt(dt/atomic_masses[i]), (walkers.shape[0],\
+	    #    num_molecules, coord_const)) for i in range(atomic_masses.shape[0])]
+	    #propagations = np.stack(propagate_atoms, axis = 2)
+		
+	    # Adds the propagation lengths to the 4D walker array
+        walkers = walkers + propagations
+	
+    
+	
+	    # Calculates the potential energy of each walker in the system
+        if vec_PE:
+            potential_energies = potential_energy_SR(walkers)
+        else:
+            potential_energies = potential_energy_M(walkers)
 
-# Plot the reference energy throughout the simulation
-plt.figure(1)
-plt.plot(reference_energy, label= 'Reference Energy')
-plt.plot(reference_converge, label='Zero Point Energy')
-plt.axis([0,sim_length,.04,.08])
-plt.xlabel('Simulation Iteration')
-plt.ylabel('System Energy')
-plt.title('Convergence of Reference Energy')
-plt.legend()
+    
+	
+	    # Gives a uniform distribution in the range [0,1) associated with each walker
+        # in the system
+        # Used to calculate the chance that a walker is deleted or replicated	
+        thresholds = np.random.rand(walkers.shape[0])
+	
+	
+	    # Calculates a probability for each walker that it is deleted
+        # This is actually the probability that a walker is not deleted
+        prob_delete = np.exp(-(potential_energies-reference_energy[i])*dt)
+
+	    # Calculates a probability for each walker that it is replicated
+	    # In the model it is based off of prob_delete
+        prob_replicate = prob_delete - 1
+
+	
+	
+	    # Returns a boolean array of which walkers have a chance of surviving or being deleted
+	    # Based on the above probabilities and thresholds calculated for each walker
+        # calculate which walkers actually have the necessary potential energies.
+	    # These two arrays are not mutually exclusive, but the calculations below ensure
+	    # that no walker is both deleted and replicated in the same time step.
+        to_delete = prob_delete < thresholds
+        to_replicate = prob_replicate > thresholds
+    
+	
+	
+	    # Gives a boolean array of indices of the walkers that are not deleted
+	    # Calculates if a walker is deleted by if its potential energy is greater than
+	    # the reference energy and if its threshold is above the prob_delete threshold.
+	    # Notice that walkers_to_remain is mutually exclusive from walkers_to_replicate
+	    # as the potential energy calculate is exclusive.
+        walkers_to_remain = np.invert( (potential_energies > reference_energy[i]) * to_delete )
+	
+	    # Returns the walkers that remain after deletion
+        walkers_after_delete = walkers[walkers_to_remain]
+
+	
+	
+	    # Gives a boolean array of indices of the walkers that are replicated
+	    # Calculates if a walker is replicated by if its potential energy is less than
+	    # the reference energy and if its threshold is below the prob_replicate threshold.
+        walkers_to_replicate = (potential_energies < reference_energy[i]) * to_replicate
+	
+	    # Returns the walkers that are to be replicated
+        walkers_after_replication = walkers[walkers_to_replicate]
+	
+	
+	
+	    # Returns the new walker array
+	    # Concatenates the walkers that were not deleted with the walkers that are to be 
+	    # replicated. Since a replicated walker was not deleted, concatenating these two 
+	    # arrays serves to replicated a walker. 
+	    # Notice that if the potential energy is equal the reference energy, the walker 
+	    # will appear in the walkers_after_delete array but not in the 
+	    # walkers_after_replication array. This serves to ensure that in the unlikely case 
+	    # of equal potential and reference energy, the walker is neither replicated nor deleted. 
+        walkers = np.append(walkers_after_delete, walkers_after_replication, axis=0)
+	
+	# return the difference between the start time and current time to get time elapsed
+	# in seconds
+    return (time.time()-start_time)
+	
+# Number of simulations ran 
+num_sims = 10
+# Get output:
+vec_time = 0
+unvec_time = 0
+for i in range(num_sims):
+    print('\nStarting loop: ', i)
+    vec_time = vec_time + vectorized_loop(True)
+    unvec_time = unvec_time + vectorized_loop(False)
 
 
-# Plot the rolling average of the reference energy throughout the simulation
-plt.figure(2)
-plt.plot(ref_rolling_avg, label= 'Reference Energy')
-plt.plot(reference_converge, label = 'Zero Point Energy')
-plt.axis([0,sim_length,.05,.07])
-plt.xlabel('Simulation Iteration')
-plt.ylabel('System Energy')
-plt.title(str(rolling_avg) + ' Step Rolling Average for Reference Energy')
-plt.legend()
+print('Vectorized PE function average time: ', vec_time/num_sims)
+print('Unvectorized PE function average time: ', unvec_time/num_sims)
 
 
-# Plot the number of walkers throughout the simulation
-plt.figure(3)
-plt.plot(num_walkers, label='Current Walkers')
-plt.plot(init_walkers, label='Initial Walkers')
-plt.xlabel('Simulation Iteration')
-plt.ylabel('Number of Walkers')
-plt.title('Number of Walkers Over Time')
-plt.legend()
-
-
-# Plot a density histogram of the walkers at the final iteration of the simulation
-plt.figure(4)
-plt.hist(OH_positions, bins=n_bins, density=True)
-plt.plot(x, N*np.exp(-(x**2)*np.sqrt(kOH*reduced_mass)/2), label = 'Wave Function')
-plt.xlabel('Walker Position')
-plt.ylabel('Density of Walkers')
-plt.title('Wave Function with Normalization Constant ' + str(N))
-plt.legend()
-
-plt.show()
 
