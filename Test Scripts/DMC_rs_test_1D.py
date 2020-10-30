@@ -5,11 +5,8 @@
 
 
 # This program runs a Diffusion Monte Carlo simulation to find an approximation for the
-# ground state energy of a system of molecules. In this particular implementation, the system 
-# is simplified to a 1D system, where the distance between two arbitrary atoms is the only
-# piece of data stored. 
-
-# To Run: Navigate to file in terminal directory and type 'python dmc_rs_1D.py'
+# ground state energy of a system of molecules. In this test file, a print statement follows
+# every change to the walkers array so that the user can verify its correctness
 
 # Output: Graphs for the reference energy, the n-step rolling average, and the number 
 # of walkers at each time step, as well as a density histogram of the walker distance

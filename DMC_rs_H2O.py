@@ -2,6 +2,7 @@
 # CS446 Fall 2020
 # Diffusion Monte Carlo (DMC) Simulation
 # Script Style
+# Last Updated 10/27/20
 
 # This program runs a Diffusion Monte Carlo simulation to find an approximation for the
 # ground state energy of a system of molecules. In this particular implementation, a 4D
@@ -18,6 +19,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.integrate as integrate
+import time
+import sys
 
 
 ###################################################################################
@@ -33,9 +36,12 @@ avogadro = 6.02213670000e23
 # Always 3, used for clarity
 coord_const = 3
 
+
 # create a random seed for the number generator, can be changed to a constant value
 # for the purpose of replicability
 seed = np.random.randint(100000)
+# Set the seed manually for replicability purposes over multiple simulations
+# seed = 84143
 
 # Set the seed for the pseudo-random number generator. 
 np.random.seed(seed)
@@ -48,10 +54,10 @@ print('Seed used: ' + str(seed))
 # Time step 
 # Used to calculate the distance an atom moves in a time step
 # Smaller time step means less movement in a given time step
-dt = .01
+dt = 1
 
 # Number of time steps in a simulation
-sim_length = 5000
+sim_length = 10000
 
 # Number of initial walkers
 n_walkers = 1000
@@ -61,6 +67,14 @@ rolling_avg = 1000
 
 # Number of bins for histogram. More bins is more precise
 n_bins = 50
+
+
+# Set the dimensions of the 4D array of which the walkers, molecules, atoms, and positions 
+# reside. Used for clarity in the simulation loop
+walker_axis = 0
+molecule_axis = 1
+atom_axis = 2
+coord_axis = 3
 
 
 ####################################################################################
@@ -75,26 +89,23 @@ num_molecules = 1
 
 # Atomic masses of atoms in system
 # Used to calculate the atomic masses in Atomic Mass Units
-oxygen_mass = 15.99491461957
+oxygen_mass = 15.994915
 hydrogen_mass = 1.007825
 HOH_bond_angle = 112.0
 
 
 
 # Equilibrium length of OH Bond
-eq_bond_length = 1.0 / 0.529177
+eq_bond_length = 1.889727
 
 # Equilibrium angle of the HOH bond in radians
 eq_bond_angle = HOH_bond_angle * np.pi/180
 
 # Spring constant of the OH Bond
-kOH = 1059.162 * (1.0 / 0.529177)**2 * (4.184 / 2625.5)
+kOH = 6.027540
 
 # Spring constant of the HOH bond angle
-kA = 75.90 * (4.184 / 2625.5)
-
-# Calculate the convergence reference energy based on the given equation.
-ref_converge_num = .00494317
+kA = 0.120954
 
 
 
@@ -158,55 +169,53 @@ def potential_energy(x):
 
 	
 	
-def sim_loop():	
-
-    walkers = (np.random.rand(n_walkers, num_molecules, atomic_masses.shape[0], \
-    coord_const) - .5) 
-    # Simulation loop
-    # Iterates over the walkers array, propogating each walker. Deletes and replicates those 
-    # walkers based on their potential energies with respect to the calculated reference energy
-    for i in range(sim_length):
+	
+# Simulation loop
+# Iterates over the walkers array, propogating each walker. Deletes and replicates those 
+# walkers based on their potential energies with respect to the calculated reference energy
+for i in range(sim_length):
 
     # Calculate the Reference Energy
 	# Energy is calculated based on the average of all potential energies of walkers.
 	# Is adjusted by a statistical value to account for large or small walker populations.
-        reference_energy[i] = np.mean( potential_energy(walkers) ) \
-        + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
+    reference_energy[i] = np.mean( potential_energy(walkers) ) \
+        + (1.0 - (walkers.shape[walker_axis] / n_walkers) ) / ( 2.0*dt )
 		
     # Current number of walkers
-        num_walkers[i] = walkers.shape[0]
+    num_walkers[i] = walkers.shape[walker_axis]
 
 	
 	# Propagates each coordinate of each atom in each molecule of each walker within a normal
 	# distribution given by the atomic mass of each atom.
     # Returns a 4D array in the shape of walkers with the standard deviation depending on the
     # atomic mass of each atom	
-        propagations = np.random.normal(0, np.sqrt(dt/np.transpose(np.tile(atomic_masses, \
-	    (walkers.shape[0], num_molecules, coord_const, 1)), (0, 1, 3, 2))))
+    propagations = np.random.normal(0, np.sqrt(dt/np.transpose(np.tile(atomic_masses, \
+	    (walkers.shape[walker_axis], num_molecules, coord_const, 1)), \
+        (walker_axis, molecule_axis, coord_axis, atom_axis))))
 		
 	# Adds the propagation lengths to the 4D walker array
-        walkers = walkers + propagations
+    walkers = walkers + propagations
 	
     
 	
 	# Calculates the potential energy of each walker in the system
-        potential_energies = potential_energy(walkers)
+    potential_energies = potential_energy(walkers)
 
     
 	
 	# Gives a uniform distribution in the range [0,1) associated with each walker
     # in the system
     # Used to calculate the chance that a walker is deleted or replicated	
-        thresholds = np.random.rand(walkers.shape[0])
+    thresholds = np.random.rand(walkers.shape[walker_axis])
 	
 	
 	# Calculates a probability for each walker that it is deleted
     # This is actually the probability that a walker is not deleted
-        prob_delete = np.exp(-(potential_energies-reference_energy[i])*dt)
+    prob_delete = np.exp(-(potential_energies-reference_energy[i])*dt)
 
 	# Calculates a probability for each walker that it is replicated
 	# In the model it is based off of prob_delete
-        prob_replicate = prob_delete - 1
+    prob_replicate = prob_delete - 1
 
 	
 	
@@ -215,8 +224,8 @@ def sim_loop():
     # calculate which walkers actually have the necessary potential energies.
 	# These two arrays are not mutually exclusive, but the calculations below ensure
 	# that no walker is both deleted and replicated in the same time step.
-        to_delete = prob_delete < thresholds
-        to_replicate = prob_replicate > thresholds
+    to_delete = prob_delete < thresholds
+    to_replicate = prob_replicate > thresholds
     
 	
 	
@@ -225,20 +234,20 @@ def sim_loop():
 	# the reference energy and if its threshold is above the prob_delete threshold.
 	# Notice that walkers_to_remain is mutually exclusive from walkers_to_replicate
 	# as the potential energy calculate is exclusive.
-        walkers_to_remain = np.invert( (potential_energies > reference_energy[i]) * to_delete )
+    walkers_to_remain = np.invert( (potential_energies > reference_energy[i]) * to_delete )
 	
 	# Returns the walkers that remain after deletion
-        walkers_after_delete = walkers[walkers_to_remain]
+    walkers_after_delete = walkers[walkers_to_remain]
 
 	
 	
 	# Gives a boolean array of indices of the walkres that are replicated
 	# Calculates if a walker is replicated by if its potential energy is less than
 	# the reference energy and if its threshold is below the prob_replicate threshold.
-        walkers_to_replicate = (potential_energies < reference_energy[i]) * to_replicate
+    walkers_to_replicate = (potential_energies < reference_energy[i]) * to_replicate
 	
 	# Returns the walkers that are to be replicated
-        walkers_after_replication = walkers[walkers_to_replicate]
+    walkers_after_replication = walkers[walkers_to_replicate]
 	
 	
 	
@@ -250,83 +259,40 @@ def sim_loop():
 	# will appear in the walkers_after_delete array but not in the 
 	# walkers_after_replication array. This serves to ensure that in the unlikely case 
 	# of equal potential and reference energy, the walker is neither replicated nor deleted. 
-        walkers = np.append(walkers_after_delete, walkers_after_replication, axis=0)
-		
-	# Calculate the distance between one of the OH vectors
-    # Used in the histogram and wave function plot	
-    return np.linalg.norm(walkers[:,0,0]-walkers[:,0,1],axis=1)
-	
-vectors = np.array([])
-for i in range(20):
-    vectors = np.append(sim_loop(),vectors)
+    walkers = np.append(walkers_after_delete, walkers_after_replication, axis = walker_axis)
 
-
-# Center the bond length about zero for graphing in the histogram
-OH_positions = vectors - eq_bond_length
-
-
-
-# Part of the wave function. Used in integration to solve for the normalization constant
-# under the assumption that the integral should be 1.
-wave_func = lambda x: np.exp(-(x**2)*np.sqrt(kOH*reduced_mass)/2)
-
-# Get the integral of the wave function and the error
-integral_value, error = integrate.quad(wave_func, -np.inf, np.inf)
-
-# Calculate the Normalization constant
-N = 1 / integral_value
-
-
-# Get the range to graph the wave function in
-# Step is .001, which is usually a good smooth value
-x = np.arange(OH_positions.min(), OH_positions.max(), step = .001)
-
-# Plot a density histogram of the walkers at the final iteration of the simulation
-plt.figure(4)
-plt.hist(OH_positions, bins=n_bins, density=True)
-plt.plot(x, N*np.exp(-(x**2)*np.sqrt(kOH*reduced_mass)/2), label = 'Wave Function')
-plt.xlabel('Walker Position')
-plt.ylabel('Density of Walkers')
-plt.title('Wave Function with Normalization Constant ' + str(N))
-plt.legend()
-
-plt.show() 
 
 #####################################################################################
 # Output
-	
-# Create reference energy array for plotting
-reference_converge = (np.zeros(sim_length) + 1) * ref_converge_num
 
-# Create walker num array for plotting
-init_walkers = (np.zeros(sim_length) + 1 )* n_walkers	
-	
+print('Average Walker Population: ', np.mean(num_walkers[rolling_avg]))
 
+sys.exit(0)
 # Calculate the rolling average for rolling_avg time steps
 ref_rolling_avg = np.zeros(sim_length)
-for i in range(sim_length):
-    # If i less than rolling_avg, cannot calculate rolling average over the last 
-	# rolling_avg time steps
-	# Instead, calculate average over the first i time steps
-    if i < rolling_avg:
-        for j in range(i):
-            ref_rolling_avg[i] = ( ref_rolling_avg[i] - ( ref_rolling_avg[i] / (j+1) ) ) \
-                + (reference_energy[i-j] / (j+1) )
-    else: 
-        # Calculate the rolling average by looping over the past rolling_avg time steps 
-        for j in range(rolling_avg):
-            ref_rolling_avg[i] = ( ref_rolling_avg[i] - ( ref_rolling_avg[i] / (j+1) ) ) \
-                + ( reference_energy[i-j] / (j+1) )
+for i in range(rolling_avg, sim_length):
+    # Calculate the rolling average by looping over the past rolling_avg time steps 
+    for j in range(rolling_avg):
+        ref_rolling_avg[i] = ( ref_rolling_avg[i] - ( ref_rolling_avg[i] / (j+1) ) ) \
+            + ( reference_energy[i-j] / (j+1) )
+			
+			
+# Calculate the average reference convergence energy based on the last rolling_avg
+# time steps of the calculation
+ref_converge_num = np.mean(ref_rolling_avg[sim_length-rolling_avg:])
+
+
+# Create walker num array for plotting
+init_walkers = (np.zeros(sim_length) + 1 )* n_walkers
+
+# Create Zero Point Energy array for plotting
+zp_energy = (np.zeros(sim_length) + 1) * ref_converge_num	
 
 			
 
 # Calculate the distance between one of the OH vectors
 # Used in the histogram and wave function plot	
-OH_vector_length = np.linalg.norm(walkers[:,0,0]-walkers[:,0,1],axis=1)
-
-
-# Center the bond length about zero for graphing in the histogram
-OH_positions = OH_vector_length - eq_bond_length
+OH_positions = np.linalg.norm(walkers[:,0,0]-walkers[:,0,1], axis = molecule_axis)
 
 
 
@@ -350,22 +316,21 @@ x = np.arange(OH_positions.min(), OH_positions.max(), step = .001)
 # Plot the reference energy throughout the simulation
 plt.figure(1)
 plt.plot(reference_energy, label= 'Reference Energy')
-plt.plot(reference_converge, label='Zero Point Energy')
-plt.axis([0,sim_length,.04,.08])
+plt.plot(zp_energy, label='ZP Energy (' + str.format('{0:.6f}', ref_converge_num) + ')')
+plt.axis([0,sim_length,.045,.08])
 plt.xlabel('Simulation Iteration')
-plt.ylabel('System Energy')
-plt.title('Convergence of Reference Energy')
+plt.ylabel('Reference Energy')
+plt.title('Reference Energy')
 plt.legend()
-
 
 # Plot the rolling average of the reference energy throughout the simulation
 plt.figure(2)
-plt.plot(ref_rolling_avg, label= 'Reference Energy')
-plt.plot(reference_converge, label = 'Zero Point Energy')
-plt.axis([0,sim_length,.05,.07])
+plt.plot(np.arange(rolling_avg,sim_length),ref_rolling_avg[rolling_avg:], label= 'Reference Energy')
+plt.plot(zp_energy, label='ZP Energy (' + str.format('{0:.6f}', ref_converge_num) + ')')
+plt.axis([0,sim_length,.06,.065])
 plt.xlabel('Simulation Iteration')
-plt.ylabel('System Energy')
-plt.title(str(rolling_avg) + ' Step Rolling Average for Reference Energy')
+plt.ylabel('Reference Energy')
+plt.title(str(rolling_avg) + ' Step Rolling Average')
 plt.legend()
 
 
@@ -379,5 +344,14 @@ plt.title('Number of Walkers Over Time')
 plt.legend()
 
 
+# Plot a density histogram of the walkers at the final iteration of the simulation
+plt.figure(4)
+plt.hist(OH_positions, bins=n_bins, density=True)
+plt.plot(x, N*np.exp(-((x-eq_bond_length)**2)*np.sqrt(kOH*reduced_mass)/2), label = 'Wave Function (Norm Constant ' + str.format('{0:.4f}' + ')', N))
+plt.xlabel('Walker Position')
+plt.ylabel('Density of Walkers')
+plt.title('Density of Walker Positions')
+plt.legend()
 
+plt.show()
 
