@@ -60,7 +60,7 @@ print('Seed used: ' + str(seed))
 # Time step 
 # Used to calculate the distance an atom moves in a time step
 # Smaller time step means less movement in a given time step
-dt = .5
+dt = 1
 
 # Length of the equilibration phase in time steps. The below data is for the water molecule
 # If dt = 1.0, equilibration phase should be greater than 1500
@@ -70,7 +70,7 @@ equilibration_phase = 1500
 
 # Number of time steps in a simulation.
 # Simulation length should be at least five times the length of the equilibration phase
-sim_length = 10000
+sim_length = 5000
 
 # Number of initial walkers
 n_walkers = 1000
@@ -506,7 +506,7 @@ def sim_loop(vec_PE, init_walkers):
 
     
 # Number of simulations ran 
-num_sims = 10
+num_sims = 4
 
 # Get an initial position for walkers based on the equilibration phase
 init_walkers = equilibrate_walkers()
@@ -525,6 +525,8 @@ ref_avg = []
 # Length of one OH bond
 OH_positions = []
 
+
+
 # Run the simulation num_sims times and record all the outputs in an array
 for i in range(num_sims):
     time_taken, walkers, ref, OH_p = sim_loop(True, init_walkers)
@@ -532,12 +534,11 @@ for i in range(num_sims):
     elapsed_time.append(time_taken)
     num_walkers.append(walkers)
     ref_avg.append(ref)
-    OH_positions.append(OH_p)
 
-elapsed_time = np.stack(elapsed_time, axis = -1)
-#num_walkers = np.stack(num_walkers, axis = -1)
-#ref_avg = np.stack(ref_avg, axis = -1)
-#OH_positions = np.stack(OH_positions, axis = -1)
+num_walkers_arr = np.stack(num_walkers, axis = -1)
+ref_avg_arr = np.stack(ref_avg, axis = -1)
+
+
 
     
 
@@ -545,10 +546,13 @@ elapsed_time = np.stack(elapsed_time, axis = -1)
 avg_time = np.mean(elapsed_time)
 
 # Calculate an array of length sim_length of the average number of walkers at a time step
-avg_walkers = np.mean(num_walkers, axis = 1)
+avg_walkers = np.mean(num_walkers_arr, axis = 1)
+
+# Calculate an array of the median number of walkers at a time step
+median_walkers = np.median(num_walkers_arr, axis = 1)
 
 # Calculate an array of length sim_length of the average ref energy rolling average 
-avg_ref_avg = np.mean(ref_avg, axis = 1)
+avg_ref_avg = np.mean(ref_avg, axis = 0)
 
 # Calculate the zero point energy based on the average of the ref rolling energy
 ref_converge_num = np.mean(avg_ref_avg)
@@ -568,14 +572,16 @@ initial_walkers = np.ones(sim_length) * n_walkers
 
 # Range for rolling average graphing
 ref_x = np.arange(rolling_avg,sim_length)
+# Range for walker scatterplot
+walker_x = np.arange(sim_length)
     
 # Plot the rolling average of the reference energy throughout the simulation
 plt.figure(1)
 # Plot every reference energy
 for i in range(num_sims):
-    plt.plot(ref_x, ref_avg[i], label= 'Reference Energy ' + str(i))
+    plt.plot(ref_x, ref_avg_arr[:,i], label= 'Reference Energy ' + str(i))
 # Plot the average reference rolling average
-#plt.plot(ref_x, avg_ref_avg, label='Average Reference Energy')
+plt.plot(ref_x, avg_ref_avg, label='Average Reference Energy')
 # Plot the Zero-Point energy
 plt.plot(zp_energy, label='ZP Energy (' + str.format('{0:.6f}', ref_converge_num) + ')')
 
@@ -587,17 +593,37 @@ plt.legend()
     
 # Plot the number of walkers throughout the simulation
 plt.figure(2)
-# Plot every set of walkers
-for i in range(num_sims):
-    plt.plot(num_walkers[i], label='Current Walkers ' + str(i))
 # Plot the average number of walkers
-#plt.plot(avg_walkers, label='Average Current Walkers')
+plt.plot(walker_x,avg_walkers, label='Average Current Walkers')
+# Plot the median number of walkers
+plt.plot(walker_x,median_walkers, label='Median Current Walkers')
 # Plot the initial number of walkers
 plt.plot(initial_walkers, label='Initial Walkers')
-
 plt.xlabel('Simulation Iteration')
 plt.ylabel('Number of Walkers')
 plt.title('Number of Walkers Over Time')
+plt.legend()
+
+# Plot the standard deviation of the reference energy through the simulation
+plt.figure(3)
+# Plot every referece energy
+plt.plot(ref_x, np.std(ref_avg_arr, axis=1), label='Standard Dev')
+# Plot the standard deviation of the average
+print('Standard Deviation of average Reference Energy %.6f' %np.std(avg_ref_avg))
+plt.xlabel('Simulation Iteration')
+plt.ylabel('Standard Deviation')
+plt.title('Standard Deviation of Reference Energy')
+plt.legend()
+
+# Plot the standard deviation of the walkers through the simulation
+plt.figure(4)
+# Plot every num walker
+plt.plot(walker_x, np.std(num_walkers_arr, axis=1), label='Standard Dev ')
+# Plot the standard deviation for the average number of walkers
+print('Standard Deviation of average Walker Population %.6f' % np.std(avg_walkers))
+plt.xlabel('Simulation Iteration')
+plt.ylabel('Standard Deviation')
+plt.title('Standard Deviation of Walker Populations')
 plt.legend()
 
 plt.show()
