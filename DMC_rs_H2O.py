@@ -2,7 +2,7 @@
 # CS446 Fall 2020
 # Diffusion Monte Carlo (DMC) Simulation
 # Script Style
-# Last Updated 10/27/20
+# Last Updated 10/30/20
 
 # This program runs a Diffusion Monte Carlo simulation to find an approximation for the
 # ground state energy of a system of molecules. In this particular implementation, a 4D
@@ -32,16 +32,28 @@ electron_mass = 9.10938970000e-28
 # Avogadro's constant
 avogadro = 6.02213670000e23
 
+# Chemsitry constants for intermolecular energy
+sigma = 5.981915
+epsilon = 0.0002477
+
+
+# Normalization constant
+# Used in graphing the wave function. Can be found experimentally using the file
+# dmc_rs_norm_constant.py. 
+# Not calculated here given the time it takes each simulation
+N = 4.0303907719347185
+
+
 # Number of coordinates
 # Always 3, used for clarity
 coord_const = 3
 
 
-# create a random seed for the number generator, can be changed to a constant value
+# Create a random seed for the number generator, can be changed to a constant value
 # for the purpose of replicability
 seed = np.random.randint(100000)
 # Set the seed manually for replicability purposes over multiple simulations
-# seed = 84143
+seed = 84143
 
 # Set the seed for the pseudo-random number generator. 
 np.random.seed(seed)
@@ -55,6 +67,12 @@ print('Seed used: ' + str(seed))
 # Used to calculate the distance an atom moves in a time step
 # Smaller time step means less movement in a given time step
 dt = 1
+
+# Length of the equilibration phase in time steps. The below data is for the water molecule
+# If dt = 1.0, equilibration phase should be greater than 1500
+# If dt = 0.5, equilibration phase should be greater than 2000
+# If dt = 0.1, equilibration phase should be greater than 5000
+equilibration_phase = 1500
 
 # Number of time steps in a simulation
 sim_length = 10000
@@ -265,9 +283,11 @@ for i in range(sim_length):
 #####################################################################################
 # Output
 
-print('Average Walker Population: ', np.mean(num_walkers[rolling_avg]))
 
-sys.exit(0)
+# Uncomment the below line to avoid graphing 
+#sys.exit(0)
+
+
 # Calculate the rolling average for rolling_avg time steps
 ref_rolling_avg = np.zeros(sim_length)
 for i in range(rolling_avg, sim_length):
@@ -277,9 +297,9 @@ for i in range(rolling_avg, sim_length):
             + ( reference_energy[i-j] / (j+1) )
 			
 			
-# Calculate the average reference convergence energy based on the last rolling_avg
-# time steps of the calculation
-ref_converge_num = np.mean(ref_rolling_avg[sim_length-rolling_avg:])
+# Calculate the average reference convergence energy based on reference energy after the
+# equilibration phase
+ref_converge_num = np.mean(ref_rolling_avg[np.maximum(equilibration_phase,rolling_avg):])
 
 
 # Create walker num array for plotting
@@ -294,17 +314,6 @@ zp_energy = (np.zeros(sim_length) + 1) * ref_converge_num
 # Used in the histogram and wave function plot	
 OH_positions = np.linalg.norm(walkers[:,0,0]-walkers[:,0,1], axis = molecule_axis)
 
-
-
-# Part of the wave function. Used in integration to solve for the normalization constant
-# under the assumption that the integral should be 1.
-wave_func = lambda x: np.exp(-(x**2)*np.sqrt(kOH*reduced_mass)/2)
-
-# Get the integral of the wave function and the error
-integral_value, error = integrate.quad(wave_func, -np.inf, np.inf)
-
-# Calculate the Normalization constant
-N = 1 / integral_value
 
 
 # Get the range to graph the wave function in
