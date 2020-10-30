@@ -506,7 +506,7 @@ def sim_loop(vec_PE, init_walkers):
 
     
 # Number of simulations ran 
-num_sims = 2
+num_sims = 10
 
 # Get an initial position for walkers based on the equilibration phase
 init_walkers = equilibrate_walkers()
