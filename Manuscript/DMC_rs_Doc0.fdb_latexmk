@@ -1,14 +1,14 @@
 # Fdb version 3
-["bibtex DMC_rs_Doc0"] 1602136495 "DMC_rs_Doc0.aux" "DMC_rs_Doc0.bbl" "DMC_rs_Doc0" 1602136498
+["bibtex DMC_rs_Doc0"] 1604116228 "DMC_rs_Doc0.aux" "DMC_rs_Doc0.bbl" "DMC_rs_Doc0" 1604117592
   "/usr/share/texlive/texmf-dist/bibtex/bst/achemso/achemso.bst" 1517961817 30126 87a39f95722e880134464e035b344579 ""
-  "DMC_rs_Doc0.aux" 1602136498 426 f53726939e106a0d6f8f2b45cdff5e9e ""
+  "DMC_rs_Doc0.aux" 1604117592 474 4c9937146efe39f0f22a4caae0c05449 ""
   "DMC_rs_Doc0.bcf" 0 -1 0 ""
-  "acs-DMC_rs_Doc0.bib" 1602136498 306 2ec6e2c563f7f14bcefed0d36c308168 ""
-  "rs_bib.bib" 1602136495 4130 59c49f6250107327ee8e123cca1b065b ""
+  "acs-DMC_rs_Doc0.bib" 1604117592 306 2ec6e2c563f7f14bcefed0d36c308168 ""
+  "rs_bib.bib" 1602136576 4130 59c49f6250107327ee8e123cca1b065b ""
   (generated)
   "DMC_rs_Doc0.blg"
   "DMC_rs_Doc0.bbl"
-["pdflatex"] 1602136497 "DMC_rs_Doc0.tex" "DMC_rs_Doc0.pdf" "DMC_rs_Doc0" 1602136498
+["pdflatex"] 1604117591 "DMC_rs_Doc0.tex" "DMC_rs_Doc0.pdf" "DMC_rs_Doc0" 1604117592
   "/etc/texmf/web2c/texmf.cnf" 1569719740 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/home/skye/texmf/tex/generic/pgf/basiclayer/pgfcore.code.tex" 1480098816 1006 b103be0bfc8c1682ff1fa9760697a329 ""
   "/home/skye/texmf/tex/generic/pgf/basiclayer/pgfcorearrows.code.tex" 1480098816 43226 167a99346bfe2676e3efcdde2d81fe45 ""
@@ -186,11 +186,11 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1520210507 32485 c64754543d8ac501bea6e75e209ea521 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1569994700 2700761 ac0584cc9514ab21918550a6948c4ee2 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1569994736 4127702 1179e4e63f561b49be6c7fc4616ff4ca ""
-  "DMC_rs_Doc0.aux" 1602136498 426 f53726939e106a0d6f8f2b45cdff5e9e ""
-  "DMC_rs_Doc0.bbl" 1602136495 1383 5ce762866b28a373b69b5e18707efc72 "bibtex DMC_rs_Doc0"
-  "DMC_rs_Doc0.tex" 1602136339 18701 91f1628746d54394f940d92ff475f714 ""
+  "DMC_rs_Doc0.aux" 1604117592 474 4c9937146efe39f0f22a4caae0c05449 ""
+  "DMC_rs_Doc0.bbl" 1604116228 1383 5ce762866b28a373b69b5e18707efc72 "bibtex DMC_rs_Doc0"
+  "DMC_rs_Doc0.tex" 1604117590 25670 0067c9f44c6fc107e479f7a1e7a5ac29 ""
   (generated)
+  "DMC_rs_Doc0.aux"
   "DMC_rs_Doc0.pdf"
   "DMC_rs_Doc0.log"
-  "DMC_rs_Doc0.aux"
   "acs-DMC_rs_Doc0.bib"
