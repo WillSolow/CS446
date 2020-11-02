@@ -60,17 +60,17 @@ print('Seed used: ' + str(seed))
 # Time step 
 # Used to calculate the distance an atom moves in a time step
 # Smaller time step means less movement in a given time step
-dt = 1
+dt = 0.1
 
 # Length of the equilibration phase in time steps. The below data is for the water molecule
 # If dt = 1.0, equilibration phase should be greater than 1500
-# If dt = 0.5, equilibration phase should be greater than 2000
+# If dt = 0.5, equilibration phase should be greater than 2500
 # If dt = 0.1, equilibration phase should be greater than 5000
-equilibration_phase = 1500
+equilibration_phase = 5000
 
 # Number of time steps in a simulation.
 # Simulation length should be at least five times the length of the equilibration phase
-sim_length = 5000
+sim_length = 10000
 
 # Number of initial walkers
 n_walkers = 1000
@@ -506,7 +506,7 @@ def sim_loop(vec_PE, init_walkers):
 
     
 # Number of simulations ran 
-num_sims = 4
+num_sims = 10
 
 # Get an initial position for walkers based on the equilibration phase
 init_walkers = equilibrate_walkers()
@@ -574,7 +574,14 @@ initial_walkers = np.ones(sim_length) * n_walkers
 ref_x = np.arange(rolling_avg,sim_length)
 # Range for walker scatterplot
 walker_x = np.arange(sim_length)
-    
+   
+
+print('Calculated Zero-Point Energy %.8f' %ref_converge_num)
+print('Standard Deviation of average Reference Energy %.6f' %np.std(avg_ref_avg))
+print('Calculated average number of walkers %.2f' %np.mean(avg_walkers))
+print('Standard Deviation of average Walker Population %.6f' % np.std(avg_walkers))
+
+   
 # Plot the rolling average of the reference energy throughout the simulation
 plt.figure(1)
 # Plot every reference energy
@@ -609,7 +616,6 @@ plt.figure(3)
 # Plot every referece energy
 plt.plot(ref_x, np.std(ref_avg_arr, axis=1), label='Standard Dev')
 # Plot the standard deviation of the average
-print('Standard Deviation of average Reference Energy %.6f' %np.std(avg_ref_avg))
 plt.xlabel('Simulation Iteration')
 plt.ylabel('Standard Deviation')
 plt.title('Standard Deviation of Reference Energy')
@@ -620,7 +626,6 @@ plt.figure(4)
 # Plot every num walker
 plt.plot(walker_x, np.std(num_walkers_arr, axis=1), label='Standard Dev ')
 # Plot the standard deviation for the average number of walkers
-print('Standard Deviation of average Walker Population %.6f' % np.std(avg_walkers))
 plt.xlabel('Simulation Iteration')
 plt.ylabel('Standard Deviation')
 plt.title('Standard Deviation of Walker Populations')
