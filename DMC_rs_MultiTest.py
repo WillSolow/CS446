@@ -60,13 +60,21 @@ print('Seed used: ' + str(seed))
 # Time step 
 # Used to calculate the distance an atom moves in a time step
 # Smaller time step means less movement in a given time step
-dt = 0.1
+dt = 0.01
+
+# Number of simulations ran 
+num_sims = 10
 
 # Length of the equilibration phase in time steps. The below data is for the water molecule
 # If dt = 1.0, equilibration phase should be greater than 1500
 # If dt = 0.5, equilibration phase should be greater than 2500
 # If dt = 0.1, equilibration phase should be greater than 5000
-equilibration_phase = 5000
+# If dt = 0.01, equilibration phase should be greater than 100000
+# For smaller dt, can calculate (1 / sqrt(dt)) * 1500 and round up generously given that
+# the time taken to reach equilibrium is dependent on the square root of the time step. 
+# In theory this works, but experimentally it has been found that smaller time steps 
+# require drastically more time to reach equilibrium
+equilibration_phase = 100000
 
 # Number of time steps in a simulation.
 # Simulation length should be at least five times the length of the equilibration phase
@@ -504,9 +512,6 @@ def sim_loop(vec_PE, init_walkers):
 #######################################################################################
 # Main Testing Loop
 
-    
-# Number of simulations ran 
-num_sims = 10
 
 # Get an initial position for walkers based on the equilibration phase
 init_walkers = equilibrate_walkers()
@@ -575,9 +580,10 @@ ref_x = np.arange(rolling_avg,sim_length)
 # Range for walker scatterplot
 walker_x = np.arange(sim_length)
    
-
+print('Average elapsed time per simulation %.2f' %avg_time)
+print('Standard deviation of elapsed time %.2f\n' %np.std(elapsed_time))
 print('Calculated Zero-Point Energy %.8f' %ref_converge_num)
-print('Standard Deviation of average Reference Energy %.6f' %np.std(avg_ref_avg))
+print('Standard Deviation of average Reference Energy %.6f\n' %np.std(avg_ref_avg))
 print('Calculated average number of walkers %.2f' %np.mean(avg_walkers))
 print('Standard Deviation of average Walker Population %.6f' % np.std(avg_walkers))
 
