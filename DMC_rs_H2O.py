@@ -140,15 +140,10 @@ kA = 0.120954
 atomic_masses = np.array([oxygen_mass, hydrogen_mass, hydrogen_mass]) / (avogadro * electron_mass)
 
 
-
 # Returns an array of atomic charges based on the position of the atoms in the atomic_masses array
 # This is used in the potential energy function and is broadcasted to an array of distances to
 # calculate the energy using Coulomb's Law. 
 atomic_charges = np.array([q_oxygen, q_hydrogen, q_hydrogen])
-
-# Computes the product of the charges as the atom charges are multiplied together in accordance
-# with Coulomb's Law
-coulombic_charges = (np.transpose(atomic_charges) @ atomic_charges) * coulomb_const
 
 
 
@@ -174,10 +169,14 @@ walkers = (np.random.rand(n_walkers, num_molecules, atomic_masses.shape[0], \
 # Create indexing arrays for the distinct pairs of water molecules in the potential 
 # energy calculation. Based on the idea that there are num_molecules choose 2 distinct
 # molecular pairs
-molecule_index_1 = np.array(sum([[i]*(n-(i+1)) for i in range(n-1)],[]))
-molecule_index_2 = np.array(sum([list(range(i,n)) for i in range(1,n)],[]))
+molecule_index_1 = np.array(sum([[i]*(num_molecules-(i+1)) for i in range(num_molecules-1)],[]))
+molecule_index_2 = np.array(sum([list(range(i,num_molecules)) for i in range(1,num_molecules)],[]))
+
 
 # Create an array of the charges 
+# Computes the product of the charges as the atom charges are multiplied together in accordance
+# with Coulomb's Law.
+coulombic_charges = (np.transpose(atomic_charges) @ atomic_charges) * coulomb_const
 
 
 # Create arrays to store values for plotting at each time step
