@@ -184,7 +184,9 @@ def inter_potential_energy(x):
     # with the result being the dimensions:
     # (num_walkers, num_distinct_molecule_pairs, num_atoms, coord_const)
     molecule_difference = x[:,molecule_index_1] - x[:,molecule_index_2]
-    
+    print('Molecule difference: \n', molecule_difference)
+    print('Molecule diff transpose: \n', np.transpose(molecule_difference, (0, 1, 3, 2)))
+    print('Molecule matrix mult: \n', molecule_difference @ np.transpose(molecule_difference, (0, 1, 3, 2)))
     
     # Returns the distances between two atoms in each molecule pair. The distance array is 
     # now of dimension (num_walkers, num_distinct_pairs, num_atoms, num_atoms) as each
@@ -228,8 +230,7 @@ for i in range(100):
     
     
     water_walker = np.stack((atom1[np.newaxis,:,:], atom2[np.newaxis,:,:]), axis=1)
-    print('Water walker shape: ', water_walker.shape)
-    print(water_walker)
+   
     
     SR_inter_sum, SR_coulombic_energy, SR_lennardJones = inter_potential_energy(water_walker)
     
@@ -244,4 +245,22 @@ for i in range(100):
 # plt.show()
 	
 # print("Result: ",PotentialEnergyManyWaters(sample2WaterWalkers))
-print("\n\nEnd test. \n \n")
+print("\n\nEnd test 1. \n \n")
+
+# Create 2 water molecules randomly for testing purposes with non zero values
+atom1 = np.random.rand(3, 3)
+print(atom1)
+print('\n\n')
+atom2 = np.random.rand(3, 3)
+print(atom2)
+
+water_walker = np.stack((atom1[np.newaxis,:,:], atom2[np.newaxis,:,:]), axis=1)
+
+VinterSum, coloumbicEnergySum, lennardJonesSum  = PotentialEnergyTwoWaters(atom1, atom2)
+
+SR_inter_sum, SR_coulombic_energy, SR_lennardJones = inter_potential_energy(water_walker)
+
+print('\n\nMadison Coulombic energy sum: ', coloumbicEnergySum)
+print('SR Coulombic energy sum: ', SR_coulombic_energy)
+print('\nMadison PE: ', VinterSum)
+print('SR PE: ', SR_inter_sum)
