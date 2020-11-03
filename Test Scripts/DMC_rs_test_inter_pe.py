@@ -10,6 +10,7 @@
 
 # Imports
 import numpy as np 
+import itertools as it
 import matplotlib.pyplot as plt
 
 
@@ -166,9 +167,10 @@ coulombic_charges = (np.transpose(atomic_charges) @ atomic_charges) * coulomb_co
 # Create indexing arrays for the distinct pairs of water molecules in the potential 
 # energy calculation. Based on the idea that there are num_molecules choose 2 distinct
 # molecular pairs
-molecule_index_1 = np.array(sum([[i]*(num_molecules-(i+1)) for i in range(num_molecules-1)],[]))
-molecule_index_2 = np.array(sum([list(range(i,num_molecules)) for i in range(1,num_molecules)],[]))
- 
+#molecule_index_1 = np.array(sum([[i]*(num_molecules-(i+1)) for i in range(num_molecules-1)],[]))
+#molecule_index_2 = np.array(sum([list(range(i,num_molecules)) for i in range(1,num_molecules)],[]))
+molecule_idx = lambda n: list(zip(*it.combinations(n))) 
+molecule_index_1, molecule_index_2 = [np.array(m) for m in molecule_idx(num_molecules)]
  
 # Input: 4D Array of walkers
 # Output: Three 1D arrays for Intermolecular Potential Energy, Coulombic energy, and 
@@ -183,16 +185,19 @@ def inter_potential_energy(x):
     # dimesions (num_walkers, num_distinct_molecule_pairs, num_atoms, coord_const),
     # with the result being the dimensions:
     # (num_walkers, num_distinct_molecule_pairs, num_atoms, coord_const)
-    molecule_difference = x[:,molecule_index_1] - x[:,molecule_index_2]
-    print('Molecule difference: \n', molecule_difference)
-    print('Molecule diff transpose: \n', np.transpose(molecule_difference, (0, 1, 3, 2)))
-    print('Molecule matrix mult: \n', molecule_difference @ np.transpose(molecule_difference, (0, 1, 3, 2)))
+    #molecule_difference = x[:,molecule_index_1] - x[:,molecule_index_2]
+    #print('Molecule difference: \n', molecule_difference)
+    #print('Molecule diff transpose: \n', np.transpose(molecule_difference, (0, 1, 3, 2)))
+    #print('Molecule matrix mult: \n', molecule_difference @ np.transpose(molecule_difference, (0, 1, 3, 2)))
     
     # Returns the distances between two atoms in each molecule pair. The distance array is 
     # now of dimension (num_walkers, num_distinct_pairs, num_atoms, num_atoms) as each
     # atom in the molecule has its distance computed with each atom in the other molecule in
     # the distinct pair.
-    distances = np.sqrt(molecule_difference @ np.transpose(molecule_difference, (0, 1, 3, 2)))
+    # distances = np.sqrt(molecule_difference @ np.transpose(molecule_difference, (0, 1, 3, 2)))
+    mol_a, mol_b = x[:,molecule_index_1,...], x[:,molecule_index_2,...]
+    distances = np.sqrt( (np.sum( mol_a[...,None] \
+            - mol_b[:,:,np.newaxis,...].transpose(0,1,2,4,3) )**2,axis=3) )
    
    
     # Calculate the Coulombic energy using Coulomb's Law of every walker. 
