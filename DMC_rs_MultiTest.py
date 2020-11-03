@@ -74,7 +74,7 @@ num_sims = 10
 # the time taken to reach equilibrium is dependent on the square root of the time step. 
 # In theory this works, but experimentally it has been found that smaller time steps 
 # require drastically more time to reach equilibrium
-equilibration_phase = 100000
+equilibration_phase = 150000
 
 # Number of time steps in a simulation.
 # Simulation length should be at least five times the length of the equilibration phase

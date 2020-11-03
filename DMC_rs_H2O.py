@@ -17,6 +17,7 @@
 
 # Imports
 import numpy as np
+import itertools as it
 import matplotlib.pyplot as plt
 import scipy.integrate as integrate
 import time
@@ -35,6 +36,10 @@ avogadro = 6.02213670000e23
 # Chemsitry constants for intermolecular energy
 sigma = 5.981915
 epsilon = 0.0002477
+
+# Coulombic charges
+q_oxygen = -.84
+q_hydrogen = .42
 
 
 # Normalization constant
@@ -151,6 +156,8 @@ walkers = (np.random.rand(n_walkers, num_molecules, atomic_masses.shape[0], \
 #######################################################################################
 # Simulation
 
+# Create indexing arrays for the 
+
 
 # Create arrays to store values for plotting at each time step
 reference_energy = np.zeros(sim_length)
@@ -184,6 +191,32 @@ def potential_energy(x):
 	# Sums the potential energy of the bond lengths with the bond angle to get potential energy
 	# of one molecule, then summing to get potential energy of each walker
     return np.sum(np.sum(pe_bond_lengths, axis = 2)+pe_bond_angle, axis=1)
+    
+def inter_potential_energy(x):
+    # Get pairs of molecules in the n choose 2
+    molecule_pair1 = x[:,np.array([0,0,1])]
+    molecule_pair2 = x[:,np.array([1,2,2])]
+    
+    molecule_difference = molecule_pair1-molecule_pair2
+    
+    distances = np.sqrt(molecule_difference @ np.transpose(molecule_difference, (0, 1, 3, 2)))
+    
+    coulombic_charges = np.array([q_oxygen, q_hydrogen, q_hydrogen])
+    coulombic_charge_arr = (np.transpose(coulombic_charges) @ coulombic_charges) * (1.0/(4.0*np.pi)
+    
+    coulombic_sum = np.sum(coulombic_charge_arr / distances, axis=(1,2,3))
+    
+    oxygen_distances = x[:,:,0,0]
+    
+    leonard_jones_arr = 4 * epsilon * ((sigma/distance)**12-(sigma/distance)**6)
+    
+    LJ_energy = np.sum(leonard_jones_arr, axis = 1)
+    
+    inter_pe = coulombic_sum+LJ_energy
+    
+    return inter_pe, coulombic_energy, LJ_energy
+    
+    
 
 	
 	
