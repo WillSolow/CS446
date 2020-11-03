@@ -167,10 +167,10 @@ coulombic_charges = (np.transpose(atomic_charges) @ atomic_charges) * coulomb_co
 # Create indexing arrays for the distinct pairs of water molecules in the potential 
 # energy calculation. Based on the idea that there are num_molecules choose 2 distinct
 # molecular pairs
-#molecule_index_1 = np.array(sum([[i]*(num_molecules-(i+1)) for i in range(num_molecules-1)],[]))
-#molecule_index_2 = np.array(sum([list(range(i,num_molecules)) for i in range(1,num_molecules)],[]))
-molecule_idx = lambda n: list(zip(*it.combinations(n))) 
-molecule_index_1, molecule_index_2 = [np.array(m) for m in molecule_idx(num_molecules)]
+molecule_index_1 = np.array(sum([[i]*(num_molecules-(i+1)) for i in range(num_molecules-1)],[]))
+molecule_index_2 = np.array(sum([list(range(i,num_molecules)) for i in range(1,num_molecules)],[]))
+#molecule_idx = lambda n: list(zip(*it.combinations(n, 2))) 
+#molecule_index_1, molecule_index_2 = [np.array(m) for m in molecule_idx(num_molecules)]
  
 # Input: 4D Array of walkers
 # Output: Three 1D arrays for Intermolecular Potential Energy, Coulombic energy, and 
@@ -196,8 +196,8 @@ def inter_potential_energy(x):
     # the distinct pair.
     # distances = np.sqrt(molecule_difference @ np.transpose(molecule_difference, (0, 1, 3, 2)))
     mol_a, mol_b = x[:,molecule_index_1,...], x[:,molecule_index_2,...]
-    distances = np.sqrt( (np.sum( mol_a[...,None] \
-            - mol_b[:,:,np.newaxis,...].transpose(0,1,2,4,3) )**2,axis=3) )
+    distances = np.sqrt( (np.sum( (mol_a[...,None] \
+            - mol_b[:,:,np.newaxis,...].transpose(0,1,2,4,3) )**2, axis=3) ) )
    
    
     # Calculate the Coulombic energy using Coulomb's Law of every walker. 
@@ -268,4 +268,6 @@ SR_inter_sum, SR_coulombic_energy, SR_lennardJones = inter_potential_energy(wate
 print('\n\nMadison Coulombic energy sum: ', coloumbicEnergySum)
 print('SR Coulombic energy sum: ', SR_coulombic_energy)
 print('\nMadison PE: ', VinterSum)
-print('SR PE: ', SR_inter_sum)
+print('SR PE: ', int(SR_inter_sum))
+print('\n\n Madison LJ: ', lennardJonesSum)
+print('SR LJ: ', int(SR_lennardJones))
