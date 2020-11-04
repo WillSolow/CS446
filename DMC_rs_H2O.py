@@ -2,7 +2,7 @@
 # CS446 Fall 2020
 # Diffusion Monte Carlo (DMC) Simulation
 # Script Style
-# Last Updated 10/30/20
+# Last Updated 11/04/20
 
 # This program runs a Diffusion Monte Carlo simulation to find an approximation for the
 # ground state energy of a system of molecules. In this particular implementation, a 4D
@@ -34,8 +34,12 @@ electron_mass = 9.10938970000e-28
 avogadro = 6.02213670000e23
 
 # Chemsitry constants for intermolecular energy
-sigma = 5.981915
-epsilon = 0.0002477
+# Input as equation to avoid rounding errors
+# Rounding should be at least 15 decimals otherwise error in the Lennard Jones 
+# Energy will be incorrect by a magnitude of at least 100 depending on the 
+# distance between atoms
+sigma = 3.165492 / 0.529177
+epsilon = 0.1554252 * (4.184 / 2625.5)
 
 # Coulombic charges
 q_oxygen = -.84
@@ -115,23 +119,25 @@ num_molecules = 1
 
 # Atomic masses of atoms in system
 # Used to calculate the atomic masses in Atomic Mass Units
-oxygen_mass = 15.994915
+oxygen_mass = 15.99491461957
 hydrogen_mass = 1.007825
 HOH_bond_angle = 112.0
 
 
 
 # Equilibrium length of OH Bond
-eq_bond_length = 1.889727
+# Input as equation to avoid rounding errors
+eq_bond_length = 1.0 / 0.529177
 
 # Equilibrium angle of the HOH bond in radians
 eq_bond_angle = HOH_bond_angle * np.pi/180
 
 # Spring constant of the OH Bond
-kOH = 6.027540
+# Input as equation to avoid rounding errors 
+kOH = 1059.162 * (1.0 / 0.529177)**2 * (4.184 / 2625.5)
 
 # Spring constant of the HOH bond angle
-kA = 0.120954
+kA = 75.90 * (4.184 / 2625.5)
 
 
 
