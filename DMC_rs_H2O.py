@@ -179,8 +179,24 @@ reduced_mass = (atomic_masses[0]*atomic_masses[1])/(atomic_masses[0]+atomic_mass
 # Initial 4D walker array
 # Returns a uniform distribution cenetered at the given bond length
 # Array axes are walkers, molecules, coordinates, and atoms
-walkers = (np.random.rand(n_walkers, num_molecules, atomic_masses.shape[0], \
-    coord_const) - .5) 
+#walkers = (np.random.rand(n_walkers, num_molecules, atomic_masses.shape[0], \
+#    coord_const) - .5) 
+
+# Alternatively, load a 4D array of equilibrated walkers. Used in more complex
+# systems where equilibration takes a large amount of time due to that amount of
+# randomness introduced to the system on initialization
+walkers = np.load('two_water_eq_4.npy')
+
+
+# Stack another water molecule onto the walkers array to get a water trimer system
+
+# Create a new water molecule from the old and propagate it a little bit
+new_water = walkers[:,0,np.newaxis,:,:] + \
+        np.random.normal(0, np.sqrt(dt/np.transpose(np.tile(atomic_masses, \
+        (walkers.shape[walker_axis], 1, coord_const, 1)), \
+        (walker_axis, molecule_axis, coord_axis, atom_axis))))
+walkers = np.append(walkers, new_water, axis=1)
+print('walkers: \n', walkers)
 
 
 #######################################################################################
@@ -344,7 +360,7 @@ for i in range(sim_length):
 		
     # Current number of walkers
     num_walkers[i] = walkers.shape[walker_axis]
-    print('Num walkers: ', num_walkers[i])
+    #print('Num walkers: ', num_walkers[i])
 
 	
 	# Propagates each coordinate of each atom in each molecule of each walker within a normal
@@ -476,7 +492,7 @@ OOO_angle_eq = 60.0
 plt.figure(1)
 plt.plot(reference_energy, label= 'Reference Energy')
 plt.plot(zp_energy, label='ZP Energy (' + str.format('{0:.6f}', ref_converge_num) + ')')
-plt.axis([0,sim_length,.045,.08])
+plt.axis([0,sim_length,.11,.14])
 plt.xlabel('Simulation Iteration')
 plt.ylabel('Reference Energy')
 plt.title('Reference Energy')
@@ -486,7 +502,7 @@ plt.legend()
 plt.figure(2)
 plt.plot(np.arange(rolling_avg,sim_length),ref_rolling_avg[rolling_avg:], label= 'Reference Energy')
 plt.plot(zp_energy, label='ZP Energy (' + str.format('{0:.6f}', ref_converge_num) + ')')
-plt.axis([0,sim_length,.06,.065])
+plt.axis([0,sim_length,.122,.127])
 plt.xlabel('Simulation Iteration')
 plt.ylabel('Reference Energy')
 plt.title(str(rolling_avg) + ' Step Rolling Average')
@@ -515,7 +531,7 @@ plt.legend()
 # Plot a density histogram of the angles that the oxygen molecules form at the 
 # final iteration of the simulation
 plt.figure(5)
-plt.hist(OH_angles, bins=n_bins, density=True)
+#plt.hist(OH_angles, bins=n_bins, density=True)
 
 plt.show()
 

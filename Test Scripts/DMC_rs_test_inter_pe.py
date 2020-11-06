@@ -266,22 +266,22 @@ for i in range(100):
 np.random.seed(10)
 # Create 2 water molecules randomly for testing purposes with non zero values
 atom1 = np.random.rand(3, 3)
-atom1[0,0] = 1
-atom1[0,1]=1
-atom1[0,2]=1
+#atom1[0,0] = 1
+#atom1[0,1]=1
+#atom1[0,2]=1
 print('Atom 1: \n',atom1)
 print('\n\n')
 atom2 = np.random.rand(3, 3)
-atom2[0,0]=1
-atom2[0,1]=1
-atom2[0,2]=1.0000001
+#atom2[0,0]=1
+#atom2[0,1]=1
+#atom2[0,2]=1.0000001
 print('Atom 2: \n', atom2)
 
 water_walker = np.stack((atom1[np.newaxis,:,:], atom2[np.newaxis,:,:]), axis=1)
 
 VinterSum, coloumbicEnergySum, lennardJonesSum  = PotentialEnergyTwoWaters(atom1, atom2)
 
-SR_inter_sum, SR_coulombic_energy, SR_lennardJones = inter_potential_energy(water_walker)
+SR_inter_sum, SR_coulombic_energy, SR_lennardJones = inter_pe(water_walker)
 
 print('\n\nMadison Coulombic energy sum: ', coloumbicEnergySum)
 print('SR Coulombic energy sum:      ', float(SR_coulombic_energy))
