@@ -50,3 +50,5 @@ angle_3 = np.arccos(np.sum(OO_vectors[:,2]*OO_vectors[:,1]  , axis=1) / \
 print('\nAngle 1: ', angle_1)
 print('Angle 2: ', angle_2)
 print('Angle 3: ', angle_3)
+
+print('Angle 3 shape: ', angle_3.shape)

@@ -484,8 +484,32 @@ OH_positions = np.linalg.norm(walkers[:,0,0]-walkers[:,0,1], axis = molecule_axi
 x = np.arange(OH_positions.min(), OH_positions.max(), step = .001)
 
 
-# Equilibrium angle in water trimer system
-OOO_angle_eq = 60.0
+
+# Calculate the bond angle between every oxygen molecule in the water trimer.
+# Get the distinct pairs of each oxygen atom
+oxygen_pair_a = walkers[:,molecule_index_a]
+oxygen_pair_b = walkers[:,molecule_index_b]
+
+# Calculate the vector in between each distinct pair
+oxygen_vectors = oxygen_pair_a - oxygen_pair_b
+
+# Calculate the length of each oxygen vector
+oxygen_lengths = np.linalg.norm(oxygen_vectors, axis=2)
+
+# Find the three oxygen angles in the water trimer
+oxygen_angle_1 = np.arccos(np.sum(-oxygen_vectors[:,0]*-oxygen_vectors[:,1], \
+                 axis=1) / (oxygen_lengths[:,0]*oxygen_lengths[:,1])
+                 
+oxygen_angle_2 = np.arccos(np.sum(-oxygen_vectors[:,0]*-oxygen_vectors[:,2], \
+                 axis=1) / (oxygen_lengths[:,0]*oxygen_lengths[:,2])
+                 
+oxygen_angle_3 = np.arccos(np.sum(-oxygen_vectors[:,1]*-oxygen_vectors[:,2], \
+                 axis=1) / (oxygen_lengths[:,1]*oxygen_lengths[:,2])
+                 
+
+# Append all three angles into one matrix for graphing in the density histogram
+oxygen_angles = np.append(oxygen_angle_1, oxygen_angle_2, oxygen_angle_3, axis=0)
+
 	
 
 # Plot the reference energy throughout the simulation
@@ -531,7 +555,11 @@ plt.legend()
 # Plot a density histogram of the angles that the oxygen molecules form at the 
 # final iteration of the simulation
 plt.figure(5)
-#plt.hist(OH_angles, bins=n_bins, density=True)
+plt.hist(oxygen_angles, bins=n_bins, density=True)
+plt.xlabel('Oxygen Angle in a Walker')
+plt.ylabel('Density of Walkers')
+plt.title('Density of Walker Oxygen Angles')
+plt.legend
 
 plt.show()
 
