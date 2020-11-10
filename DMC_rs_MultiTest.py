@@ -831,6 +831,12 @@ OH_positions = np.array([])
 
 for i in sim_arr:
     for j in num_walk_arr:
+        if i == 2000 and j == 1000:
+            continue
+        if i == 2000 and j = 2000:
+            continue
+        if i == 2000 and j == 5000:
+            continue
         sim_length = i
         n_walkers = j
         print('Walkers: ' + str(n_walkers) + '. Sim length: ' + str(sim_length) + '.')
