@@ -203,7 +203,6 @@ print("End test 1.\n\n\n")
 
 print('\n\nNew test:\n\n')
 test = eq_bond_length + np.random.rand(10, 2, 3, 3)
-print("Madison result: ", PotentialEnergyManyWaters(test))
-print('\n\n')
-print("SR result: ", potential_energy(test))
+print("\n\nMadison result: \n", PotentialEnergyManyWaters(test))
+print("\nSR result: \n", potential_energy(test))
 
