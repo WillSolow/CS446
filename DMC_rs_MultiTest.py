@@ -341,7 +341,7 @@ def total_pe_SR(x):
 def pe_M(positions):
 
     # Gets the shape of the walker array 
-    (nWalkers,nWaters,nAtoms,nCartesian)=positions.shape
+    (nWalkers,nWaters,nAtoms,nCartesian)= positions.shape
     
     # Intialize intramolecular energy array
     intRAmolecularEnergy=np.zeros(nWalkers)
@@ -349,22 +349,24 @@ def pe_M(positions):
     # For each water, calculate the intramolecular potential energy
     # This passes a 1D array of shape (walkers,) to PotentialEnergySingleWater
     # and calculates them in a vectorized manner
-    for iWat in range(nWaters):
-        intRAmolecularEnergy=intRAmolecularEnergy+PotentialEnergySingleWater(positions[:,iWat])
+    for i in range(nWaters):
+        intRAmolecularEnergy = intRAmolecularEnergy + \
+                               PotentialEnergySingleWater(positions[:,i])
 
     # Initialize the intermolecular energy array
-    intERmolecularEnergy=np.zeros(nWalkers)
+    intERmolecularEnergy = np.zeros(nWalkers)
     
     if num_molecules > 1:
         # For every distinct pair of water molecules in each walker
-        for iWat in range(nWaters):
-            for jWat in range(iWat,nWaters):
+        for i in range(nWaters):
+            for j in range(i+1, nWaters):
                 # Calculate the intermolecular potential energy by passing each pair 
                 # to PotentialEnergyTwoWaters
-                intERmolecularEnergy=intERmolecularEnergy+PotentialEnergyTwoWaters(positions[:,iWat],positions[:,jWat])
+                intERmolecularEnergy = intERmolecularEnergy + \
+                                       PotentialEnergyTwoWaters(positions[:,i],positions[:,j])
     
     # Calculate the sum of the potential energys
-    potentialEnergy=intRAmolecularEnergy+intERmolecularEnergy
+    potentialEnergy = intRAmolecularEnergy + intERmolecularEnergy
     
     return potentialEnergy
 
@@ -398,28 +400,6 @@ def coloumbic(atom1, atom2, distance):
     
     return coloumbic1
 
-    
-    
-# Input: Two arrays of size (3,) representing the xyz coordinates of each atom
-# Output: The distance between the two atoms
-def atomdistance(atom1, atom2):
-    
-    # Create a list to store each x, y and z distance
-    distancelist = np.zeros(atom1.size)
-
-    # Go through every (x, y, z) coord in atom and calculate the difference
-    for i in range(atom1.size):
-        axesdistance = atom1[i]-atom2[i]
-        distanceSquared = axesdistance ** 2
-        distancelist[i] = distanceSquared
-
-    # Calculate the distance by taking the square root of the sum of the 
-    # xyz differences
-    distance = np.sum(distancelist)
-    distance = np.sqrt(distance)
-
-    return distance
-  
 
   
 # Input: Two arrays of size (3,3) representing the xyz coordinates of each atom
@@ -429,8 +409,8 @@ def PotentialEnergyTwoWaters(water1pos, water2pos):
 
     # Get the shape of both water molecules. Note that they will always be 
     # 3 by 3 in the case of the water molecule.
-    (nAtoms1,nCartesian1)=water1pos.shape
-    (nAtoms2,nCartesian2)=water2pos.shape
+    (walkers, nAtoms1,nCartesian1)=water1pos.shape
+    (walkers, nAtoms2,nCartesian2)=water2pos.shape
 
     # Initial Epsilon and Sigma constant
     epsilon = 0.1554252

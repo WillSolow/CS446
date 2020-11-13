@@ -9,6 +9,13 @@
 
 import numpy as np
 
+# Set print options to suppress scientific notation
+np.set_printoptions(suppress=True)
+
+# Ignore runtime divide by zero erros which can occur when the distances between two
+# atoms are equal in the intermolecular potential energy function
+np.seterr(divide='ignore')
+
 # Initial constants
 
 # Chemsitry constants for intermolecular energy
@@ -219,7 +226,7 @@ def PotentialEnergyManyWaters(positions):
     
     # For every distinct pair of water molecules in each walker
     for iWat in range(nWaters):
-        for jWat in range(iWat,nWaters):
+        for jWat in range(iWat+1,nWaters):
             # Calculate the intermolecular potential energy by passing each pair 
             # to PotentialEnergyTwoWaters
             intERmolecularEnergy=intERmolecularEnergy+PotentialEnergyTwoWaters(positions[:,iWat],positions[:,jWat])
@@ -286,13 +293,13 @@ def atomdistance(atom1, atom2):
 # Input: Two arrays of size (3,3) representing the xyz coordinates of each atom
 #        in the water molecule
 # Output: The intermolecular potential energy between the two water moolecules
-def PotentialEnergyTwoWaters(water1pos, water2pos):
+def PotentialEnergyTwoWaters(water1, water2):
 
     # Get the shape of both water molecules. Note that they will always be 
     # 3 by 3 in the case of the water molecule.
-    (walkers, nAtoms1,nCartesian1)=water1pos.shape
-    (walkers, nAtoms2,nCartesian2)=water2pos.shape
-
+    (nWalkers1, nAtoms1, nCartesian1)=water1.shape
+    (nWalkers2, nAtoms2, nCartesian2)=water2.shape
+    
     # Initial Epsilon and Sigma constant
     epsilon = 0.1554252
     sigma = 3.165492
@@ -301,10 +308,11 @@ def PotentialEnergyTwoWaters(water1pos, water2pos):
     epsilon = epsilon*(4.184/2625.5)
     sigma = sigma/0.529177
 
+    
     # Initialize energy lists
-    potentialEnergyList = []
-    coloumbicEnergyList = []
-    lennardJonesList = []
+    potentialEnergyList = np.zeros(nWalkers1)
+    coloumbicEnergyList = np.zeros(nWalkers1)
+    lennardJonesList = np.zeros(nWalkers1)
 
     # For every atom in water 1
     for atomNum1 in range(nAtoms1):
@@ -312,49 +320,47 @@ def PotentialEnergyTwoWaters(water1pos, water2pos):
         for atomNum2 in range(nAtoms2):
         
             # Get the position index [0, 1, 2] of atom 1 and 2
-            atom1 = water1pos[atomNum1]
-            atom2 = water2pos[atomNum2]
+            atom1 = water1[:,atomNum1]
+            atom2 = water2[:,atomNum2]
             
             # Calculate the distance between atoms
-            distance = atomdistance(atom1, atom2)
+            distance = np.linalg.norm(water1[:,atomNum1]-water2[:,atomNum2], axis=1)
             
             # If the distance is not 0, calculate QiQj
-            if distance != 0.0:
-                # Calculate Coulombic energy
-                coloumbicV = coloumbic(atomNum1, atomNum2, distance)
+            # Calculate Coulombic energy
+            coloumbicV = coloumbic(atomNum1, atomNum2, distance)
+            
+            # If the distance is 0, we will get a np.inf value in the array, convert this to 0
+            # as 0 distance means 0 PE
+            coloumbicV = np.where(np.abs(coloumbicV) == np.inf, 0, coloumbicV)
                 
-                # If both atoms are oxygen, calculate the lennard jones energy
-                if atomNum1 == 0 and atomNum2 == 0:
-                    lennardJones = 4*epsilon*((sigma/distance)**12 \
+            # If both atoms are oxygen, calculate the lennard jones energy
+            if atomNum1 == 0 and atomNum2 == 0:
+                lennardJones = 4*epsilon*((sigma/distance)**12 \
                                    - (sigma/distance)**6)
-                    
-                    # Edit made by Will Solow (11/4/20) 
-                    # Moved this line of code
-                    lennardJonesList.append(lennardJones)
+                # If the distance is 0, we will get a np.inf value in the array, convert this to 0
+                # as 0 distance means 0 PE
+                lennardJones = np.where(np.abs(lennardJones) == np.inf, 0, lennardJones)
+                
+                lennardJonesList = lennardJonesList+lennardJones
                                    
-                    # Calculate the intermolecular potential energy              
-                    potential = lennardJones + coloumbicV
+                # Calculate the intermolecular potential energy              
+                potential = lennardJones + coloumbicV
                     
-                # If not both oxygen, then potential energy is just Coulombic energy
-                else:
-                    potential = coloumbicV
+            # If not both oxygen, then potential energy is just Coulombic energy
+            else:
+                potential = coloumbicV
                 
-                potentialEnergyList.append(potential)
-                coloumbicEnergyList.append(coloumbicV)
+            potentialEnergyList = potentialEnergyList + potential
+            coloumbicEnergyList = coloumbicEnergyList + coloumbicV
                 
-                # This is commented out and moved into the if statement as it is 
-                # believed to be a bug in the code (11/4/2)
-                # lennardJonesList.append(lennardJones)
-    
-    # Cast Python lists to Numpy arrays for quick summing
-    potentialEnergyList = np.array(potentialEnergyList)
-    coloumbicEnergyList = np.array(coloumbicEnergyList)
-    lennardJonesList = np.array(lennardJonesList)
     
     # Sum up all energies
-    VinterSum = np.sum(potentialEnergyList)
-    coloumbicEnergySum = np.sum(coloumbicEnergyList)
-    lennardJonesSum = np.sum(lennardJonesList)
+    # Note that we do not need to sum up all the energies anymore as they are getting summed
+    # in each addition step
+    VinterSum = potentialEnergyList
+    coloumbicEnergySum = coloumbicEnergyList 
+    lennardJonesSum = lennardJonesList
 
 
     return VinterSum, coloumbicEnergySum, lennardJonesSum
@@ -416,7 +422,7 @@ def PotentialEnergySingleWater(OHHpositions):
 
 
 
-test_walkers = np.random.rand(10, num_molecules, 3, 3)  
+test_walkers = np.random.rand(10, 3, 3, 3)  
 
 print('SR total PE:      ', total_pe_SR(test_walkers))
 print('Madison total PE: ', PotentialEnergyManyWaters(test_walkers))  
