@@ -35,11 +35,11 @@ k = 6.027540
 # being graphed in the histogram
 # For example in a H2O molecule when graphing the OH bond, the only atoms present are 
 # one Oxygen and one Hydrogen atom
-atomic_masses = np.array([oxygen_mass, hydrogen_mass]) / (avogadro * electron_mass)
+atomic_masses = np.array([oxygen_mass, hydrogen_mass, hydrogen_mass]) / (avogadro * electron_mass)
 
 # Reduced mass of the system
 # Used in calculating the normalization constant in the wave function
-reduced_mass = np.prod(atomic_masses) / np.sum(atomic_masses)
+reduced_mass = ((atomic_masses[0]+atomic_masses[1])*atomic_masses[2])/np.sum(atomic_masses)
 
 
 # Part of the wave function. Used in integration to solve for the normalization constant

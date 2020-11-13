@@ -110,10 +110,10 @@ equilibration_phase = 5000
 
 # Number of time steps in a simulation.
 # Simulation length should be at least five times the length of the equilibration phase
-sim_length = 10000
+sim_length = 5000
 
 # Number of initial walkers
-n_walkers = 2000
+n_walkers = 5000
 
 # Number of time steps for rolling average calculation
 rolling_avg = 1000
@@ -222,6 +222,7 @@ def intra_pe_SR(x):
     # Returns the lengths of each OH bond vector for each molecule 
     # in each walker. 
     lengths = np.linalg.norm(OH_vectors, axis=3)
+    
     
     # Calculates the bond angle in the HOH bond
     # Computes the arccosine of the dot product between the two vectors, by 
@@ -803,40 +804,17 @@ def sim_loop(vec_PE, init_walkers):
 # Main Testing Loop
 
 # Sim length array
-sim_arr = [2000, 5000, 10000]
+sim_arr = [10000]
 
 # num walkers array
-num_walk_arr = [1000, 2000, 5000, 10000]
-
-'''
-# Get an initial position for walkers based on the equilibration phase
-init_walkers = equilibrate_walkers()
+num_walk_arr = [10000]
 
 
-# Create arrays to record output
-# Elapsed time of the simulation loop - used for comparing PE functions
-elapsed_time = []
 
-# Number  of walkers in the simulation - used for showing convergence and a valid time step
-num_walkers = []
-
-# Rolling average of the reference energy
-ref_avg = []
-
-# Length of one OH bond
-OH_positions = np.array([])
-'''
-
-# Test body of code
-
+# The below simulation loop compares SR PE function to Prof Madison PE function 
+# across different inputs and records desired data
 for i in sim_arr:
     for j in num_walk_arr:
-        if i == 2000 and j == 1000:
-            continue
-        if i == 2000 and j = 2000:
-            continue
-        if i == 2000 and j == 5000:
-            continue
         sim_length = i
         n_walkers = j
         print('Walkers: ' + str(n_walkers) + '. Sim length: ' + str(sim_length) + '.')
@@ -896,11 +874,28 @@ for i in sim_arr:
         print('Calculated average number of walkers %.2f' %np.mean(M_avg_walkers))
         print('Standard Deviation of average Walker Population %.6f' % np.std(M_avg_walkers))
         print('\n\n ##############################################################\n\n')
+       
         
         
-        
-
 '''
+# Get an initial position for walkers based on the equilibration phase
+init_walkers = equilibrate_walkers()
+
+
+# Create arrays to record output
+# Elapsed time of the simulation loop - used for comparing PE functions
+elapsed_time = []
+
+# Number  of walkers in the simulation - used for showing convergence and a valid time step
+num_walkers = []
+
+# Rolling average of the reference energy
+ref_avg = []
+
+# Length of one OH bond
+OH_positions = np.array([])
+
+
 # Run the simulation num_sims times and record all the outputs in an array
 for i in range(num_sims):
     print('Simulation Loop: ' + str(i))
@@ -909,17 +904,11 @@ for i in range(num_sims):
     elapsed_time.append(time_taken)
     num_walkers.append(walkers)
     ref_avg.append(ref)
-    #OH_positions = np.append(OH_positions, OH_p, axis=0)
 
 # Collect all data into a numpy array for graphing
 num_walkers_arr = np.stack(num_walkers, axis = -1)
 ref_avg_arr = np.stack(ref_avg, axis = -1)
-print('ref_avg_arr shape ', ref_avg_arr.shape)
 
-
-
-
-    
 
 # Calculate the average time
 avg_time = np.mean(elapsed_time)
@@ -932,17 +921,26 @@ median_walkers = np.median(num_walkers_arr, axis = 1)
 
 # Calculate an array of length sim_length of the average ref energy rolling average 
 avg_ref_avg = np.mean(ref_avg_arr, axis = 1)
-print(avg_ref_avg)
-print(np.mean(ref_avg, axis=0))
+
 
 # Calculate the zero point energy based on the average of the ref rolling energy
 ref_converge_num = np.mean(avg_ref_avg)
-    
+
+print('\n\n')
+print('Average elapsed time per simulation %.2f' %avg_time)
+print('Standard deviation of elapsed time %.2f\n' %np.std(elapsed_time))
+print('Calculated Zero-Point Energy %.8f' %ref_converge_num)
+print('Standard Deviation of average Reference Energy %.6f\n' %np.std(avg_ref_avg))
+print('Calculated average number of walkers %.2f' %np.mean(avg_walkers))
+print('Standard Deviation of average Walker Population %.6f' % np.std(avg_walkers))
+'''
 
     
 #####################################################################################
 # Output
 
+# Uncomment the below line to avoid graphing
+sys.exit(0)
 
 # Create an array to graph the Zero point energy
 zp_energy = np.ones(sim_length) * ref_converge_num
@@ -1042,5 +1040,5 @@ plt.title('Density of Walker Positions')
 plt.legend()
 
 plt.show()
-'''
+
 

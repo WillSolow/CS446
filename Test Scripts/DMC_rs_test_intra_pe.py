@@ -151,11 +151,11 @@ def potential_energy(x):
     # Return the two OH vectors
 	# Used to calculate the bond lengths and angle in a molecule
     OH_vectors = x[:,:,np.newaxis,0]-x[:,:,1:]
-	
     # Returns the lengths of each OH bond vector for each molecule 
 	# in each walker. 
-    lengths = np.linalg.norm(OH_vectors, axis=3)
-	
+    #lengths1 = np.linalg.norm(OH_vectors, axis=3)
+    lengths = np.sqrt(np.sum(OH_vectors ** 2, axis=3))
+    
 	# Calculates the bond angle in the HOH bond
 	# Computes the arccosine of the dot product between the two vectors, by normalizing the
 	# vectors to magnitude of 1
