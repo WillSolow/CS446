@@ -5,7 +5,9 @@
 
 # THIS IS THE GROSSEST THING I'VE EVER WRITTEN
 
-def print_xyz(walkers, atoms = ['C','H','H','H','H'], \
+import numpy as np
+
+def print_xyz(walkers, atoms = ['O','H','H'], \
         comment = '### Comment ###', coord_cnst = 3):
     '''
     Input: walkers: ndarray shape=(nWalkers,nMolecules,nAtoms,coord_cnst)
@@ -29,3 +31,20 @@ def print_xyz(walkers, atoms = ['C','H','H','H','H'], \
             + tb.join( [f"{el:.8f}" for el in row] ) 
             for c,row in enumerate( walkers[i,...].reshape((-1,coord_cnst)) )] )}'''
         ) for i in range(walkers.shape[0]) ] )
+
+def print_csv(walkers):
+    pass
+
+def print_arr(walkers,ext):
+    if ext == 'xyz':
+        return print_xyz(walkers)
+    elif ext == 'csv':
+        return print_csv(walkers)
+    else:
+        print('Error: Invalid Extension for Printing')
+        exit()
+
+def write_array(filename,ext='xyz'):
+    with open(filename+'.'+ext,'w') as fl:
+        wlk = np.load(filename+'.npy')
+        fl.write(print_arr(wlk,ext))

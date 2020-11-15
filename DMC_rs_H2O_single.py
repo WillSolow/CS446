@@ -89,7 +89,7 @@ equilibration_phase = 5000
 sim_length = 10000
 
 # Number of initial walkers
-n_walkers = 1000
+n_walkers = 5000
 
 # Number of time steps for rolling average calculation
 rolling_avg = 1000
@@ -157,9 +157,9 @@ reduced_mass = ((atomic_masses[0]+atomic_masses[1])*atomic_masses[2])/np.sum(ato
 # Initial 4D walker array
 # Returns a uniform distribution cenetered at the given bond length
 # Array axes are walkers, molecules, coordinates, and atoms
-walkers = (np.random.rand(n_walkers, num_molecules, atomic_masses.shape[0], \
-    coord_const) - .5) 
-
+#walkers = (np.random.rand(n_walkers, num_molecules, atomic_masses.shape[0], \
+#    coord_const) - .5) 
+walkers = np.load('5000_walker.npy')
 
 
 #######################################################################################
@@ -297,7 +297,7 @@ for i in range(sim_length):
 #####################################################################################
 # Output
 
-
+np.save('5000_walker', walkers)
 # Uncomment the below line to avoid graphing 
 #sys.exit(0)
 

@@ -101,7 +101,7 @@ equilibration_phase = 1500
 
 
 # Number of time steps in a simulation
-sim_length = 10000
+sim_length = 500
 
 # Number of initial walkers
 n_walkers = 10000
@@ -179,24 +179,24 @@ reduced_mass = (atomic_masses[0]*atomic_masses[1])/(atomic_masses[0]+atomic_mass
 # Initial 4D walker array
 # Returns a uniform distribution cenetered at the given bond length
 # Array axes are walkers, molecules, coordinates, and atoms
-#walkers = (np.random.rand(n_walkers, num_molecules, atomic_masses.shape[0], \
-#    coord_const) - .5) 
+walkers = (np.random.rand(n_walkers, num_molecules, atomic_masses.shape[0], \
+    coord_const) - .5) 
 
 # Alternatively, load a 4D array of equilibrated walkers. Used in more complex
 # systems where equilibration takes a large amount of time due to that amount of
 # randomness introduced to the system on initialization
-walkers = np.load('two_water_eq_4.npy')
+#walkers = np.load('two_water_eq_4.npy')
 
 
 # Stack another water molecule onto the walkers array to get a water trimer system
 
 # Create a new water molecule from the old and propagate it a little bit
-new_water = walkers[:,0,np.newaxis,:,:] + \
-        np.random.normal(0, np.sqrt(dt/np.transpose(np.tile(atomic_masses, \
-        (walkers.shape[walker_axis], 1, coord_const, 1)), \
-        (walker_axis, molecule_axis, coord_axis, atom_axis))))
-walkers = np.append(walkers, new_water, axis=1)
-print('walkers: \n', walkers)
+#new_water = walkers[:,0,np.newaxis,:,:] + \
+#        np.random.normal(0, np.sqrt(dt/np.transpose(np.tile(atomic_masses, \
+#        (walkers.shape[walker_axis], 1, coord_const, 1)), \
+#        (walker_axis, molecule_axis, coord_axis, atom_axis))))
+#walkers = np.append(walkers, new_water, axis=1)
+#print('walkers: \n', walkers)
 
 
 #######################################################################################
@@ -360,7 +360,7 @@ for i in range(sim_length):
 		
     # Current number of walkers
     num_walkers[i] = walkers.shape[walker_axis]
-    #print('Num walkers: ', num_walkers[i])
+    print(f'Reference energy: {reference_energy[i]:.8f}, Walkers: {num_walkers[i]}')
 
 	
 	# Propagates each coordinate of each atom in each molecule of each walker within a normal
@@ -498,13 +498,13 @@ oxygen_lengths = np.linalg.norm(oxygen_vectors, axis=2)
 
 # Find the three oxygen angles in the water trimer
 oxygen_angle_1 = np.arccos(np.sum(-oxygen_vectors[:,0]*-oxygen_vectors[:,1], \
-                 axis=1) / (oxygen_lengths[:,0]*oxygen_lengths[:,1])
+                 axis=1) / (oxygen_lengths[:,0]*oxygen_lengths[:,1]))
                  
 oxygen_angle_2 = np.arccos(np.sum(-oxygen_vectors[:,0]*-oxygen_vectors[:,2], \
-                 axis=1) / (oxygen_lengths[:,0]*oxygen_lengths[:,2])
+                 axis=1) / (oxygen_lengths[:,0]*oxygen_lengths[:,2]))
                  
 oxygen_angle_3 = np.arccos(np.sum(-oxygen_vectors[:,1]*-oxygen_vectors[:,2], \
-                 axis=1) / (oxygen_lengths[:,1]*oxygen_lengths[:,2])
+                 axis=1) / (oxygen_lengths[:,1]*oxygen_lengths[:,2]))
                  
 
 # Append all three angles into one matrix for graphing in the density histogram
