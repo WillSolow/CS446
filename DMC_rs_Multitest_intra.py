@@ -576,6 +576,8 @@ equilibrate = 1500
 
 tot_walkers = []
 
+# create a data file for all sims
+fl = open('convergence_data.txt', 'a')
 # For every equilibrated walker array
 for walkers in num_walkers:
     init_walkers = np.load(walkers)
@@ -591,6 +593,7 @@ for walkers in num_walkers:
         # For every set of times we run the simulation
         for sims in sim_times:
             print('Walkers: '+str(n_walkers)+'. dt: '+str(dt)+'. Sim times: '+str(sims))
+            fl.write('Walkers: '+str(n_walkers)+'. dt: '+str(dt)+'. Sim times: '+str(sims)+'\n')
             
             tot_avg_ref = []
             tot_avg_walkers = []
@@ -601,7 +604,6 @@ for walkers in num_walkers:
             
 
             for i in range(num_sims):
-                print('Sim number: ', i)
                 # Number  of walkers in the simulation - used for showing convergence and a valid time step
                 num_walkers_arr = []
 
@@ -634,15 +636,21 @@ for walkers in num_walkers:
                 tot_avg_ref.append(ref_converge_num)
             
             print('\nReference Converge Nums: \n',tot_avg_ref)
+            fl.write('\n\n')
+            for k in tot_avg_ref:
+                fl.write(str(k) + ' ') 
             print('\nAverage Walkers: \n',tot_avg_walkers)
+            fl.write('\n\n')
+            for k in tot_avg_walkers:
+                fl.writelines(str(k) + ' ') 
             print('\n\n###########################################\n\n')
-            
+            fl.write('\n\n########################################\n\n')
             tot_sims.append(tot_avg_ref)
             tot_sims.append(tot_avg_walkers)
             
         tot_timestep.append(tot_sims)
     tot_walkers.append(tot_timestep)
-    
+fl.close()  
 data = np.array(tot_walkers)
 np.save('timestep_convergence_data', data)
 
