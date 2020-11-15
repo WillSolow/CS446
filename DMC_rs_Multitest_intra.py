@@ -21,7 +21,6 @@ import scipy.integrate as integrate
 import time
 import sys
 
-
 # Set print options to suppress scientific notation
 np.set_printoptions(suppress=True)
 
@@ -104,7 +103,7 @@ num_sims = 10
 # the time taken to reach equilibrium is dependent on the square root of the time step. 
 # In theory this works, but experimentally it has been found that smaller time steps 
 # require drastically more time to reach equilibrium
-equilibration_phase = 5000
+#equilibration_phase = 5000
 
 
 
@@ -330,211 +329,7 @@ def total_pe_SR(x):
     # Return the total potential energy of the walker
     return intra_pe + inter_pe
 
-
-    
-# Functions provided by Prof Madison
-# Extra comments for clarity added by Will Solow
-
-# Input: 4D array of walkers
-# Output: 1D array of total potential energies
-# Calculates the intermolecular potential energy and intramolecular potential 
-# energy of each walker
-def pe_M(positions):
-
-    # Gets the shape of the walker array 
-    (nWalkers,nWaters,nAtoms,nCartesian)= positions.shape
-    
-    # Intialize intramolecular energy array
-    intRAmolecularEnergy=np.zeros(nWalkers)
-    
-    # For each water, calculate the intramolecular potential energy
-    # This passes a 1D array of shape (walkers,) to PotentialEnergySingleWater
-    # and calculates them in a vectorized manner
-    for i in range(nWaters):
-        intRAmolecularEnergy = intRAmolecularEnergy + \
-                               PotentialEnergySingleWater(positions[:,i])
-
-    # Initialize the intermolecular energy array
-    intERmolecularEnergy = np.zeros(nWalkers)
-    
-    if num_molecules > 1:
-        # For every distinct pair of water molecules in each walker
-        for i in range(nWaters):
-            for j in range(i+1, nWaters):
-                # Calculate the intermolecular potential energy by passing each pair 
-                # to PotentialEnergyTwoWaters
-                intERmolecularEnergy = intERmolecularEnergy + \
-                                       PotentialEnergyTwoWaters(positions[:,i],positions[:,j])
-    
-    # Calculate the sum of the potential energys
-    potentialEnergy = intRAmolecularEnergy + intERmolecularEnergy
-    
-    return potentialEnergy
-
-    
-    
-# Input: Two ingters in range [0, 1, 2] to represent an atom, as well as a distance
-#        between the two atoms
-# Output: The Coulombic energy according to Coulomb's Law
-def coloumbic(atom1, atom2, distance):
-    # Initialize Charges to 0
-    q1 = 0
-    q2 = 0
-    
-    # If atom 1 is oxygen (index 0), give it charge -.84
-    # Otherwise (hydrogen), give it charge .42
-    if atom1 == 0:
-        q1 = -0.84
-    else:
-        q1 = 0.42
-
-    # If atom 2 is oxygen (index 0), give it charge -.84
-    # Otherwise (hydrogen), give it charge .42
-    if atom2 == 0:
-        q2 = -0.84
-    else:
-        q2 = 0.42
-        
-    # Calculate the Coulombic energy
-    # Distance is already assumed to be non-zero
-    coloumbic1 = q1*q2/distance*(1.0/(4.0*np.pi))
-    
-    return coloumbic1
-
-
-  
-# Input: Two arrays of size (3,3) representing the xyz coordinates of each atom
-#        in the water molecule
-# Output: The intermolecular potential energy between the two water moolecules
-def PotentialEnergyTwoWaters(water1pos, water2pos):
-
-    # Get the shape of both water molecules. Note that they will always be 
-    # 3 by 3 in the case of the water molecule.
-    (walkers, nAtoms1,nCartesian1)=water1pos.shape
-    (walkers, nAtoms2,nCartesian2)=water2pos.shape
-
-    # Initial Epsilon and Sigma constant
-    epsilon = 0.1554252
-    sigma = 3.165492
-
-    # Converted Epsilon and Sigma constant
-    epsilon = epsilon*(4.184/2625.5)
-    sigma = sigma/0.529177
-
-    # Initialize energy lists
-    potentialEnergyList = []
-    coloumbicEnergyList = []
-    lennardJonesList = []
-
-    # For every atom in water 1
-    for atomNum1 in range(nAtoms1):
-        # For every atom in water 2
-        for atomNum2 in range(nAtoms2):
-        
-            # Get the position index [0, 1, 2] of atom 1 and 2
-            atom1 = water1pos[atomNum1]
-            atom2 = water2pos[atomNum2]
-            
-            # Calculate the distance between atoms
-            distance = atomdistance(atom1, atom2)
-            
-            # If the distance is not 0, calculate QiQj
-            if distance != 0.0:
-                # Calculate Coulombic energy
-                coloumbicV = coloumbic(atomNum1, atomNum2, distance)
-                
-                # If both atoms are oxygen, calculate the lennard jones energy
-                if atomNum1 == 0 and atomNum2 == 0:
-                    lennardJones = 4*epsilon*((sigma/distance)**12 \
-                                   - (sigma/distance)**6)
-                    
-                    # Edit made by Will Solow (11/4/20) 
-                    # Moved this line of code
-                    lennardJonesList.append(lennardJones)
-                                   
-                    # Calculate the intermolecular potential energy              
-                    potential = lennardJones + coloumbicV
-                    
-                # If not both oxygen, then potential energy is just Coulombic energy
-                else:
-                    potential = coloumbicV
-                
-                potentialEnergyList.append(potential)
-                coloumbicEnergyList.append(coloumbicV)
-                
-                # This is commented out and moved into the if statement as it is 
-                # believed to be a bug in the code (11/4/2)
-                # lennardJonesList.append(lennardJones)
-    
-    # Cast Python lists to Numpy arrays for quick summing
-    potentialEnergyList = np.array(potentialEnergyList)
-    coloumbicEnergyList = np.array(coloumbicEnergyList)
-    lennardJonesList = np.array(lennardJonesList)
-    
-    # Sum up all energies
-    VinterSum = np.sum(potentialEnergyList)
-    coloumbicEnergySum = np.sum(coloumbicEnergyList)
-    lennardJonesSum = np.sum(lennardJonesList)
-
-
-    return VinterSum, coloumbicEnergySum, lennardJonesSum
-
-
-# Input: a walkersx3x3 array of xyz coordinates representing the position of a water
-# Output: The intramolecular potential energy  
-def PotentialEnergySingleWater(OHHpositions):
-
-    #The first atom is assumed to be Oxygen
-    #The second and third atoms are assumed to be the two Hydrogens
-
-    #The potential energy of water is the sum of the PE from the two OH 
-    #bond lengths and the H-O-H bond angle
-
-    # Calculate the length of the first OH bond
-    rOH1=np.linalg.norm(OHHpositions[:,0,:]-OHHpositions[:,1,:],axis=1) 
-    
-    
-    # equilibrium bond length in atomic units of distance
-    rOHeq=1.0 /0.529177 
-    # spring constant in atomic units of energy per (atomic units of distance)^2
-    kb= 1059.162 *(1.0/0.529177)**2 * (4.184/2625.5)
-
-    # Calculate the potential energy of OH bond 1
-    potROH1=kb/2.0 *(rOH1-rOHeq)**2
-    
-
-    # Calculate the length of the second OH bond 
-    rOH2=np.linalg.norm(OHHpositions[:,0]-OHHpositions[:,2],axis=1)
-
-    # Calculate the potential energy of OH bond 2 
-    potROH2=kb/2.0 *(rOH2-rOHeq)**2
-
-    aHOH=[]
-    # For each walker in the inputted list, calculate the angle of the 
-    # H - O - H atom
-    for walkerPos in OHHpositions:
-        vecOH_1=walkerPos[0]-walkerPos[1]
-        vecOH_2=walkerPos[2]-walkerPos[0]
-        cosAngle=np.dot(vecOH_1,vecOH_2)/(np.linalg.norm(vecOH_1)*np.linalg.norm(vecOH_2))
-        aHOH.append(np.arccos(cosAngle))
-
-    # Convert the Python list to a Numpy arra
-    aHOH=np.array(aHOH)
-    
-    #spring constant in atomic units of energy per (rad)^2
-    ka=75.90*(4.184/2625.5) 
-    #equilibrium HOH bond angle in radians
-    aHOHeq= 112.0 * np.pi/180.0 
-    
-    # Calculate the potential energy of the HOH angle
-    potAHOH=ka/2.0*(aHOH-aHOHeq)**2
-
-    # Sum all potential energies
-    potentialEnergy=potROH1+potROH2+potAHOH
-
-    return potentialEnergy
-
-    
+ 
     
 #######################################################################################
 # Simulation Functions
@@ -646,8 +441,8 @@ def equilibrate_walkers(init_walkers, equil_phase):
 # Input: Boolean - if true used SR vectorized PE, if false use Madison PE function
 # Output: Time taken to complete computation
 # Runs a simulation with vectorized techniques
-def sim_loop(vec_PE, init_walkers):
-    
+def sim_loop(init_walkers):
+
     # Create array to store the number of walkers at each time step
     num_walkers = np.zeros(sim_length)
     
@@ -656,9 +451,6 @@ def sim_loop(vec_PE, init_walkers):
     
     # Set the equilibrated walkers array to 
     walkers = init_walkers
-    
-    # Calculate the start time of the program to be used when calculating efficiency
-    start_time = time.time()
     
     
     # Simulation loop
@@ -669,14 +461,9 @@ def sim_loop(vec_PE, init_walkers):
         # Calculate the Reference Energy
         # Energy is calculated based on the average of all potential energies of walkers.
         # Is adjusted by a statistical value to account for large or small walker populations.
-        if vec_PE:
-            reference_energy[i] = np.mean( intra_pe_SR(walkers) ) \
-                + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
-        else:
-            reference_energy[i] = np.mean( pe_M(walkers) ) \
-                + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
-        
-        # Current number of walkers
+        reference_energy[i] = np.mean( intra_pe_SR(walkers) ) \
+            + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
+               
         num_walkers[i] = walkers.shape[0]
 
     
@@ -695,10 +482,7 @@ def sim_loop(vec_PE, init_walkers):
     
     
         # Calculates the potential energy of each walker in the system
-        if vec_PE:
-            potential_energies = intra_pe_SR(walkers)
-        else:
-            potential_energies = pe_M(walkers)
+        potential_energies = intra_pe_SR(walkers)
 
     
     
@@ -760,8 +544,6 @@ def sim_loop(vec_PE, init_walkers):
         # of equal potential and reference energy, the walker is neither replicated nor deleted. 
         walkers = np.append(walkers_after_delete, walkers_after_replication, axis=walker_axis)
         
-    # Calculate the time at the end of the simulation
-    end_time = time.time()
     
     
     # Calculate the rolling average for rolling_avg time steps
@@ -771,102 +553,102 @@ def sim_loop(vec_PE, init_walkers):
         for j in range(rolling_avg):
             ref_rolling_avg[i] = ( ref_rolling_avg[i] - ( ref_rolling_avg[i] / (j+1) ) ) \
                 + ( reference_energy[(i+rolling_avg)-j] / (j+1) ) 
-            
-    # Calculate the distance between one of the OH vectors
-    # Used in the histogram and wave function plot  
-    OH_positions = np.linalg.norm(walkers[:,0,0]-walkers[:,0,1], axis = molecule_axis)
+         
     
     # Returns the elapsed time, number of walkers, and a bond length
-    return (end_time-start_time), num_walkers, ref_rolling_avg, OH_positions
+    return num_walkers, ref_rolling_avg
 
     
 #######################################################################################
 # Main Testing Loop
 
 # Equilibrated walkers array
-num_walkers = ['1000_walkers.npy', '5000_walkers.npy', '10000_walkers.npy']
+num_walkers = ['1000_walker.npy', '5000_walker.npy', '10000_walker.npy']
 
 # dt values to test
 dt_values = [10, 5, 1, .5, .1, .01]
 
 # number of times the average is taken over
-sim_times = [10, 20, 50, 100]
+sim_times = [10, 50, 100]
 
 # equilbration standard
 equilibrate = 1500
 
+tot_walkers = []
+
+# For every equilibrated walker array
 for walkers in num_walkers:
     init_walkers = np.load(walkers)
     num_walk, ext = walkers.split('_')
-    for j in dt_values: 
-        for k in sim_times:
-            print('Walkers: '+num_walk+'. dt: '+str(j)+'. Sim times: '+str(k))
-            equil_walkers = 
+    # Set the initial number of walkers
+    n_walkers = int(num_walk)
+    
+    tot_timestep = []
+    # For every dt value
+    for time_step in dt_values:
+        dt = time_step
+        tot_sims = []
+        # For every set of times we run the simulation
+        for sims in sim_times:
+            print('Walkers: '+str(n_walkers)+'. dt: '+str(dt)+'. Sim times: '+str(sims))
+            
+            tot_avg_ref = []
+            tot_avg_walkers = []
+            
+            # Find the length of the equilibration phase
+            equil_phase = int(np.ceil(1/np.sqrt(dt)*equilibrate))
+            sim_length = equil_phase*5
+            
 
+            for i in range(num_sims):
+                print('Sim number: ', i)
+                # Number  of walkers in the simulation - used for showing convergence and a valid time step
+                num_walkers_arr = []
 
+                # Rolling average of the reference energy
+                ref_avg = []
 
+                # Propagate the equilibrated walkers for that length based on 
+                # the time step
+                equil_walkers = equilibrate_walkers(init_walkers, equil_phase)
+            
+       
+                for j in range(sims):
+                    walkers_n, ref = sim_loop(equil_walkers)
+                    num_walkers_arr.append(walkers_n)
+                    ref_avg.append(ref)
+                    
+                # Collect all data into a numpy array for graphing
+                avg_walkers_arr = np.stack(num_walkers_arr, axis = -1)
+                ref_avg_arr = np.stack(ref_avg, axis = -1)    
+                
+                # Calculate an array of length sim_length of the average number of walkers at a time step
+                avg_walkers = np.mean(avg_walkers_arr, axis = 1)
+
+                # Calculate an array of length sim_length of the average ref energy rolling average 
+                avg_ref_avg = np.mean(ref_avg_arr, axis = 1)
+                # Calculate the zero point energy based on the average of the ref rolling energy
+                ref_converge_num = np.mean(avg_ref_avg)
+                
+                tot_avg_walkers.append(np.mean(avg_walkers))
+                tot_avg_ref.append(ref_converge_num)
+            
+            print('\nReference Converge Nums: \n',tot_avg_ref)
+            print('\nAverage Walkers: \n',tot_avg_walkers)
+            print('\n\n###########################################\n\n')
+            
+            tot_sims.append(tot_avg_ref)
+            tot_sims.append(tot_avg_walkers)
+            
+        tot_timestep.append(tot_sims)
+    tot_walkers.append(tot_timestep)
+    
+data = np.array(tot_walkers)
+np.save('timestep_convergence_data', data)
 
        
         
-        
-'''
-# Get an initial position for walkers based on the equilibration phase
-init_walkers = equilibrate_walkers()
-
-
-# Create arrays to record output
-# Elapsed time of the simulation loop - used for comparing PE functions
-elapsed_time = []
-
-# Number  of walkers in the simulation - used for showing convergence and a valid time step
-num_walkers = []
-
-# Rolling average of the reference energy
-ref_avg = []
-
-# Length of one OH bond
-OH_positions = np.array([])
-
-
-# Run the simulation num_sims times and record all the outputs in an array
-for i in range(num_sims):
-    print('Simulation Loop: ' + str(i))
-    time_taken, walkers, ref, OH_p = sim_loop(True, init_walkers)
-    
-    elapsed_time.append(time_taken)
-    num_walkers.append(walkers)
-    ref_avg.append(ref)
-
-# Collect all data into a numpy array for graphing
-num_walkers_arr = np.stack(num_walkers, axis = -1)
-ref_avg_arr = np.stack(ref_avg, axis = -1)
-
-
-# Calculate the average time
-avg_time = np.mean(elapsed_time)
-
-# Calculate an array of length sim_length of the average number of walkers at a time step
-avg_walkers = np.mean(num_walkers_arr, axis = 1)
-
-# Calculate an array of the median number of walkers at a time step
-median_walkers = np.median(num_walkers_arr, axis = 1)
-
-# Calculate an array of length sim_length of the average ref energy rolling average 
-avg_ref_avg = np.mean(ref_avg_arr, axis = 1)
-
-
-# Calculate the zero point energy based on the average of the ref rolling energy
-ref_converge_num = np.mean(avg_ref_avg)
-
-print('\n\n')
-print('Average elapsed time per simulation %.2f' %avg_time)
-print('Standard deviation of elapsed time %.2f\n' %np.std(elapsed_time))
-print('Calculated Zero-Point Energy %.8f' %ref_converge_num)
-print('Standard Deviation of average Reference Energy %.6f\n' %np.std(avg_ref_avg))
-print('Calculated average number of walkers %.2f' %np.mean(avg_walkers))
-print('Standard Deviation of average Walker Population %.6f' % np.std(avg_walkers))
-'''
-
+      
     
 #####################################################################################
 # Output
@@ -894,8 +676,7 @@ print('Standard Deviation of average Reference Energy %.6f\n' %np.std(avg_ref_av
 print('Calculated average number of walkers %.2f' %np.mean(avg_walkers))
 print('Standard Deviation of average Walker Population %.6f' % np.std(avg_walkers))
 
-''' 
-'''  
+
 # Plot the rolling average of the reference energy throughout the simulation
 plt.figure(1)
 # Plot every reference energy
