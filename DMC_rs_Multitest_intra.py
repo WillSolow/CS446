@@ -569,7 +569,7 @@ num_walkers = ['1000_walker.npy', '5000_walker.npy', '10000_walker.npy']
 dt_values = [10, 5, 1, .5, .1, .01]
 
 # number of times the average is taken over
-sim_times = [10, 50, 100]
+sim_times = [10, 20, 50]
 
 # equilbration standard
 equilibrate = 1500
@@ -604,6 +604,7 @@ for walkers in num_walkers:
             
 
             for i in range(num_sims):
+                print('Test num: ', i)
                 # Number  of walkers in the simulation - used for showing convergence and a valid time step
                 num_walkers_arr = []
 
