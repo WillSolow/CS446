@@ -16,8 +16,8 @@
 
 # Imports
 import numpy as np
-import matplotlib.pyplot as plt
-import scipy.integrate as integrate
+#import matplotlib.pyplot as plt
+#import scipy.integrate as integrate
 import time
 import sys
 
@@ -205,8 +205,8 @@ molecule_index_b = np.array(sum([list(range(i,num_molecules)) \
 # Create an array of the charges 
 # Computes the product of the charges as the atom charges are multiplied together in accordance
 # with Coulomb's Law.
-coulombic_charges = (np.transpose(atomic_charges[np.newaxis]) \
-                    @ atomic_charges[np.newaxis])  * coulomb_const
+coulombic_charges = np.matmul(np.transpose(atomic_charges[np.newaxis]), \
+                    atomic_charges[np.newaxis])  * coulomb_const
 
 
 # Input: 4D Array of walkers
@@ -566,34 +566,38 @@ def sim_loop(init_walkers):
 num_walkers = ['1000_walker.npy', '5000_walker.npy', '10000_walker.npy']
 
 # dt values to test
-dt_values = [10, 5, 1, .5, .1, .01]
+dt_values = [10, 5, 1, .5, .1, .05, .01]
 
 # number of times the average is taken over
-sim_times = [10, 20, 50]
+sim_times = [10]
 
 # equilbration standard
 equilibrate = 1500
 
-tot_walkers = []
 
-# create a data file for all sims
-fl = open('convergence_data.txt', 'a')
-# For every equilibrated walker array
-for walkers in num_walkers:
-    init_walkers = np.load(walkers)
-    num_walk, ext = walkers.split('_')
-    # Set the initial number of walkers
-    n_walkers = int(num_walk)
+
+# For every time step 
+for time_step in dt_values:
+    dt = time_step
+
+    # create a data file for all sims
+    fl = open('convergence_data_'+str(dt)+'.txt', 'a') 
+    fl.write('Data for time step: '+str(dt)+'\n\n')
     
-    tot_timestep = []
-    # For every dt value
-    for time_step in dt_values:
-        dt = time_step
-        tot_sims = []
+    # For every walker value
+    for walkers in num_walkers:
+    
+    # Load the initial walkers array
+        init_walkers = np.load(walkers)
+        num_walk, ext = walkers.split('_')
+
+        # Set the initial number of walkers
+        n_walkers = int(num_walk)
+
         # For every set of times we run the simulation
         for sims in sim_times:
             print('Walkers: '+str(n_walkers)+'. dt: '+str(dt)+'. Sim times: '+str(sims))
-            fl.write('Walkers: '+str(n_walkers)+'. dt: '+str(dt)+'. Sim times: '+str(sims)+'\n')
+            fl.write('Walkers: '+str(n_walkers)+'. Sim times: '+str(sims)+'\n')
             
             tot_avg_ref = []
             tot_avg_walkers = []
@@ -604,7 +608,7 @@ for walkers in num_walkers:
             
 
             for i in range(num_sims):
-                print('Test num: ', i)
+                #print('Test num: ', i)
                 # Number  of walkers in the simulation - used for showing convergence and a valid time step
                 num_walkers_arr = []
 
@@ -636,24 +640,22 @@ for walkers in num_walkers:
                 tot_avg_walkers.append(np.mean(avg_walkers))
                 tot_avg_ref.append(ref_converge_num)
             
-            print('\nReference Converge Nums: \n',tot_avg_ref)
+            #print('\nReference Converge Nums: \n',tot_avg_ref)
             fl.write('\n\n')
             for k in tot_avg_ref:
-                fl.write(str(k) + ' ') 
-            print('\nAverage Walkers: \n',tot_avg_walkers)
+                fl.write(str.format('{0:.8f}',k)+ ' ') 
+            #print('\nAverage Walkers: \n',tot_avg_walkers)
             fl.write('\n\n')
             for k in tot_avg_walkers:
-                fl.writelines(str(k) + ' ') 
-            print('\n\n###########################################\n\n')
-            fl.write('\n\n########################################\n\n')
-            tot_sims.append(tot_avg_ref)
-            tot_sims.append(tot_avg_walkers)
-            
-        tot_timestep.append(tot_sims)
-    tot_walkers.append(tot_timestep)
-fl.close()  
-data = np.array(tot_walkers)
-np.save('timestep_convergence_data', data)
+                fl.write(str.format('{0:.2f}',k)+' ') 
+        pop_std = np.std(tot_avg_walkers)
+        ref_std = np.std(tot_avg_ref)
+        fl.write('\n\nRef Energy Standard Deviation '+str.format('{0:.8f}',ref_std)+'\n')
+        fl.write('Walker Pop Standard Deviation '+str.format('{0:.6f}',pop_std))
+        #print('\n\n###########################################\n\n')
+        fl.write('\n\n########################################\n\n')
+    fl.close()
+        
 
        
         
@@ -685,7 +687,7 @@ print('Standard Deviation of average Reference Energy %.6f\n' %np.std(avg_ref_av
 print('Calculated average number of walkers %.2f' %np.mean(avg_walkers))
 print('Standard Deviation of average Walker Population %.6f' % np.std(avg_walkers))
 
-
+'''
 # Plot the rolling average of the reference energy throughout the simulation
 plt.figure(1)
 # Plot every reference energy
@@ -762,5 +764,6 @@ plt.title('Density of Walker Positions')
 plt.legend()
 
 plt.show()
+'''
 
 

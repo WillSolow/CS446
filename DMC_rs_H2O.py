@@ -101,7 +101,7 @@ equilibration_phase = 1500
 
 
 # Number of time steps in a simulation
-sim_length = 500
+sim_length = 5000
 
 # Number of initial walkers
 n_walkers = 10000
@@ -179,23 +179,22 @@ reduced_mass = (atomic_masses[0]*atomic_masses[1])/(atomic_masses[0]+atomic_mass
 # Initial 4D walker array
 # Returns a uniform distribution cenetered at the given bond length
 # Array axes are walkers, molecules, coordinates, and atoms
-walkers = (np.random.rand(n_walkers, num_molecules, atomic_masses.shape[0], \
-    coord_const) - .5) 
+#walkers = (np.random.rand(n_walkers, num_molecules, atomic_masses.shape[0], \
+#    coord_const) - .5) 
 
 # Alternatively, load a 4D array of equilibrated walkers. Used in more complex
 # systems where equilibration takes a large amount of time due to that amount of
 # randomness introduced to the system on initialization
-#walkers = np.load('two_water_eq_4.npy')
+walkers = np.load('10000_water_trimer.npy')
 
 
 # Stack another water molecule onto the walkers array to get a water trimer system
 
 # Create a new water molecule from the old and propagate it a little bit
-#new_water = walkers[:,0,np.newaxis,:,:] + \
-#        np.random.normal(0, np.sqrt(dt/np.transpose(np.tile(atomic_masses, \
-#        (walkers.shape[walker_axis], 1, coord_const, 1)), \
-#        (walker_axis, molecule_axis, coord_axis, atom_axis))))
+#new_water = walkers[:,0,np.newaxis,:,:] + np.array([-1.98702975, 5.1702229, 1.29956568])
+
 #walkers = np.append(walkers, new_water, axis=1)
+#print('Walkers shape: ', walkers.shape)
 #print('walkers: \n', walkers)
 
 
@@ -360,7 +359,7 @@ for i in range(sim_length):
 		
     # Current number of walkers
     num_walkers[i] = walkers.shape[walker_axis]
-    print(f'Reference energy: {reference_energy[i]:.8f}, Walkers: {num_walkers[i]}')
+    #print(f'Reference energy: {reference_energy[i]:.8f}, Walker Shape: '+str(walkers.shape))
 
 	
 	# Propagates each coordinate of each atom in each molecule of each walker within a normal
@@ -441,7 +440,7 @@ for i in range(sim_length):
     
 # Save the outputted walker array to a text file give that it takes a ridiculuous amount
 # of time to equilibrate a water trimer system from random values
-np.save('walker_array.npy', walkers)
+#np.save('equil_water_trimer.npy', walkers)
 
 #####################################################################################
 # Output
@@ -497,18 +496,20 @@ oxygen_vectors = oxygen_pair_a - oxygen_pair_b
 oxygen_lengths = np.linalg.norm(oxygen_vectors, axis=2)
 
 # Find the three oxygen angles in the water trimer
-oxygen_angle_1 = np.arccos(np.sum(-oxygen_vectors[:,0]*-oxygen_vectors[:,1], \
+oxygen_angle_1 = (180/np.pi)*np.arccos(np.sum(-oxygen_vectors[:,0]*-oxygen_vectors[:,1], \
                  axis=1) / (oxygen_lengths[:,0]*oxygen_lengths[:,1]))
                  
-oxygen_angle_2 = np.arccos(np.sum(-oxygen_vectors[:,0]*-oxygen_vectors[:,2], \
+oxygen_angle_2 = (180/np.pi)*np.arccos(np.sum(-oxygen_vectors[:,0]*-oxygen_vectors[:,2], \
                  axis=1) / (oxygen_lengths[:,0]*oxygen_lengths[:,2]))
                  
-oxygen_angle_3 = np.arccos(np.sum(-oxygen_vectors[:,1]*-oxygen_vectors[:,2], \
+oxygen_angle_3 = (180/np.pi)*np.arccos(np.sum(-oxygen_vectors[:,1]*-oxygen_vectors[:,2], \
                  axis=1) / (oxygen_lengths[:,1]*oxygen_lengths[:,2]))
                  
 
 # Append all three angles into one matrix for graphing in the density histogram
-oxygen_angles = np.append(oxygen_angle_1, oxygen_angle_2, oxygen_angle_3, axis=0)
+oxygen_angles = np.concatenate((oxygen_angle_1, oxygen_angle_2, \
+                oxygen_angle_3), axis=0)
+print(oxygen_angles.shape)
 
 	
 
@@ -516,7 +517,7 @@ oxygen_angles = np.append(oxygen_angle_1, oxygen_angle_2, oxygen_angle_3, axis=0
 plt.figure(1)
 plt.plot(reference_energy, label= 'Reference Energy')
 plt.plot(zp_energy, label='ZP Energy (' + str.format('{0:.6f}', ref_converge_num) + ')')
-plt.axis([0,sim_length,.11,.14])
+plt.axis([0,sim_length,.17,.195])
 plt.xlabel('Simulation Iteration')
 plt.ylabel('Reference Energy')
 plt.title('Reference Energy')
@@ -526,7 +527,7 @@ plt.legend()
 plt.figure(2)
 plt.plot(np.arange(rolling_avg,sim_length),ref_rolling_avg[rolling_avg:], label= 'Reference Energy')
 plt.plot(zp_energy, label='ZP Energy (' + str.format('{0:.6f}', ref_converge_num) + ')')
-plt.axis([0,sim_length,.122,.127])
+plt.axis([0,sim_length,.183,.192])
 plt.xlabel('Simulation Iteration')
 plt.ylabel('Reference Energy')
 plt.title(str(rolling_avg) + ' Step Rolling Average')
@@ -555,11 +556,24 @@ plt.legend()
 # Plot a density histogram of the angles that the oxygen molecules form at the 
 # final iteration of the simulation
 plt.figure(5)
-plt.hist(oxygen_angles, bins=n_bins, density=True)
-plt.xlabel('Oxygen Angle in a Walker')
+plt.hist(oxygen_angle_1, bins=n_bins, density=True)
+plt.xlabel('Oxygen Angle 1 in a Walker')
 plt.ylabel('Density of Walkers')
 plt.title('Density of Walker Oxygen Angles')
 plt.legend
 
+plt.figure(6)
+plt.hist(oxygen_angle_2, bins=n_bins, density=True)
+plt.xlabel('Oxygen Angle 2 in a Walker')
+plt.ylabel('Density of Walkers')
+plt.title('Density of Walker Oxygen Angles')
+plt.legend
+
+plt.figure(7)
+plt.hist(oxygen_angle_3, bins=n_bins, density=True)
+plt.xlabel('Oxygen Angle 3 in a Walker')
+plt.ylabel('Density of Walkers')
+plt.title('Density of Walker Oxygen Angles')
+plt.legend
 plt.show()
 

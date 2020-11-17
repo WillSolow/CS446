@@ -49,11 +49,11 @@
 %% On the other hand, \alsoaffiliation is used on a per author basis
 %% when authors are associated with multiple institutions.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\author{Skye Rhomberg}
 \author{Will Solow}
+\author{Skye Rhomberg}
+\author{Lindsey Madison}
 \author{Eric Aaron}
-\email{sorhom22@colby.edu}
-\phone{+123 (0)123 4445556}
+\email{whsolo22@colby.edu}
 \affiliation[Colby College]
 {Department of Computer Science, Colby College, Waterville, ME}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -62,7 +62,7 @@
 %% optional argument to \title.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \title[An \textsf{achemso} demo]
-  {Small Assignment 10/30 - Code Validation}
+  {Investigating Zero-Point Energy in a Water Trimer with Diffusion Monte Carlo}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Some journals require a list of abbreviations or keywords to be
@@ -109,18 +109,21 @@
 %% if an abstract is not used by the target journal.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
-We~\cite{Anderson1975} give an overview of the Diffusion Monte Carlo (DMC) algorithm and its applications into finding solutions to the Schrodinger Equation when no analytical solution is available. An implementation of the DMC algorithm is presented with a specific focus on understanding the behaviour of Clathrate Hydrates---a complex, multi-atomic structure often made up of water molecules and a greenhouse gas. Given the many ways of representing such a system, we present conditions for which different representations produce the computationally efficient results. We show how Importance Sampling can be used to reduce some of the computational inefficiency that abounds when working in high dimensional data sets with results that mirror those of a straightforward DMC implementation. Finally, we provide an analysis of the above algorithm when implemented in a Object Oriented versus script-based format to conclude that script-based programming is more computationally efficient in this scope.
+We give an overview of the Diffusion Monte Carlo (DMC) algorithm and its applications into finding solutions to the Schr\"odinger Equation when no analytical solution is available. An implementation of the DMC algorithm is presented with a specific focus on understanding the behavior of a three-water molecule system. Given the same data structure, a four-dimensional NumPy array, we demonstrate how a fully vectorized implementation is at least 35 times faster than a traditional for loop implementation, and how to validate an inherently less obvious implementation. In such molecularly complicated systems, we show how the role of timestep factors into both the population of walkers and the calculated Zero-Point energy of the system. Following up, we give necessary criteria to find the Zero-Point energy to the desired precision, and show the wave function, a normal distribution of bond lengths or angles within the studied molecular system. Finally, we show the difficulty of equilibrating a complicated system like the water trimer, and we illustrate techniques for how build an equilibrated system when the DMC algorithm is not sufficient on its own when the system is initialized with random values.
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Start the main part of the manuscript here.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
-We introduce an efficient, generalizable, and validated implementation of the Diffusion Monte Carlo (DMC) algorithm utilizing NumPy. We discuss the problems faced in the world of Computational Sciences in writing validated, efficient, and widely usable code and how our implementation of the DMC algorithm furthers the work in these areas. We present efficiency comparisons between an Object-Oriented approach and a scripting approach, and discuss the pros and cons of each implementation in the context of verifiability, efficiency and generalizability. 
+The Schr\"odinger equation can be solved for only the simplest of systems. Often, in Chemistry, we wish to know the result of the Schr\"odinger equation for more complicated molecular systems, such as a single water molecule and a water trimer system. However, due to the complexities of these systems, the Schr\"odinger equation is not able to be solved analytically, and so no resulting wave function can be obtained. 
 
-The Shr\"odinger equation is nearly impossible to solve for complicated molecular systems. To date, the DMC algorithm is one of the best proposed algorithms for creating a tight approximation of solutions to the Schr\"odinger equation for complex systems. Given the complexity of the DMC algorithm and its potential for time growth in large systems, studying faster implementations of it is broadly applicable for future research; in computational studies, time barriers often prevent work from being done as computers are required to analyze a large amount of possible simulations.
+Instead, we turn to the Diffusion Monte Carlo (DMC) algorithm, first introduced by Anderson. We give an efficient, generalizable, and validated NumPy implementation of the DMC algorithm in order to calculate the Zero-Point energy and wave function of a single water molecule system and water trimer system. To our knowledge, this is the first time that the water trimer system has been studied using DMC methods. 
 
-However, a fast implementation is not valuable unless it is correct. We provide techniques through which we validated our work and hope that these techniques and practices can be apllied broadly to future work done in Computational Science.
+We give evidence to support the importance of time step when performing calculations, both in the capacity of the Zero-Point energy and the wave function. We show how time step impacts the population of walkers in the DMC algorithm, an interesting discovery, and how a smaller timestep alleviates this problem. 
+
+We conclude with the importance of computational efficiency and give an empirical analysis of two different implementations of the DMC algorithm with specific focus on how the potential energy function is calculated. In any computationally heavy experiment, efficiency is important. We show a strategy for leveraging vectorization techniques to arrive at a meaningfully faster implementation. In addition, we give tools to validate these vectorization techniques given that the code is less inherently obvious than a more typical for loop implementation. 
+
 \section{Related Work}
 
 This semester, we code a python based implementation of the Diffusion Monte Carlo algorithm originally presented in Anderson 1975~\cite{Anderson1975}. Our implementation of the DMC algorithm can be directly attributed to Anderson's work, as he was one of the first to propose such a method. At the time, other methods were seen as more computationally efficient for a given level of accuracy. We take Anderson's algorithm and refine it in the scope of being efficient for computing the ground level energy and bond strength of Clathrate Hydrates. 
@@ -131,9 +134,12 @@ As Anderson points out, the Schr\"odinger Equation is only analytically solvable
 
 \section{Modeling}
 \subsection{The Model}
-The DMC model is not novel. It~\cite{Anderson1975} was first introduced over 40 years ago and has been refined since. At a high level, the model takes an array of walkers, each representing a possible state of the system, and propagates the atoms in each walker. After propagation, the potential energy of each walker is calculated. Walkers with potential energy that is too high are deleted, while walkers with reasonable potential energy are replicated. Given the pseudo-randomness leveraged in code-based implementations of the DMC algorithm, this serves to approximate every possible configuration of the system, within the bounds in which it would normally exist in nature.
+At a high level, in each loop of the simulation, the DMC algorithm first calculates the reference energy of the system (one can think of this as the average zero-point energy). Then, the algorithm takes an array of walkers, each representing a possible state of the system, and propagates the atoms in each walker within a normal distribution based on the time step. After propagation, the potential energy of each walker is calculated. Walkers with potential energy higher than the reference energy are deleted, based on a given probability, while walkers with reasonable potential energy are replicated. Over many time steps, the reference energy starts to converge to an experimentally found value, and by taking a 1000 step rolling average, one can compute the Zero-Point energy of the system. 
 
-Over time, the rolling average of the potential energy of all systems that are valid converges to the zero point energy, or the ground state energy of the system. This produces an approximate solution of the Schr\"odinger equation, which is what the DMC algorithm is modelling. 
+Given the pseudo-randomness leveraged in code-based implementations of the DMC algorithm, this serves to approximate every possible configuration of the system, within the bounds in which it would normally exist in nature. The resulting positions of the atoms in the system serves as the solution to Schr\"odinger’s wave function equation, and we see that the bond lengths and bond angles between atoms appear within a normal distribution of their equilibrium values. 
+
+Over time, the rolling average of the potential energy of all systems that are valid converges to the zero-point energy, or the ground state energy of the system. This produces an approximate solution of the Schr\"odinger equation, which is what the DMC algorithm is modelling.
+
 \subsection{Implementation}
 In our implementation of DMC, we write a script-based implementation in Python, relying heavily on the NumPy library, which provides ``vectorization'' for fast operations on large matrices---that is, it allows processors to perform concurrent operations while looping over matrices, greatly reducing runtime compared to conventional looping. The most important variable in the code is a 4D array which stores the Cartesian coordinates of each atom in each molecule in each walker. As we move through the simulation loop of the algorithm, we operate on the walker array to delete and replicate walkers as required by the algorithm.
 
@@ -155,8 +161,7 @@ When creating a piece of code in the field of Computational Science, its worth i
 
 This begs us to consider how to create generalizable code that can be used in a variety of circumstances without sacrificing efficiency. Observe that NumPy works well when dealing with arrays of many dimensions. As soon as we change the sizes of the molecules in a walker, the dimensions of our array are no longer even, and so NumPy cannot cleanly vectorize the solution in the 4D data structure that we have presented up to this point. From a programming point of view, it would not be particularly difficult to represent each walker on a singular array dimension. However, this also reduces the extendablility of our code as it makes the potential energy function extraordinarily difficult to calculate, given that each molecule and atom corresponds to a particular index on the same array dimesion. It also makes initializing the walker array cumbersome and unintuitive, as the user would have to memorize a potentially very long string of atoms and know their indices to facilitate the potential energy calculations both within and between molecules in a particular walker. 
 
-We hope that the users of our code are domain experts, and want to create a scientific instrument that is easy and intuitive for them to use. As such, we continue to try and refine our ideas to create an implementation of DMC that balances both efficiency and ease of use. 
-
+We further plan to extend our implementation to include importance sampling which appears in ( ). This will allow us to 
 \section{Conclusion}
 % Everything After this comes later
 %\section{Results and discussion}
@@ -345,9 +350,9 @@ We hope that the users of our code are domain experts, and want to create a scie
 %%% classes.  This should be given within the "acknowledgement"
 %%% environment, which will make the correct section or running title.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{acknowledgement}
-The authors thank Professor Lindsey Madison of Colby College for her time and expertise.
-\end{acknowledgement}
+%\begin{acknowledgement}
+%The authors thank Professor Lindsey Madison of Colby College for her time and expertise.
+%\end{acknowledgement}
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% The same is true for Supporting Information, which should use the

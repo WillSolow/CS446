@@ -8,10 +8,10 @@ def third_water(walkers):
     '''
     # Average Oxygen Positions,s u,v each (3,)
     avg_walker = np.mean(walkers,axis=0)
-    print(avg_walker)
+    #print(avg_walker)
     u,v = avg_walker[:,0,:]
-    print(u)
-    print(v)
+    #print(u)
+    #print(v)
     # Midpoint between u,v (3,)
     m = (u + v)/2 
     # Orthogonal vector to midpoint
@@ -31,15 +31,15 @@ def alt_third_water(walkers):
     print(midpoints.shape)
     
     m0 = oxygen_pos[:,1]-midpoints
-    print(m0.shape)
+    #print(m0.shape)
     p = np.stack((-m0[:,1],m0[0],np.zeros(m0.shape[0])),axis=-1)
-    print(p.shape)
+    #print(p.shape)
     t = p*np.linalg.norm(m0,axis=1) * sqrt(3) / np.linalg.norm(p,axis=1) + m
     # Find the midpoint coordinate between the two oxygen atoms
     #midpoint = (walkers[:,0,0]+walkers[:,1,0])/2
     #distance = np.linalg.norm(walkers[:,0,0]-walkers[:,1,0])
     offset = t - oxygen_pos[:0]
-    print(offset)
+    #print(offset)
     
     
     new_water = walkers[:,0] + offset
