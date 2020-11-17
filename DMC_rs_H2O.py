@@ -4,16 +4,16 @@
 # Script Style
 # Last Updated 11/04/20
 
-# This program runs a Diffusion Monte Carlo simulation to find an approximation for the
-# ground state energy of a system of molecules. In this particular implementation, a 4D
-# array is utilized as a main data structure for storing the coordinates of each atom 
-# in each molecule in each walker. 
+# This program runs a Diffusion Monte Carlo simulation to find an approximation 
+# for the ground state energy of a system of molecules. In this particular
+# implementation, a 4D array is utilized as a main data structure for storing 
+# the coordinates of each atom in each molecule in each walker. 
 
-# To Run: Navigate to file in terminal directory and type 'python dmc_rs_4D_H2O.py'
+# To Run: Navigate to file in terminal directory and type 'python dmc_rs_H2O.py'
 
-# Output: Graphs for the reference energy, the n-step rolling average, and the number 
-# of walkers at each time step, as well as a density histogram of the walker distance
-# from equilibrium and the corresponding wave function
+# Output: Graphs for the reference energy, the n-step rolling average, and the 
+# number of walkers at each time step, as well as a density histogram of the 
+# walker distance from equilibrium and the corresponding wave function
 
 # Imports
 import numpy as np
@@ -27,12 +27,12 @@ import sys
 # Set print options to suppress scientific notation
 np.set_printoptions(suppress=True)
 
-# Ignore runtime divide by zero erros which can occur when the distances between two
-# atoms are equal in the intermolecular potential energy function
+# Ignore runtime divide by zero erros which can occur when the distances between 
+# two atoms are equal in the intermolecular potential energy function
 np.seterr(divide='ignore')
 
 
-###################################################################################
+################################################################################
 # Scientific Constants
 
 
@@ -70,8 +70,8 @@ N = 4.0303907719347185
 coord_const = 3
 
 
-# Create a random seed for the number generator, can be changed to a constant value
-# for the purpose of replicability
+# Create a random seed for the number generator, can be changed to a constant 
+# value for the purpose of replicability
 seed = np.random.randint(1000000)
 # Set the seed manually for replicability purposes over multiple simulations
 #seed = 
@@ -82,7 +82,7 @@ print('Seed used: ' + str(seed))
 
 
 
-####################################################################################
+################################################################################
 # Simulation Loop Constants
 
 
@@ -92,19 +92,19 @@ print('Seed used: ' + str(seed))
 dt = .1
 
 
-# Length of the equilibration phase in time steps. The below data is for the water molecule
-# If dt = 1.0, equilibration phase should be greater than 1500
-# If dt = 0.5, equilibration phase should be greater than 2000
-# If dt = 0.1, equilibration phase should be greater than 5000
+# Length of the equilibration phase in time steps. The equilibration phase 
+# should be at least 1 / sqrt(dt) * 1500, to ensure proper equilibration given
+# a random walker initialization
 equilibration_phase = 1500
 
 
 
-# Number of time steps in a simulation
+# Number of time steps in a simulation. Generally on the order of 5 times the
+# length of the equilibration phase
 sim_length = 5000
 
 # Number of initial walkers
-n_walkers = 10000
+n_walkers = 5000
 
 # Number of time steps for rolling average calculation
 rolling_avg = 1000
@@ -114,22 +114,13 @@ rolling_avg = 1000
 n_bins = 50
 
 
-# Set the dimensions of the 4D array of which the walkers, molecules, atoms, and positions 
-# reside. Used for clarity in the simulation loop
-walker_axis = 0
-molecule_axis = 1
-atom_axis = 2
-coord_axis = 3
-
-
-
 ####################################################################################
 # Molecule Model Constants
 
 
 # Number of molecules in each walker
 # Used to initialize the walker array
-num_molecules = 3
+num_molecules = 1
 
 
 
@@ -157,53 +148,46 @@ kA = 75.90 * (4.184 / 2625.5)
 
 
 
-# Returns an array of masses in Atomic Mass Units, Oxygen is first followed by both 
-# Hydrogens
-atomic_masses = np.array([oxygen_mass, hydrogen_mass, hydrogen_mass]) / (avogadro * electron_mass)
+# Returns an array of masses in Atomic Mass Units, Oxygen is first followed by 
+# both Hydrogens
+atomic_masses = np.array([oxygen_mass, hydrogen_mass, hydrogen_mass]) / \
+                (avogadro * electron_mass)
 
 
 # Returns an array of atomic charges based on the position of the atoms in the atomic_masses array
-# This is used in the potential energy function and is broadcasted to an array of distances to
-# calculate the energy using Coulomb's Law. 
+# This is used in the potential energy function and is broadcasted to an array 
+# of distances to calculate the energy using Coulomb's Law. 
 atomic_charges = np.array([q_oxygen, q_hydrogen, q_hydrogen])
 
 
 
 # Calculate the reduced mass of the system
-# Note that as the wave function is being graphed for an OH vector, we only consider the
-# reduced mass of the OH vector system
-reduced_mass = (atomic_masses[0]*atomic_masses[1])/(atomic_masses[0]+atomic_masses[1])
-
+# Note that as the wave function is being graphed for an OH vector, we only 
+# consider the reduced mass of the OH vector system
+# For the water trimer system, we currently do not consider reduced mass.
+# reduced_mass = (atomic_masses[0]*atomic_masses[1])/(atomic_masses[0]+ \
+#                 atomic_masses[1])
 
 
 # Initial 4D walker array
 # Returns a uniform distribution cenetered at the given bond length
 # Array axes are walkers, molecules, coordinates, and atoms
-#walkers = (np.random.rand(n_walkers, num_molecules, atomic_masses.shape[0], \
+# walkers = (np.random.rand(n_walkers, num_molecules, atomic_masses.shape[0], \
 #    coord_const) - .5) 
+
 
 # Alternatively, load a 4D array of equilibrated walkers. Used in more complex
 # systems where equilibration takes a large amount of time due to that amount of
 # randomness introduced to the system on initialization
-walkers = np.load('10000_water_trimer.npy')
+walkers = np.load('1000_water_single.npy')
 
 
-# Stack another water molecule onto the walkers array to get a water trimer system
-
-# Create a new water molecule from the old and propagate it a little bit
-#new_water = walkers[:,0,np.newaxis,:,:] + np.array([-1.98702975, 5.1702229, 1.29956568])
-
-#walkers = np.append(walkers, new_water, axis=1)
-#print('Walkers shape: ', walkers.shape)
-#print('walkers: \n', walkers)
-
-
-#######################################################################################
+################################################################################
 # Simulation
 
-# Create indexing arrays for the distinct pairs of water molecules in the potential 
-# energy calculation. Based on the idea that there are num_molecules choose 2 distinct
-# molecular pairs
+# Create indexing arrays for the distinct pairs of water molecules in the 
+# potential energy calculation. Based on the idea that there are num_molecules 
+# choose 2 distinct molecular pairs.
 molecule_index_a = np.array(sum([[i]*(num_molecules-(i+1)) \
                    for i in range(num_molecules-1)],[]))
 molecule_index_b = np.array(sum([list(range(i,num_molecules)) \
@@ -211,8 +195,8 @@ molecule_index_b = np.array(sum([list(range(i,num_molecules)) \
 
 
 # Create an array of the charges 
-# Computes the product of the charges as the atom charges are multiplied together in accordance
-# with Coulomb's Law.
+# Computes the product of the charges as the atom charges are multiplied 
+# together in accordance with Coulomb's Law.
 coulombic_charges = (np.transpose(atomic_charges[np.newaxis]) \
                     @ atomic_charges[np.newaxis])  * coulomb_const
 
@@ -224,8 +208,8 @@ num_walkers = np.zeros(sim_length)
 
 # Input: 4D Array of walkers
 # Output: 1D Array of intramolecular potential energies for each walker
-# Calculates the potential energy of a walker based on the distance of bond lengths and 
-# bond angles from equilibrium
+# Calculates the potential energy of a walker based on the distance of bond 
+# lengths and bond angles from equilibrium
 def intra_pe(x):
     # Return the two OH vectors
 	# Used to calculate the bond lengths and angle in a molecule
@@ -236,97 +220,101 @@ def intra_pe(x):
     lengths = np.linalg.norm(OH_vectors, axis=3)
 	
 	# Calculates the bond angle in the HOH bond
-	# Computes the arccosine of the dot product between the two vectors, by normalizing the
-	# vectors to magnitude of 1
+	# Computes the arccosine of the dot product between the two vectors, by 
+    # normalizing the vectors to magnitude of 1
     angle = np.arccos(np.sum(OH_vectors[:,:,0]*-OH_vectors[:,:,1], axis=2) \
 	        / np.prod(lengths, axis=2))
 			
-	# Calculates the potential energies based on the magnitude vector and bond angle
+	# Calculate the potential energies based on the length vector and bond angle
     pe_bond_lengths = .5 * kOH * (lengths - eq_bond_length)**2
     pe_bond_angle = .5 * kA * (angle - eq_bond_angle)**2
 	
-	# Sums the potential energy of the bond lengths with the bond angle to get potential energy
-	# of one molecule, then summing to get potential energy of each walker
+	# Sums the potential energy of the bond lengths with the bond angle 
+    # to get potential energy of one molecule, then summing to get potential 
+    # energy of each walker
     return np.sum(np.sum(pe_bond_lengths, axis = 2)+pe_bond_angle, axis=1)
 
     
     
-# The lambda function below changes all instances of -inf or inf in a numpy array to 0
-# under the assumption that the -inf or inf values result from divisions by 0
+# The lambda function below changes all instances of -inf or inf in a numpy 
+# array to 0 assuming that the -inf or inf values result from divisions by 0
 inf_to_zero = lambda dist: np.where(np.abs(dist) == np.inf, 0, dist)
     
 
 # Input: 4D Array of walkers
-# Output: Three 1D arrays for Intermolecular Potential Energy, Coulombic energy, and 
-#         Leonard Jones energy
-# Calculates the intermolecular potential energy of a walker based on the distances of the
-# atoms in each walker from one another
+# Output: Three 1D arrays for Intermolecular Potential Energy, Coulombic energy, 
+#         and Leonard Jones energy
+# Calculates the intermolecular potential energy of a walker based on the 
+# distances of the atoms in each walker from one another
 def inter_pe(x):
     
     # Returns the atom positions between two distinct pairs of molecules 
-    # in each walker. This broadcasts from a 4D array of walkers with axis dimesions 
-    # (num_walkers, num_molecules, num_atoms, coord_const) to two arrays with 
-    # dimesions (num_walkers, num_distinct_molecule_pairs, num_atoms, coord_const),
-    # with the result being the dimensions:
+    # in each walker. This broadcasts from a 4D array of walkers with axis 
+    # dimesions (num_walkers, num_molecules, num_atoms, coord_const) to two 
+    # arrays with dimesions (num_walkers, num_distinct_molecule_pairs, num_atoms
+    # , coord_const), with the result being the dimensions:
     # (num_walkers, num_distinct_molecule_pairs, num_atoms, coord_const).
-    # These arrays line up such that the corresponding pairs on the second dimension are 
-    # the distinct pairs of molecules
+    # These arrays line up such that the corresponding pairs on the second 
+    # dimension are the distinct pairs of molecules
     pairs_a = x[:,molecule_index_a]
     pairs_b = x[:,molecule_index_b]
     
     
     
-    # Returns the distances between two atoms in each molecule pair. The distance array is 
-    # now of dimension (num_walkers, num_distinct_pairs, num_atoms, num_atoms) as each
-    # atom in the molecule has its distance computed with each atom in the other molecule in
-    # the distinct pair.
-    # This line works similar to numpy's matrix multiplication by broadcasting the 4D array
-    # to a higher dimesion and then taking the elementwise difference before squarring and then
-    # summing along the positions axis to collapse the array into distances.
+    # Returns the distances between two atoms in each molecule pair. The 
+    # distance array is now of dimension (num_walkers, num_distinct_pairs, 
+    # num_atoms, num_atoms) as each atom in the molecule has its distance 
+    # computed with each atom in the other molecule in the distinct pair.
+    # This line works similar to numpy's matrix multiplication by broadcasting 
+    # the 4D array to a higher dimesion and then taking the elementwise 
+    # difference before squarring and then summing along the positions axis to 
+    # collapse the array into distances.
     distances = np.sqrt( np.sum( (pairs_a[...,None] \
             - pairs_b[:,:,np.newaxis,...].transpose(0,1,2,4,3) )**2, axis=3) )
    
    
    
     # Calculate the Coulombic energy using Coulomb's Law of every walker. 
-    # Distances is a 4D array and this division broadcasts to a 4D array of Coulombic energies
-    # where each element is the Coulombic energy of an atom pair in a distinct pair of water 
-    # molecules. 
-    # Summing along the last three axis gives the Coulombic energy of each walker.
-    # Note that we account for any instances of divide by zero by calling inf_to_zero on the
-    # result of dividing coulombic charges by distance.
+    # Distances is a 4D array and this division broadcasts to a 4D array of 
+    # Coulombic energies where each element is the Coulombic energy of an atom 
+    # pair in a distinct pair of water molecules. 
+    # Summing along the last three axis gives the Coulombic energy of each 
+    # walker. Note that we account for any instance of divide by zero by calling 
+    # inf_to_zero on the result of dividing coulombic charges by distance.
     coulombic_energy = np.sum( inf_to_zero(coulombic_charges / distances), axis=(1,2,3))
     
     
     
 
-    # Calculate the quotient of sigma with the distances between pairs of oxygen molecules
-    # Given that the Lennard Jones energy is only calculated for oxygen oxygen pairs.
-    # By the initialization assumption, the Oxygen atom is always in the first index,
-    # so the Oxygen pair is in the (0, 0) index in the last two dimensions of the 4D array with
-    # dimension (num_walkers, num_distinct_molecule_pairs, num_atoms, coord_const).
+    # Calculate the quotient of sigma with the distances between pairs of oxygen 
+    # molecules Given that the Lennard Jones energy is only calculated for O-O 
+    # pairs. By the initialization assumption, the Oxygen atom is always in the 
+    # first index, so the Oxygen pair is in the (0,0) index in the last two 
+    # dimensions of the 4D array with dimension (num_walkers,
+    # num_distinct_molecule_pairs, num_atoms, coord_const).
     sigma_dist = inf_to_zero( sigma / distances[:,:,0,0] )
     
     # Calculate the Lennard Jones energy in accordance with the given equation
-    # Sum along the first axis to get the total Lennard Jones energy in one walker.
+    # Sum along the first axis to get the total LJ energy in one walker.
     lennard_jones_energy = np.sum( 4*epsilon*(sigma_dist**12 - sigma_dist**6), axis = 1)
     
     
     
-    # Gives the intermolecular potential energy for each walker as it is the sum of the 
-    # Coulombic Energy and the Leonard Jones Energy.
+    # Gives the intermolecular potential energy for each walker as it is the sum 
+    # of the Coulombic Energy and the Leonard Jones Energy.
     intermolecular_potential_energy = coulombic_energy + lennard_jones_energy
     
     
     
-    # Return all three calculated energys which are 1D arrays of energy values for each walker
+    # Return all three calculated energys which are 1D arrays of energy values 
+    # for each walker
     return intermolecular_potential_energy, coulombic_energy, lennard_jones_energy
 
     
     
 # Input: 4D array of walkers
-# Output: 1D array of the sum of the intermolecular and intramolecular potential energy of each
-# walker
+# Output: 1D array of the sum of the intermolecular and intramolecular potential 
+# energy of each walker
 def total_pe(x):
 
     # Calculate the intramolecular potential energy of each walker
@@ -335,7 +323,7 @@ def total_pe(x):
     # Calculate the intermolecular potential energy of each walker
     # only if there is more than one molecule in the system
     inter_potential_energy = 0
-    if x.shape[molecule_axis] > 1:
+    if x.shape[1] > 1:
         inter_potential_energy, coulombic, lennard_jones = inter_pe(x)
     
     
@@ -347,28 +335,29 @@ def total_pe(x):
 	
 	
 # Simulation loop
-# Iterates over the walkers array, propogating each walker. Deletes and replicates those 
-# walkers based on their potential energies with respect to the calculated reference energy
+# Iterates over the walkers array, propogating each walker. Deletes and 
+# replicates those walkers based on their potential energies with respect to the
+# calculated reference energy
 for i in range(sim_length):
 
     # Calculate the Reference Energy
-	# Energy is calculated based on the average of all potential energies of walkers.
-	# Is adjusted by a statistical value to account for large or small walker populations.
+	# Energy is calculated based on the average of all potential energies of 
+    # walkers. Is adjusted by a statistical value to account for large or small 
+    # walker populations.
     reference_energy[i] = np.mean( total_pe(walkers) ) \
-        + (1.0 - (walkers.shape[walker_axis] / n_walkers) ) / ( 2.0*dt )
+        + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
 		
     # Current number of walkers
-    num_walkers[i] = walkers.shape[walker_axis]
-    #print(f'Reference energy: {reference_energy[i]:.8f}, Walker Shape: '+str(walkers.shape))
+    num_walkers[i] = walkers.shape[0]
 
 	
-	# Propagates each coordinate of each atom in each molecule of each walker within a normal
-	# distribution given by the atomic mass of each atom.
-    # Returns a 4D array in the shape of walkers with the standard deviation depending on the
-    # atomic mass of each atom	
-    propagations = np.random.normal(0, np.sqrt(dt/np.transpose(np.tile(atomic_masses, \
-	    (walkers.shape[walker_axis], num_molecules, coord_const, 1)), \
-        (walker_axis, molecule_axis, coord_axis, atom_axis))))
+	# Propagates each coordinate of each atom in each molecule of each walker 
+    # within a normal distribution given by the atomic mass of each atom.
+    # Returns a 4D array in the shape of walkers with the standard deviation 
+    # depending on the atomic mass of each atom	
+    propagations = np.random.normal(0, np.sqrt(dt/np.transpose(np.tile( \
+                   atomic_masses, (walkers.shape[0], num_molecules, \
+                   coord_const, 1)), (0, 1, 3, 2))))
 		
 	# Adds the propagation lengths to the 4D walker array
     walkers = walkers + propagations
@@ -380,10 +369,10 @@ for i in range(sim_length):
 
     
 	
-	# Gives a uniform distribution in the range [0,1) associated with each walker
-    # in the system
+	# Gives a uniform distribution in the range [0,1) associated with each 
+    # walker in the system
     # Used to calculate the chance that a walker is deleted or replicated	
-    thresholds = np.random.rand(walkers.shape[walker_axis])
+    thresholds = np.random.rand(walkers.shape[0])
 	
 	
 	# Calculates a probability for each walker that it is deleted
@@ -396,22 +385,24 @@ for i in range(sim_length):
 
 	
 	
-	# Returns a boolean array of which walkers have a chance of surviving or being deleted
-	# Based on the above probabilities and thresholds calculated for each walker
-    # calculate which walkers actually have the necessary potential energies.
-	# These two arrays are not mutually exclusive, but the calculations below ensure
-	# that no walker is both deleted and replicated in the same time step.
+	# Returns a boolean array of which walkers have a chance of surviving or 
+    # being deleted. Based on the above probabilities and thresholds calculated 
+    # for each walker calculate which walkers actually have the necessary 
+    # potential energies. These two arrays are not mutually exclusive, but the
+    # calculations below ensure that no walker is both deleted and replicated in 
+    # the same time step.
     to_delete = prob_delete < thresholds
     to_replicate = prob_replicate > thresholds
     
 	
 	
 	# Gives a boolean array of indices of the walkers that are not deleted
-	# Calculates if a walker is deleted by if its potential energy is greater than
-	# the reference energy and if its threshold is above the prob_delete threshold.
-	# Notice that walkers_to_remain is mutually exclusive from walkers_to_replicate
-	# as the potential energy calculate is exclusive.
-    walkers_to_remain = np.invert( (potential_energies > reference_energy[i]) * to_delete )
+	# Calculates if a walker is deleted by if its potential energy is greater 
+    # than the reference energy and if its threshold is above the prob_delete 
+    # threshold. Notice that walkers_to_remain is mutually exclusive from 
+    # walkers_to_replicate as the potential energy calculate is exclusive.
+    walkers_to_remain = np.invert( (potential_energies > reference_energy[i]) \
+                        * to_delete )
 	
 	# Returns the walkers that remain after deletion
     walkers_after_delete = walkers[walkers_to_remain]
@@ -419,9 +410,11 @@ for i in range(sim_length):
 	
 	
 	# Gives a boolean array of indices of the walkres that are replicated
-	# Calculates if a walker is replicated by if its potential energy is less than
-	# the reference energy and if its threshold is below the prob_replicate threshold.
-    walkers_to_replicate = (potential_energies < reference_energy[i]) * to_replicate
+	# Calculates if a walker is replicated by if its potential energy is less 
+    # than the reference energy and if its threshold is below the prob_replicate 
+    # threshold.
+    walkers_to_replicate = (potential_energies < reference_energy[i]) \
+                           * to_replicate
 	
 	# Returns the walkers that are to be replicated
     walkers_after_replication = walkers[walkers_to_replicate]
@@ -429,25 +422,25 @@ for i in range(sim_length):
 	
 	
 	# Returns the new walker array
-	# Concatenates the walkers that were not deleted with the walkers that are to be 
-	# replicated. Since a replicated walker was not deleted, concatenating these two 
-	# arrays serves to replicated a walker. 
-	# Notice that if the potential energy is equal the reference energy, the walker 
-	# will appear in the walkers_after_delete array but not in the 
-	# walkers_after_replication array. This serves to ensure that in the unlikely case 
-	# of equal potential and reference energy, the walker is neither replicated nor deleted. 
-    walkers = np.append(walkers_after_delete, walkers_after_replication, axis = walker_axis)
+	# Concatenates the walkers that were not deleted with the walkers that are 
+    # to be replicated. Since a replicated walker was not deleted, 
+    # concatenating these two arrays serves to replicated a walker. Notice that 
+    # if the potential energy is equal the reference energy, the walker will 
+    # appear in the walkers_after_delete array but not in the 
+	# walkers_after_replication array. This serves to ensure that in the 
+    # unlikely case of equal potential and reference energy, the walker is 
+    # neither replicated nor deleted. 
+    walkers = np.append(walkers_after_delete,walkers_after_replication,axis = 0)
     
-# Save the outputted walker array to a text file give that it takes a ridiculuous amount
-# of time to equilibrate a water trimer system from random values
-#np.save('equil_water_trimer.npy', walkers)
+# Save the outputted walker array to a .npy file for later use
+np.save('5000_water_trimer.npy', walkers)
 
-#####################################################################################
+################################################################################
 # Output
 
 
 # Uncomment the below line to avoid graphing 
-#sys.exit(0)
+sys.exit(0)
 
 
 # Calculate the rolling average for rolling_avg time steps
@@ -455,17 +448,17 @@ ref_rolling_avg = np.zeros(sim_length)
 for i in range(rolling_avg, sim_length):
     # Calculate the rolling average by looping over the past rolling_avg time steps 
     for j in range(rolling_avg):
-        ref_rolling_avg[i] = ( ref_rolling_avg[i] - ( ref_rolling_avg[i] / (j+1) ) ) \
-            + ( reference_energy[i-j] / (j+1) )
+        ref_rolling_avg[i] = (ref_rolling_avg[i]-(ref_rolling_avg[i] / (j+1))) \
+                             + ( reference_energy[i-j] / (j+1) )
 			
 			
-# Calculate the average reference convergence energy based on reference energy after the
-# equilibration phase
+# Calculate the average reference convergence energy based on reference energy 
+# after the equilibration phase
 ref_converge_num = np.mean(ref_rolling_avg[rolling_avg:])
 
 
 # Create walker num array for plotting
-init_walkers = (np.zeros(sim_length) + 1 )* n_walkers
+init_walkers = (np.zeros(sim_length) + 1 ) * n_walkers
 
 # Create Zero Point Energy array for plotting
 zp_energy = (np.zeros(sim_length) + 1) * ref_converge_num	
@@ -474,7 +467,7 @@ zp_energy = (np.zeros(sim_length) + 1) * ref_converge_num
 
 # Calculate the distance between one of the OH vectors
 # Used in the histogram and wave function plot	
-OH_positions = np.linalg.norm(walkers[:,0,0]-walkers[:,0,1], axis = molecule_axis)
+OH_positions = np.linalg.norm(walkers[:,0,0]-walkers[:,0,1], axis = 1)
 
 
 
