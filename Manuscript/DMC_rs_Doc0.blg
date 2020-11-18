@@ -10,45 +10,45 @@ Repeated entry---line 3 of file rs_bib.bib
  :                         ,
 I'm skipping whatever remains of this entry
 achemso 2018/02/05 v3.11a
-You've used 2 entries,
+You've used 4 entries,
             2536 wiz_defined-function locations,
-            757 strings with 6604 characters,
-and the built_in function-call counts, 500 in all, are:
-= -- 38
-> -- 13
+            776 strings with 7030 characters,
+and the built_in function-call counts, 1264 in all, are:
+= -- 103
+> -- 54
 < -- 5
-+ -- 7
-- -- 5
-* -- 31
-:= -- 65
-add.period$ -- 2
-call.type$ -- 2
++ -- 23
+- -- 19
+* -- 117
+:= -- 166
+add.period$ -- 6
+call.type$ -- 4
 change.case$ -- 4
 chr.to.int$ -- 2
-cite$ -- 2
-duplicate$ -- 29
-empty$ -- 40
-format.name$ -- 3
-if$ -- 93
+cite$ -- 4
+duplicate$ -- 69
+empty$ -- 94
+format.name$ -- 19
+if$ -- 242
 int.to.chr$ -- 0
 int.to.str$ -- 1
 missing$ -- 0
-newline$ -- 34
-num.names$ -- 3
-pop$ -- 3
+newline$ -- 46
+num.names$ -- 9
+pop$ -- 7
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 0
-skip$ -- 2
+skip$ -- 4
 stack$ -- 0
-substring$ -- 34
-swap$ -- 19
-text.length$ -- 2
+substring$ -- 90
+swap$ -- 61
+text.length$ -- 6
 text.prefix$ -- 0
 top$ -- 1
-type$ -- 11
+type$ -- 25
 warning$ -- 0
-while$ -- 7
+while$ -- 15
 width$ -- 0
-write$ -- 41
+write$ -- 67
 (There was 1 error message)
