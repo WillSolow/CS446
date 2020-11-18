@@ -120,7 +120,7 @@ n_bins = 50
 
 # Number of molecules in each walker
 # Used to initialize the walker array
-num_molecules = 1
+num_molecules = 3
 
 
 
@@ -165,8 +165,8 @@ atomic_charges = np.array([q_oxygen, q_hydrogen, q_hydrogen])
 # Note that as the wave function is being graphed for an OH vector, we only 
 # consider the reduced mass of the OH vector system
 # For the water trimer system, we currently do not consider reduced mass.
-# reduced_mass = (atomic_masses[0]*atomic_masses[1])/(atomic_masses[0]+ \
-#                 atomic_masses[1])
+reduced_mass = (atomic_masses[0]*atomic_masses[1])/(atomic_masses[0]+ \
+                atomic_masses[1])
 
 
 # Initial 4D walker array
@@ -179,7 +179,7 @@ atomic_charges = np.array([q_oxygen, q_hydrogen, q_hydrogen])
 # Alternatively, load a 4D array of equilibrated walkers. Used in more complex
 # systems where equilibration takes a large amount of time due to that amount of
 # randomness introduced to the system on initialization
-walkers = np.load('1000_water_single.npy')
+walkers = np.load('5000_water_trimer.npy')
 
 
 ################################################################################
@@ -433,14 +433,14 @@ for i in range(sim_length):
     walkers = np.append(walkers_after_delete,walkers_after_replication,axis = 0)
     
 # Save the outputted walker array to a .npy file for later use
-np.save('5000_water_trimer.npy', walkers)
+#np.save('5000_water_trimer.npy', walkers)
 
 ################################################################################
 # Output
 
 
 # Uncomment the below line to avoid graphing 
-sys.exit(0)
+#sys.exit(0)
 
 
 # Calculate the rolling average for rolling_avg time steps
@@ -475,35 +475,22 @@ OH_positions = np.linalg.norm(walkers[:,0,0]-walkers[:,0,1], axis = 1)
 # Step is .001, which is usually a good smooth value
 x = np.arange(OH_positions.min(), OH_positions.max(), step = .001)
 
+oxy = walkers[:,:,0]
+oxy_vec_10 = oxy[:,1]-oxy[:,0]
+oxy_vec_20 = oxy[:,2]-oxy[:,0]
+oxy_vec_21 = oxy[:,2]-oxy[:,1]
+oxy_ln_10 = np.linalg.norm(oxy_vec_10, axis=1)
+oxy_ln_20 = np.linalg.norm(oxy_vec_20, axis=1)
+oxy_ln_21 = np.linalg.norm(oxy_vec_21, axis=1)
 
+o_ang_1 = (180/np.pi)*np.arccos(np.sum(oxy_vec_10*oxy_vec_20, axis=1) / \
+          (oxy_ln_10*oxy_ln_20))
+o_ang_2 = (180/np.pi)*np.arccos(np.sum(-oxy_vec_10*oxy_vec_21, axis=1) / \
+          (oxy_ln_10*oxy_ln_21))
+o_ang_3 = (180/np.pi)*np.arccos(np.sum(-oxy_vec_20*-oxy_vec_21, axis=1) / \
+          (oxy_ln_20*oxy_ln_21))
 
-# Calculate the bond angle between every oxygen molecule in the water trimer.
-# Get the distinct pairs of each oxygen atom
-oxygen_pair_a = walkers[:,molecule_index_a]
-oxygen_pair_b = walkers[:,molecule_index_b]
-
-# Calculate the vector in between each distinct pair
-oxygen_vectors = oxygen_pair_a - oxygen_pair_b
-
-# Calculate the length of each oxygen vector
-oxygen_lengths = np.linalg.norm(oxygen_vectors, axis=2)
-
-# Find the three oxygen angles in the water trimer
-oxygen_angle_1 = (180/np.pi)*np.arccos(np.sum(-oxygen_vectors[:,0]*-oxygen_vectors[:,1], \
-                 axis=1) / (oxygen_lengths[:,0]*oxygen_lengths[:,1]))
-                 
-oxygen_angle_2 = (180/np.pi)*np.arccos(np.sum(-oxygen_vectors[:,0]*-oxygen_vectors[:,2], \
-                 axis=1) / (oxygen_lengths[:,0]*oxygen_lengths[:,2]))
-                 
-oxygen_angle_3 = (180/np.pi)*np.arccos(np.sum(-oxygen_vectors[:,1]*-oxygen_vectors[:,2], \
-                 axis=1) / (oxygen_lengths[:,1]*oxygen_lengths[:,2]))
-                 
-
-# Append all three angles into one matrix for graphing in the density histogram
-oxygen_angles = np.concatenate((oxygen_angle_1, oxygen_angle_2, \
-                oxygen_angle_3), axis=0)
-print(oxygen_angles.shape)
-
+o_angles = np.concatenate((o_ang_1,o_ang_2,o_ang_3),axis=0)
 	
 
 # Plot the reference energy throughout the simulation
@@ -549,24 +536,32 @@ plt.legend()
 # Plot a density histogram of the angles that the oxygen molecules form at the 
 # final iteration of the simulation
 plt.figure(5)
-plt.hist(oxygen_angle_1, bins=n_bins, density=True)
+plt.hist(o_ang_1, bins=n_bins, density=True)
 plt.xlabel('Oxygen Angle 1 in a Walker')
 plt.ylabel('Density of Walkers')
-plt.title('Density of Walker Oxygen Angles')
-plt.legend
+plt.title('Density of Walker Oxygen Angle 1')
+plt.legend()
 
 plt.figure(6)
-plt.hist(oxygen_angle_2, bins=n_bins, density=True)
+plt.hist(o_ang_2, bins=n_bins, density=True)
 plt.xlabel('Oxygen Angle 2 in a Walker')
 plt.ylabel('Density of Walkers')
-plt.title('Density of Walker Oxygen Angles')
-plt.legend
+plt.title('Density of Walker Oxygen Angle 2')
+plt.legend()
 
 plt.figure(7)
-plt.hist(oxygen_angle_3, bins=n_bins, density=True)
+plt.hist(o_ang_3, bins=n_bins, density=True)
 plt.xlabel('Oxygen Angle 3 in a Walker')
 plt.ylabel('Density of Walkers')
+plt.title('Density of Walker Oxygen Angle 3')
+plt.legend()
+
+plt.figure(8)
+plt.hist(o_angles, bins=n_bins, density=True)
+plt.xlabel('Oxygen Angle in a Walker')
+plt.ylabel('Density of Walkers')
 plt.title('Density of Walker Oxygen Angles')
-plt.legend
+plt.legend()
+
 plt.show()
 
