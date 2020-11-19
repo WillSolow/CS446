@@ -1,14 +1,14 @@
 # Fdb version 3
-["bibtex DMC_rs_Doc0"] 1604116228 "DMC_rs_Doc0.aux" "DMC_rs_Doc0.bbl" "DMC_rs_Doc0" 1604117592
+["bibtex DMC_rs_Doc0"] 1605674085 "DMC_rs_Doc0.aux" "DMC_rs_Doc0.bbl" "DMC_rs_Doc0" 1605674172
   "/usr/share/texlive/texmf-dist/bibtex/bst/achemso/achemso.bst" 1517961817 30126 87a39f95722e880134464e035b344579 ""
-  "DMC_rs_Doc0.aux" 1604117592 474 4c9937146efe39f0f22a4caae0c05449 ""
+  "DMC_rs_Doc0.aux" 1605674172 712 769df3114aca99a6e1409d621a53c166 ""
   "DMC_rs_Doc0.bcf" 0 -1 0 ""
-  "acs-DMC_rs_Doc0.bib" 1604117592 306 2ec6e2c563f7f14bcefed0d36c308168 ""
-  "rs_bib.bib" 1602136576 4130 59c49f6250107327ee8e123cca1b065b ""
+  "acs-DMC_rs_Doc0.bib" 1605674172 306 2ec6e2c563f7f14bcefed0d36c308168 ""
+  "rs_bib.bib" 1605674165 4558 222d6e57f0bb22666f80ee04dd72b631 ""
   (generated)
-  "DMC_rs_Doc0.blg"
   "DMC_rs_Doc0.bbl"
-["pdflatex"] 1604117591 "DMC_rs_Doc0.tex" "DMC_rs_Doc0.pdf" "DMC_rs_Doc0" 1604117592
+  "DMC_rs_Doc0.blg"
+["pdflatex"] 1605674171 "DMC_rs_Doc0.tex" "DMC_rs_Doc0.pdf" "DMC_rs_Doc0" 1605674172
   "/etc/texmf/web2c/texmf.cnf" 1569719740 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/home/skye/texmf/tex/generic/pgf/basiclayer/pgfcore.code.tex" 1480098816 1006 b103be0bfc8c1682ff1fa9760697a329 ""
   "/home/skye/texmf/tex/generic/pgf/basiclayer/pgfcorearrows.code.tex" 1480098816 43226 167a99346bfe2676e3efcdde2d81fe45 ""
@@ -92,7 +92,6 @@
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1480098698 1004 54797486969f23fa377b128694d548df ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1480098698 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmex10.tfm" 1480098701 992 662f679a0b3d2d53c1b94050fdaa3f50 ""
-  "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmmi10.tfm" 1480098701 1528 abec98dbc43e172678c11b3b9031252a ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmmi12.tfm" 1480098701 1524 4414a8315f39513458b80dfc63bff03a ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmmi6.tfm" 1480098701 1512 f21f83efb36853c0b70002322c1ab3ad ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmmi8.tfm" 1480098701 1520 eccf95517727cb11801f4f1aee3a21b4 ""
@@ -186,11 +185,11 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1520210507 32485 c64754543d8ac501bea6e75e209ea521 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1569994700 2700761 ac0584cc9514ab21918550a6948c4ee2 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1569994736 4127702 1179e4e63f561b49be6c7fc4616ff4ca ""
-  "DMC_rs_Doc0.aux" 1604117592 474 4c9937146efe39f0f22a4caae0c05449 ""
-  "DMC_rs_Doc0.bbl" 1604116228 1383 5ce762866b28a373b69b5e18707efc72 "bibtex DMC_rs_Doc0"
-  "DMC_rs_Doc0.tex" 1604117590 25670 0067c9f44c6fc107e479f7a1e7a5ac29 ""
+  "DMC_rs_Doc0.aux" 1605674172 712 769df3114aca99a6e1409d621a53c166 ""
+  "DMC_rs_Doc0.bbl" 1605674085 2263 a237f8e47d2363f88e84e624aada0b2f "bibtex DMC_rs_Doc0"
+  "DMC_rs_Doc0.tex" 1605674169 29981 bcffa40f0af82394b23a62db5f973a34 ""
   (generated)
   "DMC_rs_Doc0.aux"
-  "DMC_rs_Doc0.pdf"
   "DMC_rs_Doc0.log"
+  "DMC_rs_Doc0.pdf"
   "acs-DMC_rs_Doc0.bib"
