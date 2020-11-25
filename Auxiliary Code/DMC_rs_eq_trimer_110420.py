@@ -1,3 +1,13 @@
+# Will Solow, Skye Rhomberg
+# CS446 Fall 2020
+# Diffusion Monte Carlo (DMC) Simulation
+# Script Style
+# Last Updated 11/24/20
+
+# This code takes a 4D array of equilibrated 2 water molecule systems and outputs
+# coordinates to for the offset of the 3rd water molecule. This code is mostly
+# auxiliary and allows us to equilibrate a water trimer system
+
 import numpy as np
 
 def third_water(walkers):
@@ -21,29 +31,7 @@ def third_water(walkers):
     t = p * np.linalg.norm(m0) * np.sqrt(3) / np.linalg.norm(p) + m
     # Offset for u
     return t - u
-   
-# Input (nWalkers, 2, 3, 3) array
-# Output (nWalkers, 3, 3, 3) array for the water trimer
-def alt_third_water(walkers):
-    # Find positions of each oxygen in the walkers
-    oxygen_pos = walkers[:,:,0,:]
-    midpoints = (oxygen_pos[:,0]+oxygen_pos[:,1])/2
-    print(midpoints.shape)
-    
-    m0 = oxygen_pos[:,1]-midpoints
-    #print(m0.shape)
-    p = np.stack((-m0[:,1],m0[0],np.zeros(m0.shape[0])),axis=-1)
-    #print(p.shape)
-    t = p*np.linalg.norm(m0,axis=1) * sqrt(3) / np.linalg.norm(p,axis=1) + m
-    # Find the midpoint coordinate between the two oxygen atoms
-    #midpoint = (walkers[:,0,0]+walkers[:,1,0])/2
-    #distance = np.linalg.norm(walkers[:,0,0]-walkers[:,1,0])
-    offset = t - oxygen_pos[:0]
-    #print(offset)
-    
-    
-    new_water = walkers[:,0] + offset
-    return np.stack((walkers, new_water), axis=1)
+  
 
 
 # Test on Two Water Equilibriated Array

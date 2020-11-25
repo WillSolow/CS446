@@ -784,10 +784,10 @@ def sim_loop(vec_PE, init_walkers):
 # Main Testing Loop
 
 # Sim length array
-sim_arr = [10000]
+sim_arr = [2000, 5000, 10000]
 
 # num walkers array
-num_walk_arr = [10000]
+num_walk_arr = [1000, 2000, 5000, 10000]
 
 
 

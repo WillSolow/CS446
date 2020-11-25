@@ -5,14 +5,14 @@
 
 
 # This program runs a Diffusion Monte Carlo simulation to find an approximation for the
-# ground state energy of a system of molecules. In this particular implementation, the system is the Carbon Monoxide bond, represented in a 2D array of coordinates in 3D space
+# ground state energy of a system of molecules. In this particular implementation, 
+# the system is the Carbon Monoxide bond, represented in a 2D array of coordinates in 3D space
 # for each walker.
 
 # To Run: Navigate to file in terminal directory and type 'python dmc_rs_2D_CO.py'
 
-# Output: Graphs for the reference energy, the n-step rolling average, and the number 
-# of walkers at each time step, as well as a density histogram of the walker distance
-# from equilibrium and the corresponding wave function
+# Output: The elapsed time taken to run a number of simulations. Used in the 
+# comparison of our implementation compared to Object oriented implementation.
 
 # Imports
 import numpy as np

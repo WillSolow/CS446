@@ -101,10 +101,10 @@ equilibration_phase = 1500
 
 # Number of time steps in a simulation. Generally on the order of 5 times the
 # length of the equilibration phase
-sim_length = 5000
+sim_length = 10000
 
 # Number of initial walkers
-n_walkers = 5000
+n_walkers = 1000
 
 # Number of time steps for rolling average calculation
 rolling_avg = 1000
@@ -433,7 +433,7 @@ for i in range(sim_length):
     walkers = np.append(walkers_after_delete,walkers_after_replication,axis = 0)
     
 # Save the outputted walker array to a .npy file for later use
-#np.save('5000_water_trimer.npy', walkers)
+np.save('1000_water_trimer.npy', walkers)
 
 ################################################################################
 # Output
@@ -540,28 +540,24 @@ plt.hist(o_ang_1, bins=n_bins, density=True)
 plt.xlabel('Oxygen Angle 1 in a Walker')
 plt.ylabel('Density of Walkers')
 plt.title('Density of Walker Oxygen Angle 1')
-plt.legend()
 
 plt.figure(6)
 plt.hist(o_ang_2, bins=n_bins, density=True)
 plt.xlabel('Oxygen Angle 2 in a Walker')
 plt.ylabel('Density of Walkers')
 plt.title('Density of Walker Oxygen Angle 2')
-plt.legend()
 
 plt.figure(7)
 plt.hist(o_ang_3, bins=n_bins, density=True)
 plt.xlabel('Oxygen Angle 3 in a Walker')
 plt.ylabel('Density of Walkers')
 plt.title('Density of Walker Oxygen Angle 3')
-plt.legend()
 
 plt.figure(8)
 plt.hist(o_angles, bins=n_bins, density=True)
 plt.xlabel('Oxygen Angle in a Walker')
 plt.ylabel('Density of Walkers')
 plt.title('Density of Walker Oxygen Angles')
-plt.legend()
 
 plt.show()
 

@@ -11,9 +11,8 @@
 
 # To Run: Navigate to file in terminal directory and type 'python dmc_rs_4D_H2O.py'
 
-# Output: Graphs for the reference energy, the n-step rolling average, and the number 
-# of walkers at each time step, as well as a density histogram of the walker distance
-# from equilibrium and the corresponding wave function
+# Output: Elapsed time of the simulation. Used in comparison of our code compared
+# to the Object Oriented implementations written
 
 # Imports
 import numpy as np

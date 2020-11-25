@@ -1,9 +1,14 @@
+# Will Solow, Skye Rhomberg
+# CS446 Fall 2020
+# Diffusion Monte Carlo (DMC) Simulation
+# Script Style
+# Last Updated 11/15/20
+
 # Function for printing XYZ output of a given walker array
 # This only works for walkers with homogeneous molecules
 # Also had to hard-code the sig digs (it's 8 right now)
 # To change that, change the 8 in the ".8f" on line 27
 
-# THIS IS THE GROSSEST THING I'VE EVER WRITTEN
 
 import numpy as np
 

@@ -2,7 +2,7 @@
 # CS446 Fall 2020
 # Diffusion Monte Carlo (DMC) Simulation
 # Script Style
-# Last Updated 11/4/20
+# Last Updated 11/23/20
 
 # This program runs a Diffusion Monte Carlo simulation to find an approximation for the
 # ground state energy of a system of molecules. This file supports the main simulation 
@@ -140,7 +140,7 @@ coord_axis = 3
 
 # Number of molecules in each walker
 # Used to initialize the walker array
-num_molecules = 1
+num_molecules = 3
 
 
 
@@ -214,7 +214,7 @@ coulombic_charges = np.matmul(np.transpose(atomic_charges[np.newaxis]), \
 # Calculates the potential energy of a walker based on the distance of bond lengths and 
 # bond angles from equilibrium
 # Currently assumes that there is no interaction between molecules in a walker
-def intra_pe_SR(x):
+def intra_pe(x):
     # Return the two OH vectors
     # Used to calculate the bond lengths and angle in a molecule
     OH_vectors = x[:,:,np.newaxis,0]-x[:,:,1:]
@@ -245,7 +245,7 @@ def intra_pe_SR(x):
 #         Leonard Jones energy
 # Calculates the intermolecular potential energy of a walker based on the distances of 
 # the atoms in each walker from one another
-def inter_pe_SR(x):
+def inter_pe(x):
     
     # Returns the atom positions between two distinct pairs of molecules 
     # in each walker. This broadcasts from a 4D array of walkers with axis dimesions 
@@ -317,17 +317,17 @@ def inter_pe_SR(x):
 # Output: 1D array of the sum of the intermolecular and intramolecular 
 #         potential energy of each walker
 # Calculates the total potential energy of the molecular system in each walker
-def total_pe_SR(x):
+def total_pe(x):
 
     # Calculate the intramolecular potential energy of each walker
-    intra_pe = intra_pe(x)
+    intra = intra_pe(x)
     
     # Calculate the intermolecular potential energy of each walker
-    inter_pe, coulombic, lennard_jones = inter_pe(x)
+    inter, coulombic, lennard_jones = inter_pe(x)
     
     
     # Return the total potential energy of the walker
-    return intra_pe + inter_pe
+    return intra + inter
 
  
     
@@ -354,7 +354,7 @@ def equilibrate_walkers(init_walkers, equil_phase):
         # Calculate the Reference Energy
         # Energy is calculated based on the average of all potential energies of walkers.
         # Is adjusted by a statistical value to account for large or small walker populations.
-        reference_energy = np.mean( intra_pe_SR(walkers) ) \
+        reference_energy = np.mean( intra_pe(walkers) ) \
             + (1.0 - (walkers.shape[walker_axis] / n_walkers) ) / ( 2.0*dt )
        
 
@@ -373,7 +373,7 @@ def equilibrate_walkers(init_walkers, equil_phase):
     
     
         # Calculates the potential energy of each walker in the system
-        potential_energies = intra_pe_SR(walkers)
+        potential_energies = intra_pe(walkers)
 
     
     
@@ -461,7 +461,7 @@ def sim_loop(init_walkers):
         # Calculate the Reference Energy
         # Energy is calculated based on the average of all potential energies of walkers.
         # Is adjusted by a statistical value to account for large or small walker populations.
-        reference_energy[i] = np.mean( intra_pe_SR(walkers) ) \
+        reference_energy[i] = np.mean( total_pe(walkers) ) \
             + (1.0 - (walkers.shape[0] / n_walkers) ) / ( 2.0*dt )
                
         num_walkers[i] = walkers.shape[0]
@@ -482,7 +482,7 @@ def sim_loop(init_walkers):
     
     
         # Calculates the potential energy of each walker in the system
-        potential_energies = intra_pe_SR(walkers)
+        potential_energies = total_pe(walkers)
 
     
     
@@ -563,10 +563,10 @@ def sim_loop(init_walkers):
 # Main Testing Loop
 
 # Equilibrated walkers array
-num_walkers = ['1000_walker.npy', '5000_walker.npy', '10000_walker.npy']
+num_walkers = ['1000_trimer.npy', '5000_trimer.npy', '10000_trimer.npy']
 
 # dt values to test
-dt_values = [10, 5, 1, .5, .1, .05, .01]
+dt_values = [5, .5, .05]
 
 # number of times the average is taken over
 sim_times = [10,20]
@@ -608,7 +608,7 @@ for time_step in dt_values:
             
 
             for i in range(num_sims):
-                #print('Test num: ', i)
+                print('Test num: ', i)
                 # Number  of walkers in the simulation - used for showing convergence and a valid time step
                 num_walkers_arr = []
 
@@ -640,11 +640,11 @@ for time_step in dt_values:
                 tot_avg_walkers.append(np.mean(avg_walkers))
                 tot_avg_ref.append(ref_converge_num)
             
-            #print('\nReference Converge Nums: \n',tot_avg_ref)
+            print('\nReference Converge Nums: \n',tot_avg_ref)
             fl.write('\n\n')
             for k in tot_avg_ref:
                 fl.write(str.format('{0:.8f}',k)+ ' ') 
-            #print('\nAverage Walkers: \n',tot_avg_walkers)
+            print('\nAverage Walkers: \n',tot_avg_walkers)
             fl.write('\n\n')
             for k in tot_avg_walkers:
                 fl.write(str.format('{0:.2f}',k)+' ') 
@@ -652,11 +652,8 @@ for time_step in dt_values:
         ref_std = np.std(tot_avg_ref)
         fl.write('\n\nRef Energy Standard Deviation '+str.format('{0:.8f}',ref_std)+'\n')
         fl.write('Walker Pop Standard Deviation '+str.format('{0:.6f}',pop_std))
-        #print('\n\n###########################################\n\n')
+        print('\n\n###########################################\n\n')
         fl.write('\n\n########################################\n\n')
     fl.close()
         
-
-       
-
 
