@@ -1,0 +1,187 @@
+\providecommand{\latin}[1]{#1}
+\makeatletter
+\providecommand{\doi}
+  {\begingroup\let\do\@makeother\dospecials
+  \catcode`\{=1 \catcode`\}=2 \doi@aux}
+\providecommand{\doi@aux}[1]{\endgroup\texttt{#1}}
+\makeatother
+\providecommand*\mcitethebibliography{\thebibliography}
+\csname @ifundefined\endcsname{endmcitethebibliography}
+  {\let\endmcitethebibliography\endthebibliography}{}
+\begin{mcitethebibliography}{20}
+\providecommand*\natexlab[1]{#1}
+\providecommand*\mciteSetBstSublistMode[1]{}
+\providecommand*\mciteSetBstMaxWidthForm[2]{}
+\providecommand*\mciteBstWouldAddEndPuncttrue
+  {\def\EndOfBibitem{\unskip.}}
+\providecommand*\mciteBstWouldAddEndPunctfalse
+  {\let\EndOfBibitem\relax}
+\providecommand*\mciteSetBstMidEndSepPunct[3]{}
+\providecommand*\mciteSetBstSublistLabelBeginEnd[3]{}
+\providecommand*\EndOfBibitem{}
+\mciteSetBstSublistMode{f}
+\mciteSetBstMaxWidthForm{subitem}{(\alph{mcitesubitemcount})}
+\mciteSetBstSublistLabelBeginEnd
+  {\mcitemaxwidthsubitemform\space}
+  {\relax}
+  {\relax}
+
+\bibitem[Schrodinger(1926)]{Schrodinger1926}
+Schrodinger,~E. An Undulatory Theory of the Mechanics of Atoms and Molecules.
+  \emph{The Physical Review} \textbf{1926}, \emph{28}\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Goldman and Saykally(2004)Goldman, and Saykally]{Goldman2004}
+Goldman,~N.; Saykally,~R. Elucidating the role of many-body forces in liquid
+  water. I. Simulations of water clusters on the VRT(ASP-W) potential surfaces.
+  \emph{Journal of Chemical Physics} \textbf{2004}, \emph{120}, 4777--4789,
+  cited By 53\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Gillan \latin{et~al.}(2013)Gillan, Alfè, Bartók, and
+  Csányi]{Gillan2013}
+Gillan,~M.; Alfè,~D.; Bartók,~A.; Csányi,~G. First-principles energetics of
+  water clusters and ice: A many-body analysis. \emph{Journal of Chemical
+  Physics} \textbf{2013}, \emph{139}, cited By 31\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Liu \latin{et~al.}(1996)Liu, Brown, Carter, Saykally, Gregory, and
+  Clary]{Liu1996}
+Liu,~K.; Brown,~M.; Carter,~C.; Saykally,~R.; Gregory,~J.; Clary,~D.
+  Characterization of a cage form of the water hexamer. \emph{Nature}
+  \textbf{1996}, \emph{381}, 501--503, cited By 556\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Anderson(1975)]{Anderson1975}
+Anderson,~J.~B. A random-walk simulation of the Schr\"{o}dinger equation: H+3.
+  \emph{The Journal of Chemical Physics} \textbf{1975}, \emph{63},
+  1499--1503\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Kosztin \latin{et~al.}(1996)Kosztin, Faber, and Schulten]{Faber1996}
+Kosztin,~I.; Faber,~B.; Schulten,~K. Introduction to the diffusion Monte Carlo
+  method. \emph{American Journal of Physics} \textbf{1996}, \emph{64},
+  633--644\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Pang(2014)]{Pang2014}
+Pang,~T. Diffusion Monte Carlo: A powerful tool for studying quantum many-body
+  systems. \emph{American Journal of Physics} \textbf{2014}, \emph{82},
+  980--988\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Lee and McCoy(2019)Lee, and McCoy]{Lee2019}
+Lee,~V. G.~M.; McCoy,~A.~B. An Efficient Approach for Studies of Water Clusters
+  Using Diffusion Monte Carlo. \emph{The Journal of Physical Chemistry A}
+  \textbf{2019}, \emph{123}, 8063--8070, PMID: 31408352\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Viel and Whaley(2001)Viel, and Whaley]{Veil2001}
+Viel,~A.; Whaley,~K.~B. Quantum structure and rotational dynamics of HCN in
+  helium clusters. \emph{The Journal of Chemical Physics} \textbf{2001},
+  \emph{115}, 10186--10198\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Reynolds \latin{et~al.}(1982)Reynolds, Ceperley, Alder, and
+  Lester]{Reynolds1982}
+Reynolds,~P.~J.; Ceperley,~D.~M.; Alder,~B.~J.; Lester,~W.~A. Fixed‐node
+  quantum Monte Carlo for molecules. \emph{The Journal of Chemical Physics}
+  \textbf{1982}, \emph{77}, 5593--5603\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Babin and Paesani(2013)Babin, and Paesani]{Babin2013}
+Babin,~V.; Paesani,~F. The curious case of the water hexamer: Cage vs. Prism.
+  \emph{Chemical Physics Letters} \textbf{2013}, \emph{580}, 1--8, cited By
+  32\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Severson and Buch(1999)Severson, and Buch]{Severson1999}
+Severson,~M.; Buch,~V. Quantum Monte Carlo simulation of intermolecular excited
+  vibrational states in the cage water hexamer. \emph{Journal of Chemical
+  Physics} \textbf{1999}, \emph{111}, 10866--10875, cited By 40\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Mallory \latin{et~al.}(2015)Mallory, Brown, and
+  Mandelshtam]{Mallory2015}
+Mallory,~J.~D.; Brown,~S.~E.; Mandelshtam,~V.~A. Assessing the Performance of
+  the Diffusion Monte Carlo Method As Applied to the Water Monomer, Dimer, and
+  Hexamer. \emph{The Journal of Physical Chemistry A} \textbf{2015},
+  \emph{119}, 6504--6515, PMID: 26001418\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Umrigar \latin{et~al.}(1993)Umrigar, Nightingale, and
+  Runge]{Urimgar1993}
+Umrigar,~C.~J.; Nightingale,~M.~P.; Runge,~K.~J. A diffusion Monte Carlo
+  algorithm with very small time‐step errors. \emph{The Journal of Chemical
+  Physics} \textbf{1993}, \emph{99}, 2865--2890\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Gregory and Clary(1996)Gregory, and Clary]{Gregory1996}
+Gregory,~J.; Clary,~D. Structure of water clusters. The contribution of
+  many-body forces, monomer relaxation, and vibrational zero-point energy.
+  \emph{Journal of Physical Chemistry} \textbf{1996}, \emph{100}, 18014--18022,
+  cited By 234\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Stillinger(1975)]{Stillinger1975}
+Stillinger,~F.~H. Theory and Molecular Models for Water. \emph{Bell
+  Laboratories, Murray Hill, New Jersey} \textbf{1975}, \relax
+\mciteBstWouldAddEndPunctfalse
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Vihola \latin{et~al.}(2020)Vihola, Helske, and Franks]{Vihola2020}
+Vihola,~M.; Helske,~J.; Franks,~J. Importance sampling type estimators based on
+  approximate marginal Markov chain Monte Carlo. \emph{Scandinavian Journal of
+  Statistics} \textbf{2020}, \emph{47}, 1339--1376, cited By 0\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Bulik \latin{et~al.}(2018)Bulik, Frisch, and Vaccaro]{Bulik2018}
+Bulik,~I.~W.; Frisch,~M.~J.; Vaccaro,~P.~H. Fixed-Node, Importance-Sampling
+  Diffusion Monte Carlo for Vibrational Structure with Accurate and Compact
+  Trial States. \emph{Journal of Chemical Theory and Computation}
+  \textbf{2018}, \emph{14}, 1554--1563, PMID: 29466664\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Englezos(1993)]{Englezos1993}
+Englezos,~P. Clathrate hydrates. \emph{Industrial \& Engineering Chemistry
+  Research} \textbf{1993}, \emph{32}, 1251--1274\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\end{mcitethebibliography}

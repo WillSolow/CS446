@@ -1,154 +1,74 @@
-% Modified Skye Rhomberg 9/30/20
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% This is a (brief) model paper using the achemso class
-%% The document class accepts keyval options, which should include
-%% the target journal and optionally the manuscript type.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \documentclass[journal=jacsat,manuscript=article]{achemso}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Place any additional packages needed here.  Only include packages
-%% which are essential, to avoid problems later.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\usepackage{chemformula} % Formula subscripts using \ch{}
-\usepackage[T1]{fontenc} % Use modern font encodings
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% If issues arise when submitting your manuscript, you may want to
-%% un-comment the next line.  This provides information on the
-%% version of every file you have used.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%\listfiles
+\usepackage{chemformula} 
+\usepackage[T1]{fontenc} 
+\usepackage{fixltx2e}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Place any additional macros here.  Please use \newcommand* where
-%% possible, and avoid layout-changing macros (which are not used
-%% when typesetting).
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand*\mycommand[1]{\texttt{\emph{#1}}}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Meta-data block
-%% ---------------
-%% Each author should be given as a separate \author command.
-%%
-%% Corresponding authors should have an e-mail given after the author
-%% name as an \email command. Phone and fax numbers can be given
-%% using \phone and \fax, respectively; this information is optional.
-%%
-%% The affiliation of authors is given after the authors; each
-%% \affiliation command applies to all preceding authors not already
-%% assigned an affiliation.
-%%
-%% The affiliation takes an option argument for the short name.  This
-%% will typically be something like "University of Somewhere".
-%%
-%% The \altaffiliation macro should be used for new address, etc.
-%% On the other hand, \alsoaffiliation is used on a per author basis
-%% when authors are associated with multiple institutions.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \author{Will Solow}
+\email{whsolo22@colby.edu}
 \author{Skye Rhomberg}
+\email{sorhom22@colby.edu}
 \author{Lindsey Madison}
 \author{Eric Aaron}
-\email{whsolo22@colby.edu}
 \affiliation[Colby College]
 {Department of Computer Science, Colby College, Waterville, ME}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% The document title should be given as usual. Some journals require
-%% a running title from the author: this should be supplied as an
-%% optional argument to \title.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\title[An \textsf{achemso} demo]
-  {Investigating Zero-Point Energy in a Water Trimer with Diffusion Monte Carlo}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Some journals require a list of abbreviations or keywords to be
-%% supplied. These should be set up here, and will be printed after
-%% the title and author information, if needed.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\abbreviations{IR,NMR,UV}
-\keywords{American Chemical Society, \LaTeX}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% The manuscript does not need to include \maketitle, which is
-%% executed automatically.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{Investigating Zero-Point Energy in a Water Trimer with Diffusion Monte Carlo}
+
+
 \begin{document}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% The "tocentry" environment can be used to create an entry for the
-%% graphical table of contents. It is given here as some journals
-%% require that it is printed as part of the abstract page. It will
-%% be automatically moved as appropriate.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\begin{tocentry}
-%
-%Some journals require a graphical entry for the Table of Contents.
-%This should be laid out ``print ready'' so that the sizing of the
-%text is correct.
-%
-%Inside the \texttt{tocentry} environment, the font used is Helvetica
-%8\,pt, as required by \emph{Journal of the American Chemical
-%Society}.
-%
-%The surrounding frame is 9\,cm by 3.5\,cm, which is the maximum
-%permitted for  \emph{Journal of the American Chemical Society}
-%graphical table of content entries. The box will not resize if the
-%content is too big: instead it will overflow the edge of the box.
-%
-%This box and the associated title will always be printed on a
-%separate page at the end of the document.
-%
-%\end{tocentry}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% The abstract environment will automatically gobble the contents
-%% if an abstract is not used by the target journal.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{abstract}
 We give an overview of the Diffusion Monte Carlo (DMC) algorithm and its applications into finding solutions to the Schr\"odinger Equation when no analytical solution is available. An implementation of the DMC algorithm is presented with a specific focus on understanding the behavior of a three-water molecule system. Given the same data structure, a four-dimensional NumPy array, we demonstrate how a fully vectorized implementation is at least 35 times faster than a traditional for loop implementation, and how to validate an inherently less obvious implementation. In such molecularly complicated systems, we show how the role of timestep factors into both the population of walkers and the calculated Zero-Point energy of the system. Following up, we give necessary criteria to find the Zero-Point energy to the desired precision, and show the wave function, a normal distribution of bond lengths or angles within the studied molecular system. Finally, we show the difficulty of equilibrating a complicated system like the water trimer, and we illustrate techniques for how build an equilibrated system when the DMC algorithm is not sufficient on its own when the system is initialized with random values.
 \end{abstract}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% Start the main part of the manuscript here.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Introduction}
-The Schr\"odinger equation has been at the heart of physical chemistry given how it describes the wave function of a quantum system. Since its introduction, it has advanced the knowledge of quantum mechanics by allowing chemists to understand subatomic forces between atoms and molecules. However, solving the Schr\"odinger equation to determine the energies of a molecular system is difficult, and in practice can only be solved in a few simple molecular systems. The Schrodinger equation can explain many of the physical properties of water are of great interest and have been studied extensively, yet many of the properties of water are still not fully understood.
 
-The Diffusion Monte Carlo\cite{Anderson1975} (DMC) method allows for the Schrodinger wave function to be approximated using Monte Carlo methods given that the Schr\"odinger equation can only be solved analytically for a few specific molecular systems. For complex, many bodied systems, the DMC model is one of the few options as its computational complexity scales well large input sizes. Even so, it remains a computationally hefty model for complex systems, even as the best option. 
+\section{Introduction}
+
+The Schrodinger\cite{Schrodinger1926} equation has been at the heart of physical chemistry given how it describes the wave function of a quantum system. Since its introduction, it has advanced the knowledge of quantum mechanics by allowing chemists to understand subatomic forces between atoms and molecules. However, solving the Schrodinger equation to determine the energies of a molecular system is difficult, and in practice can only be solved in a few simple molecular systems. The Schrodinger equation can explain many of the physical properties of water are of great interest and have been studied extensively\cite{Goldman2004,Gillan2013}, yet many of the properties of water are still not fully understood.\cite{Liu1996}
+
+The Diffusion Monte Carlo\cite{Anderson1975} (DMC) method allows for the Schrodinger wave function to be approximated using Monte Carlo methods given that the Schrodinger equation can only be solved analytically for a few specific molecular systems.\cite{Faber1996,Pang2014} For complex, many bodied systems\cite{Lee2019,Veil2001}, the DMC model is one of the few options as its computational complexity scales well large input sizes. Even so, it remains a computationally hefty model for complex systems, even as the best option. 
 	
-As a complex molecular system, water is an ideal candidate to be studied using the DMC model. In fact, complex water structures, namely the hexamer, have been studied, albeit with simplifying assumptions. The DMC model is not without its limitations, however, and struggles with both population size and time step errors. 
+As a complex molecular system, water is an ideal candidate to be studied using the DMC model\cite{Reynolds1982}. In fact, complex water structures, namely the hexamer, have been studied\cite{Babin2013,Severson1999}, albeit with simplifying assumptions. The DMC model is not without its limitations, however, and struggles with both population size\cite{Mallory2015} and time step\cite{Urimgar1993} errors. 
 
 To alleviate some of the computational load in a traditional DMC implementation, we present a Python based implementation utilizing the NumPy library. NumPy gives tools to work efficiently through multidimensional matrices by splitting up the computational load amongst the cores of a computer’s processor to allow for simulations to be run faster. This method is not only faster, but allows for the implementation of the DMC model to be generalized to a variety of homogeneous molecular systems. 
 
-As such, the water molecule and the water trimer molecular system were investigated in order to find the wave function given by the Schrodinger equation and the Zero-Point Energy (ZPE) of the system. Using this novel DMC implementation, we provide necessary simulation constants in order to accurately compute the wave function of the Schr\"dinger equation and ZPE within a desired variability. We also show how the selection of time step within the DMC model plays an important role in the convergence of both the walker population and the ZPE within the water molecule and water trimer systems. 
+As such, the water molecule and the water trimer molecular system were investigated in order to find the wave function given by the Schrodinger equation and the Zero-Point Energy\cite{Gregory1996} (ZPE) of the system. Using this novel DMC implementation, we provide necessary simulation constants in order to accurately compute the wave function and ZPE within a desired variability. We also show how the selection of time step within the DMC model plays an important role in the convergence of both the walker population and the ZPE within the water molecule and water trimer systems. 
 	
-The specific aims of this project were to 1) employ a novel analytic implementation approach to study many-bodied molecular systems with the DMC model; 2) investigate the influence of different simulation constants on the ZPE for a single water molecule and water trimer; 3) determine the efficiency of the novel analytic implementation approach when compared with more traditional implementations.
+The specific aims of this project were to 1) employ a novel analytic implementation approach to study many-bodied molecular systems with the DMC model; 2) investigate the influence of different simulation constants on the ZPE for a single water molecule and water trimer; 3) determine the efficiency of the novel analytic implementation approach when compared with more traditional implementations. 
+
 
 \section{Methods}
+
 The methods for this project will be presented in the following sections: a description of the existing analytical model; the implementation and validation of a new analytical model that includes three simulation constants; and lastly the data analysis employed to achieve the aims of the project. 
+
 \subsection{The Model}
+
 Pseudocode for the DMC model was received from Professor Lindsey Madison (see Appendix 1). The important constants in the model are dependent on the system being simulated; for this project which involved modeling a water molecule, the constants are: 1) the time step; this constant controls the distance over which the walkers can propagate during an iteration of the simulation loop; 2) the duration of the simulation; this constant is typically dependent on the time step in order to run the simulation for the same amount of real world time; 3) the number of copies of the same molecular system, also called the number of walkers in the simulation; 4) the masses of the molecules in the system; and 5) the equilibrium positions for the bond lengths and bond angles present in the system, typically calculated experimentally before use is the model. 
 
 The time step dictates the distance by which each coordinate in each atom in each molecule in each walker moves from its starting position at the beginning of the iteration. Additionally, the time step also influences the acceptable range of the reference energy at each iteration of the simulation loop as well as the threshold for which an individual walker is replicated or deleted within the model. 
 
 The duration of the simulation is how many iterations of the simulation loop are run before the wave function and zero-point energy are calculated. Typically, a longer simulation gives more time for the molecular system to equilibrate. With smaller time steps, a longer simulation is necessary as equilibration takes many more iterations given that the atoms are moving much slower towards equilibrium because they are only able to move over shorter distances. 
 
-The number of walkers determines the size of the walker list and can impact the range of an acceptable reference energy which, in turn, determines replication and deletion of walkers. Reference energy is determined as the average of the potential energy over all walkers plus a statistical constant to penalize populations of walkers larger than the initial value. The reference energy is used to calculate a 1000-step rolling average of the reference energyR which converges to the ZPE. After equilibration, the average of the rolling average, is used to calculate the ZPE of the simulation. We define this average as the ZPER as it is the average of the rolling average of the reference energy. 
+The number of walkers determines the size of the walker list and can impact the range of an acceptable reference energy which, in turn, determines replication and deletion of walkers. Reference energy is determined as the average of the potential energy over all walkers plus a statistical constant to penalize populations of walkers larger than the initial value. The reference energy is used to calculate a 1000-step rolling average of the reference energyR which converges to the ZPE. After equilibration, the average of the rolling average, is used to calculate the ZPE of the simulation. We define this average as the ZPE\textsubscript{R} as it is the average of the rolling average of the reference energy. 
 
-Typically, an equilibration phase is run with a duration based on the time step. Then, 10 to 20 production phases, which are repeated simulations of the DMC model, are run, each of which calculates a ZPE. The average of the ZPE over these production phases we define as the ZPEG and is considered the computed ZPE of that trial. The ZPEG, along with the wave function, which is calculated based on the distribution of the bond lengths or bond angles in the molecular system, are considered the outputs of the DMC model. These outputs are then used as an approximation of the solution to Schrodinger’s equation.
+Typically, an equilibration phase is run with a duration based on the time step. Then, 10 to 20 production phases, which are repeated simulations of the DMC model, are run, each of which calculates a ZPE. The average of the ZPE over these production phases we define as the ZPE\textsubscript{G} and is considered the computed ZPE of that trial. The ZPE\textsubscript{G}, along with the wave function, which is calculated based on the distribution of the bond lengths or bond angles in the molecular system, are considered the outputs of the DMC model. These outputs are then used as an approximation of the solution to Schrodinger’s equation.
 
 \subsection{Implementation}
+
 The implementation of the new model described above is broken down into three sections. In the first section, the initial constants are described, with attention only paid to the initial walker array. In the second section, the simulation loop is described and how it relates to the DMC model. In the final section, the researchers give an overview of the potential energy function. The implementation was broken down into these three sections so that the code could be generalized to multiple systems. The way the potential energy function is utilized in the simulation loop ensures that only the potential energy function needs to be changed when moving between molecular systems of study. 
 
 To implement the new model described above, the researchers chose to store the walkers in a four-dimensional (4D) NumPy ndarray object. The researchers chose to use NumPy given that NumPy’s functions can operate quickly on multi-dimensional arrays. The 4D array had axes of the number of walkers by the number of molecules by the number of atoms in each molecule by the Cartesian coordinates (x, y, and z in 3D space). As a result, the researchers hypothesized that the 4D array implementation could generalize to any system of homogeneous molecules. In this project, this data structure allowed the researchers to run trials on the single water molecule system and water trimer system without making any changes to the simulation loop. It should also be noted that this 4D array implementation allowed the code to be very readable. A 2D implementation was considered, with axes being the number of walkers by the coordinates of every atom in the system. However, the structure that the 4D array provides allows for quick slicing and broadcasting of the array which made the code more easily understood.
 
-In the simulation loop implementation, the researchers directly followed the pseudocode presented by the model. NumPy is able to operate on a large array of data simultaneously such that it was not necessary to use for loops to access individual data points within the 4D array. The atoms in each walker are propagated by a pseudorandom number in the normal distribution of $\sqrt{\text{dt}/\text{atomic mass}}$. When studying the water molecule system, researchers adopted the convention that the atom dimension of the 4D walker array would have the oxygen, hydrogen, hydrogen atoms in the same order each time. Given that each atom appeared in the same index in each walker in the 4D array, the NumPy tile function was used to broadcast the range of the normal distribution to each coordinate in the 4D array. This approach allowed for a one line propagation step within the simulation loop. 
+In the simulation loop implementation, the researchers directly followed the pseudocode presented by the model. NumPy is able to operate on a large array of data simultaneously such that it was not necessary to use \textit{for loops} to access individual data points within the 4D array. The atoms in each walker are propagated by a pseudorandom number in the normal distribution of $\sqrt{\text{time step}/\text{atomic mass}}$. When studying the water molecule system, researchers adopted the convention that the atom dimension of the 4D walker array would have the oxygen, hydrogen, hydrogen atoms in the same order each time. Given that each atom appeared in the same index in each walker in the 4D array, the NumPy tile function was used to broadcast the range of the normal distribution to each coordinate in the 4D array. This approach allowed for a one line propagation step within the simulation loop. 
 
-Another point of interest in the implementation of the simulation loop was the walker replication and deletion step. Based on the potential energy of each walker compared to the overall reference energy of the system, and a random threshold number, the walker was selected to be either replicated or deleted from the array. The index of each such walker was converted into a one-dimensional array of booleans with a True value indicating that the walker should remain in the final array. NumPy arrays support boolean indexing, so the code then simply returns only the walkers that are not deleted and a copy of the walkers that are replicated.
+Another point of interest in the implementation of the simulation loop was the walker replication and deletion step. Based on the potential energy of each walker compared to the overall reference energy of the system, and a random threshold number, the walker was selected to be either replicated or deleted from the array. The index of each such walker was converted into a one-dimensional array of booleans with a \textit{True} value indicating that the walker should remain in the final array. NumPy arrays support boolean indexing, so the code then simply returns only the walkers that are not deleted and a copy of the walkers that are replicated.
 
 The potential energy functions for the single water molecule and water trimer were perhaps the most interesting part of the simulation and were where the researchers could demonstrate the powerful utility of NumPy. The potential energy functions were based on the code provided by Professor Lindsey Madison. The researchers spent a great amount of time understanding what the function did and brainstorming how to do those operations more efficiently in NumPy. The result was innovative yet unintuitive calculations that lent themselves to very efficient potential energy function calculations. For example, consider the line below within the water molecule intermolecular potential energy:
 
@@ -156,273 +76,95 @@ The key intuition is that the input to the potential energy function is a 4D arr
 
 \subsection{Code Validation}
 
-The next step was to validate the simulation loop separately from the potential energy function by using a CO harmonic oscillator as the ZPE of the CO molecule has been calculated experimentally. If the calculated ZPER of the system converged to the experimentally calculated ZPE, then the researchers could verify that the simulation loop was functioning correctly. The potential energy function of a harmonic oscillator system is simply $.5k(x-xo)^2$, or the displacement of the oscillator from its equilibrium position. Without having to consider the accuracy of the potential energy function, the researchers were able to focus on validating the simulation loop. 
+The next step was to validate the simulation loop separately from the potential energy function by using a CO harmonic oscillator as the ZPE of the CO molecule has been calculated experimentally. If the calculated ZPE\textsubscript{R} of the system converged to the experimentally calculated ZPE, then the researchers could verify that the simulation loop was functioning correctly. The potential energy function of a harmonic oscillator system is simply $.5k(x-x_0)^2$, or the displacement of the oscillator from its equilibrium position. Without having to consider the accuracy of the potential energy function, the researchers were able to focus on validating the simulation loop. 
 	
-The simulation loop was validated in a variety of ways. The wave function, the main output of the DMC algorithm, is known and is given by the equation: $N\cdot exp[-(r^2)(\sqrt k\cdot mass)/2]$ When the implementation of the DMC algorithm is working correctly, the density histogram of the CO bond length will form a normal distribution that converges to the given wave function. Additionally, the ZPE of the CO molecule system is known to be .00494317, which has been calculated experimentally. The implementation of the DMC algorithm is considered correct if the 1000-step rolling average of the reference energy converges to this ZPE within the range of $1\cdot10^{-4}$. 
+The simulation loop was validated in a variety of ways. The wave function, the main output of the DMC algorithm, is known and is given by the equation: $N\cdot \text{exp}[-(r^2)(\sqrt k\cdot mass)/2]$ When the implementation of the DMC algorithm is working correctly, the density histogram of the CO bond length will form a normal distribution that converges to the given wave function. Additionally, the ZPE of the CO molecule system is known to be .00494317, which has been calculated experimentally. The implementation of the DMC algorithm is considered correct if the 1000-step rolling average of the reference energy converges to this ZPE within the range of $1\cdot10^{-4}$. 
 	
 Given how NumPy was utilized in the implementation of the model, it was not self-evident that the replication and deletion of the walkers were mutually exclusive. The model would be ineffective if the same walker was both replicated and deleted in the same time step. To verify that this was not the case, auxiliary code was generated, and the replication and deletion was tested using unit values, or values where the expected outcome is known. These values are useful as it is already known ahead of time which values should be replicated and deleted based on the way the test is set up. Thus, the result of the replication and deletion steps were able to be compared to the expected outcome to verify that they were the same.
 
 Finally, the propagation of the walkers was tested given that the NumPy tile function was utilized, which is not a traditional implementation. Again, the researchers turned to unit testing to verify that the code written was working correctly. Given that the propagation step chooses from a normal distribution based on the mass of the system, masses with drastically different magnitudes would yield very different results. As such, by printing an array of randomly generated propagations using masses with different magnitudes, the researchers were able to confirm that the correct index in the 4D array was being propagated by the correct magnitude. 
 
-With the simulation loop validated, the researchers turned to the potential energy function in the single water molecule which calculates the intramolecular potential energy of the system. Our collaborator Dr. Lindsey Madison provided Python code that had already been validated as correct in corroboration with experimental results on the water molecule. The researchers’ goal was then to replicate the outputs of Dr. Madison’s code on different inputs. Once this was done, the intramolecular potential energy function was assumed to be correct. Given that the OH bond in a water molecule behaves much like a harmonic oscillator, the researchers were able to confirm that the convergence of the water molecule gave an OH bond length in the normal distribution given by the wave function of the corresponding harmonic oscillator. 
+With the simulation loop validated, the researchers turned to the potential energy function in the single water molecule which calculates the intramolecular potential energy of the system. Our collaborator Dr. Lindsey Madison provided Python code that had already been validated as correct in corroboration with experimental results\cite{Stillinger1975} on the water molecule. The researchers’ goal was then to replicate the outputs of Dr. Madison’s code on different inputs. Once this was done, the intramolecular potential energy function was assumed to be correct. Given that the OH bond in a water molecule behaves much like a harmonic oscillator, the researchers were able to confirm that the convergence of the water molecule gave an OH bond length in the normal distribution given by the wave function of the corresponding harmonic oscillator. 
 
 This process was repeated for the intermolecular potential energy in the water trimer. The researchers can confirm that the output of the code matches previous versions of the code up to the 18th decimal place. However, the ZPE convergence behaviour of the water trimer is an open research question. It is expected that the Oxygen atoms in the trimer form a equiangular triangle, so a normal distribution of Oxygen angles centered at 60 degrees would be expected. However, it remains to be seen what simulation constants are sufficient to observe this behaviour given the stochastic nature of the DMC algorithm.
 
 \section{Simulations}
+
 To investigate the ZPE of the water molecule and water trimer, the researchers employed the following strategy. Using the simulation loop, an equilibrated array of walkers was created and stored for later use. At the beginning of each trial, this equilibrated array of walkers was put through another equilibration phase with a duration based on the time step. A system in equilibrium will not deviate far from equilibrium; it will only move around slightly. This serves to randomize the start of our production phases to ensure that the data that we generate are from a random distribution of possible molecular system configurations.
 
-The researchers ran trials with timesteps of [10,5,1,0.5,0.1] with walkers [1000,5000,10000] over 10 or 20 production phases. In each trial, a walker array was equilibrated and then put through a series of production phases to determine the ZPEG. Over the 10 trials for each of these variables, an average of the ZPEG was calculated which is the ZPET. Calculating the ZPET in this case is not equivalent to calculating a ZPEG with 100 production phases. This is due to the fact that each ZPEG is calculated off of one initial equilibration phase which the production phases are run from. Also, the researchers were interested in the standard deviation of the ZPEG calculated as well, so by computing the ZPET over the 10 trials, the researchers could understand how the simulation constants affected both the variability in the ZPEG as well as its computed value.
+The researchers ran trials with timesteps of [10,5,1,0.5,0.1] with walkers [1000,5000,10000] over 10 or 20 production phases. In each trial, a walker array was equilibrated and then put through a series of production phases to determine the ZPE\textsubscript{G}. Over the 10 trials for each of these variables, an average of the ZPE\textsubscript{G} was calculated which is the ZPE\textsubscript{T}. Calculating the ZPE\textsubscript{T} in this case is not equivalent to calculating a ZPE\textsubscript{G} with 100 production phases. This is due to the fact that each ZPE\textsubscript{G} is calculated off of one initial equilibration phase which the production phases are run from. Also, the researchers were interested in the standard deviation of the ZPE\textsubscript{G} calculated as well, so by computing the ZPE\textsubscript{T} over the 10 trials, the researchers could understand how the simulation constants affected both the variability in the ZPE\textsubscript{G} as well as its computed value.
 
 Using the existing implementation of the intramolecular potential energy function given by Professor Lindsey Madison, and the presented NumPy implementation, simulations were run and obtained similar results, further confirming the validation of the newer model. The run time for the simulations using both models were recorded and compared by an empirical analysis over varying populations of walkers and simulation iterations. The time step was kept constant at .1, given that such a time step gives a walker population convergent to 99.99\% of initial value.
 
 \section{Results}
-By decreasing the time step or by increasing the number of walkers, the ZPET (the average of the ZPEG over 10 trials) increased between time steps of 10 to 1.0 and then plateaued at time steps lower than 1.0. However, note that at a time step of 10, the ZPET is significantly lower than the ZPET produced by smaller timesteps. Until recently with the exploration of the water molecule system, a time step of 10 had been considered sufficiently small to produce accurate results which is not supported by our results. In contrast, at the smaller time steps (e.g., 0.1 and 0.5), the ZPET stays constant, implying that it is in a desirable range. This result supports our findings that smaller time steps should be used in the modelling of more complicated systems. 
-	
-In addition to the calculated ZPET of the system, the standard deviation of the ZPEG for each time step and walker population was investigated. While the overall average (the ZPET) is important, a small variance is also desirable as it demonstrates that the simulation produces the similar results consistently. In Figure 2B, we show how the standard deviation consistently decreases with both an increase in walker population and an increase in the number of production phases over which the ZPEG is calculated. However, of interest is that a larger time step drastically decreases the standard deviation of the ZPEG, which will be highlighted in the Discussion. 
-	
-In Figure 3A, we show the equilibrium walker population at the end of the production phase compared to the ZPEG calculated. The percent of walkers retained at the end of the simulation remained virtually unchanged with more production phases or more walkers; thus, Figure 3A only shows the data for 10000 walkers over 20 production phases. We concluded that a decrease in time step is directly correlated to an increase in the remaining walker population. A retained walker population of 100\% is ideal. Furthermore, the connection between walker population and ZPET is illuminated in that fewer remaining walkers results in a smaller ZPET, which is assumed to be more inaccurate. 
-	
-In contrast, notice in Figure 3B that a smaller time step correlated with a larger standard deviation. That said, a smaller time step gave a presumably more accurate ZPET, and combined with a convergence of the ZPET calculated after a time step of 1, we saw that such a smaller time step was a necessary condition for calculating the correct ZPET value. Note that the standard deviation was still minimal with a small time step, and can be lowered by adding production phases or more walkers. Typically, a smaller time step would be associated with more accurate results and a smaller variance. Here we see more accurate results in a higher ZPET, but also see the variance increase. Reasons for this are highlighted in the Discussion section.
+
+By decreasing the time step or by increasing the number of walkers, the ZPE\textsubscript{T} (the average of the ZPE\textsubscript{G} over 10 trials) increased between time steps of 10 to 1.0 and then plateaued at time steps lower than 1.0 (\ref{fig:2A}). However, note that at a time step of 10, the ZPE\textsubscript{T} is significantly lower than the ZPE\textsubscript{T} produced by smaller timesteps. Until recently with the exploration of the water molecule system, a time step of 10 had been considered sufficiently small to produce accurate results which is not supported by our results. In contrast, at the smaller time steps (e.g., 0.1 and 0.5), the ZPE\textsubscript{T} stays constant, implying that it is in a desirable range. This result supports our findings that smaller time steps should be used in the modelling of more complicated systems. 
+
+\begin{figure}
+  \includegraphics[width=\linewidth]{fig_2A.jpg}
+  \caption{Figure 2A}
+  \label{fig:2A}
+\end{figure}
+
+In addition to the calculated ZPE\textsubscript{T} of the system, the standard deviation of the ZPE\textsubscript{G} for each time step and walker population was investigated. While the overall average (the ZPE\textsubscript{T}) is important, a small variance is also desirable as it demonstrates that the simulation produces the similar results consistently. In Figure 2B, we show how the standard deviation consistently decreases with both an increase in walker population and an increase in the number of production phases over which the ZPE\textsubscript{G} is calculated. However, of interest is that a larger time step drastically decreases the standard deviation of the ZPE\textsubscript{G}, which will be highlighted in the Discussion. 
+
+\begin{figure}
+  \includegraphics[width=\linewidth]{fig_2B.jpg}
+  \caption{Figure 2B}
+  \label{fig:}
+\end{figure}
+
+In Figure 3A, we show the equilibrium walker population at the end of the production phase compared to the ZPE\textsubscript{G} calculated. The percent of walkers retained at the end of the simulation remained virtually unchanged with more production phases or more walkers; thus, Figure 3A only shows the data for 10000 walkers over 20 production phases. We concluded that a decrease in time step is directly correlated to an increase in the remaining walker population. A retained walker population of 100\% is ideal. Furthermore, the connection between walker population and ZPE\textsubscript{T} is illuminated in that fewer remaining walkers results in a smaller ZPE\textsubscript{T}, which is assumed to be more inaccurate. 
+
+\begin{figure}
+  \includegraphics[width=\linewidth]{fig_3A.jpg}
+  \caption{Figure 3A}
+  \label{fig:}
+\end{figure}
+
+In contrast, notice in Figure 3B that a smaller time step correlated with a larger standard deviation. That said, a smaller time step gave a presumably more accurate ZPE\textsubscript{T}, and combined with a convergence of the ZPE\textsubscript{T} calculated after a time step of 1, we saw that such a smaller time step was a necessary condition for calculating the correct ZPE\textsubscript{T} value. Note that the standard deviation was still minimal with a small time step, and can be lowered by adding production phases or more walkers. Typically, a smaller time step would be associated with more accurate results and a smaller variance. Here we see more accurate results in a higher ZPE\textsubscript{T}, but also see the variance increase. Reasons for this are highlighted in the Discussion section.
+
+\begin{figure}
+  \includegraphics[width=\linewidth]{fig_3B.jpg}
+  \caption{Figure 3B}
+  \label{fig:}
+\end{figure}
 
 By incorporating the novel analytic model, the run times improved from 32-45 times faster than the existing model for simulating a single water model (see Table 1). Table 1 shows the rate at which the Solow-Rhomberg intramolecular potential energy function improved over the Madison intramolecular potential energy function. All simulations were run using the simulation loop generated by the researchers. 10 trials were run for each walker value and simulation duration to obtain an average. Notably, for 10000 walkers over 10000 time steps, the Solow-Rhomberg potential energy function yielded an average run time of 66 seconds while the Madison potential energy function yielded an average run time of 2644 seconds, giving an improvement rate of 39.75.
 
 The efficiencies gained by using NumPy have implications for expanding the model to a water timer and clathrate hydrates. To obtain a meaningful result from the water trimer takes around an hour. We would expect that more complicated molecular systems take longer given the extra computations required in the potential energy function. As such, this run time improvement only becomes more meaningful.
 
 \section{Discussion}
-Based on our results, we demonstrated that a time step of at most 1 is necessary to properly collect ZPEG data on the water molecule. We also demonstrated that both 10 and 20 production phases produced the same ZPEG; however, 20 production phases also lowered the standard deviation among the 10 ZPEG values that were calculated. More walkers lowered the standard deviation as well and impacted the ZPEG calculated when the initial walker population was less than 5000. Finally, we saw how the remaining walker population impacted the ZPEG and how it corresponded to the time step. All of this points to the fact that a smaller time step was better when modelling more complicated molecular systems. 
 
-The importance of a correct time step cannot be understated. With a smaller timestep the ZPEG calculated is more accurate. Moreover, the aim of the DMC algorithm is also to compute the wave function, or the normal distribution curve that the Schrodinger equation gives. With a larger timestep, the walker population is not convergent to its initial value, and so with fewer walkers, the density histogram created does not converge to any sort of normal curve. As a result, the wave function cannot be calculated with a non-convergent walker population which arises from an incorrectly chosen time step. It should also be noted that a larger walker population gives rise to a histogram that converges closer to a normal curve. This is due to the fact that a larger sample size is more accommodating for small irregularities in the population. 
+Based on our results, we demonstrated that a time step of at most 1 is necessary to properly collect ZPE\textsubscript{G} data on the water molecule. We also demonstrated that both 10 and 20 production phases produced the same ZPE\textsubscript{G}; however, 20 production phases also lowered the standard deviation among the 10 ZPE\textsubscript{G} values that were calculated. More walkers lowered the standard deviation as well and impacted the ZPE\textsubscript{G} calculated when the initial walker population was less than 5000. Finally, we saw how the remaining walker population impacted the ZPE\textsubscript{G} and how it corresponded to the time step. All of this points to the fact that a smaller time step was better when modelling more complicated molecular systems. 
 
-We mentioned in our results that a smaller time step leads to a larger standard deviation in the ZPEG calculated. At first, this finding appears counterintuitive. However, in the simulation loop, the walkers are propagated in a normal distribution in the range sqrt(time step/mass). A smaller time step means that each atom in each walker can only move a smaller distance in each iteration of the simulation; this fact supports why the number of iterations needs to be normalized to the time step. In a complex molecular system like the water molecule, the length of both OH bonds and the HOH bond angle are enforced. With a larger time step, more motion occurs at each iteration. Thus, it is easier for the walker to move outside an acceptable range from the reference energy, resulting in its deletion from the array. 
+The importance of a correct time step cannot be understated. With a smaller timestep the ZPE\textsubscript{G} calculated is more accurate. Moreover, the aim of the DMC algorithm is also to compute the wave function, or the normal distribution curve that the Schrodinger equation gives. With a larger timestep, the walker population is not convergent to its initial value, and so with fewer walkers, the density histogram created does not converge to any sort of normal curve. As a result, the wave function cannot be calculated with a non-convergent walker population which arises from an incorrectly chosen time step. It should also be noted that a larger walker population gives rise to a histogram that converges closer to a normal curve. This is due to the fact that a larger sample size is more accommodating for small irregularities in the population. 
+
+We mentioned in our results that a smaller time step leads to a larger standard deviation in the ZPE\textsubscript{G} calculated. At first, this finding appears counterintuitive. However, in the simulation loop, the walkers are propagated in a normal distribution in the range $\sqrt{\text{time step}/\text{mass}}$. A smaller time step means that each atom in each walker can only move a smaller distance in each iteration of the simulation; this fact supports why the number of iterations needs to be normalized to the time step. In a complex molecular system like the water molecule, the length of both OH bonds and the HOH bond angle are enforced. With a larger time step, more motion occurs at each iteration. Thus, it is easier for the walker to move outside an acceptable range from the reference energy, resulting in its deletion from the array. 
 
 This allowance of extra motion is exactly what we see with a larger time step in that enough walkers always move out of an acceptable range at each iteration resulting in a walker population that does not converge to the initial population. With regard to the standard deviation, we saw that with a larger time step, the range over which walkers are likely to move is increased, so a larger portion of the walkers moved outside an acceptable range at each step. When the walkers are deleted, they no longer contribute to the reference energy, resulting in a lower standard deviation in that the walkers remaining are more identical in their distribution. In contrast, with a smaller time step less motion occurs at each iteration. As a result, the walkers are able to move to the edge of an acceptable value without being deleted from the walker array given that they can move in small increments towards a non-valid atom configuration. As such, a smaller time step actually creates more variance in the system, which is what we would expect as we get closer to simulating continuous time within a system. 
 
 As mentioned in the modelling section, our implementation of the DMC algorithm heavily utilized the NumPy library. NumPy’s vectorization techniques with matrices allowed the computations to be split up and thus done efficiently among the cores of the computer. Different hardware architectures allow for more compatibility with vectorization techniques, but even on an older laptop, we still saw a noticeable decrease in run time on the order of 40 times faster than a more traditional DMC implementation. At the core of NumPy, however, the implementation still has to loop over every value within the 4D array. This explains why the implementation is a constant time improvement, and not linear time or better. Ultimately, we did not do anything meaningfully different in the computation in the simulation loop, but we did the same process much faster. Even so, an improvement of 40 times should not be underestimated as it is the difference between hours and days when running these lengthy trials, particularly when more walkers or production phases are added.
 
 \subsection{Limitations}
-Today, some DMC implementations incorporate importance sampling which is a strategy used to estimate the properties of a distribution while only having a sample at hand. As previously stated, the goal of the DMC algorithm is to approximate the wave function of the Schrodinger equation. With only samples at hand, those samples being the number of walkers, importance sampling allows for the wave function to be approximated more accurately given that the computational complexity of the algorithm limits the number of walkers on which we can realistically run trials. Future work may include adding importance-sampling techniques into our implementation. 
 
-Time is always a limiting factor in computational sciences. Given that it is necessary to standardize the number of iterations in a simulation to the time step, running trials on smaller time steps takes drastically more time. Time permitting, we would have been interested in quantifying the behaviour of the ZPEG with time steps of .05 and .01 as well. Additionally, it would have been interesting to see the decrease in standard deviation continued if 30 or 50 production phases were used. Finally, in the future, we would like to explore the trend in the ZPEG to determine if it remained unchanged after 10000 walkers. Running trials with 15000 and 20000 walkers should have been sufficient to confirm these conjectures.
+Today, some DMC implementations incorporate importance sampling\cite{Vihola2020} which is a strategy used to estimate the properties of a distribution while only having a sample at hand. As previously stated, the goal of the DMC algorithm is to approximate the wave function of the Schrodinger equation. With only samples at hand, those samples being the number of walkers, importance sampling allows for the wave function to be approximated more accurately\cite{Bulik2018} given that the computational complexity of the algorithm limits the number of walkers on which we can realistically run trials. Future work may include adding importance-sampling techniques into our implementation. 
+
+Time is always a limiting factor in computational sciences. Given that it is necessary to standardize the number of iterations in a simulation to the time step, running trials on smaller time steps takes drastically more time. Time permitting, we would have been interested in quantifying the behaviour of the ZPE\textsubscript{G} with time steps of .05 and .01 as well. Additionally, it would have been interesting to see the decrease in standard deviation continued if 30 or 50 production phases were used. Finally, in the future, we would like to explore the trend in the ZPE\textsubscript{G} to determine if it remained unchanged after 10000 walkers. Running trials with 15000 and 20000 walkers should have been sufficient to confirm these conjectures.
 
 \subsection{Future Work}
-Moving forward, we hope to continue our investigations of the water trimer molecular system. We have strong data to support the necessary conditions for convergence of the ZPEG calculated based on the time step and walker populations. That said, we have seen that the density histogram of the oxygen angles does not always converge to an expected normal distribution. Other convergence conditions also need to be explored which involve the positions of the Hydrogen atoms in one water molecule with respect to the Oxygen atoms in the other two water molecules. If we can confirm that conditions are met, then, along with the ZPEG calculated, we will be able to determine with confidence that we have determined the ZPEG of the water trimer. 
 
-Following the water trimer validation, we then hope to investigate clathrate hydrates, also known as water cages. Clathrate hydrates present the unique challenge in that they are a system of heterogeneous molecules, unlike the systems that have been studied to date. The large advantage of NumPy is that it is very efficient for rectangular matrices. This advantage of rectangular matrices would be lost if we tried to simulate clathrate hydrates in the same way as the water trimer system given that some entries of the 4D array would be empty because each molecule in the system does not have the same number of atoms. It is possible that we could avoid this problem by using NumPy’s masking feature or creating our own data type, but this remains to be investigated. 
+Moving forward, we hope to continue our investigations of the water trimer molecular system. We have strong data to support the necessary conditions for convergence of the ZPE\textsubscript{G} calculated based on the time step and walker populations. That said, we have seen that the density histogram of the oxygen angles does not always converge to an expected normal distribution. Other convergence conditions also need to be explored which involve the positions of the Hydrogen atoms in one water molecule with respect to the Oxygen atoms in the other two water molecules. If we can confirm that conditions are met, then, along with the ZPE\textsubscript{G} calculated, we will be able to determine with confidence that we have determined the ZPE\textsubscript{G} of the water trimer. 
+
+Following the water trimer validation, we then hope to investigate clathrate hydrates\cite{Englezos1993}, also known as water cages. Clathrate hydrates present the unique challenge in that they are a system of heterogeneous molecules, unlike the systems that have been studied to date. The large advantage of NumPy is that it is very efficient for rectangular matrices. This advantage of rectangular matrices would be lost if we tried to simulate clathrate hydrates in the same way as the water trimer system given that some entries of the 4D array would be empty because each molecule in the system does not have the same number of atoms. It is possible that we could avoid this problem by using NumPy’s masking feature or creating our own data type, but this remains to be investigated. 
 
 Furthermore, the potential energy function for a clathrate hydrate molecule is likely much more complicated than a water trimer system. As such, we would expect the computational complexity of the system to be much greater. As a final obstacle, equilibration of the system becomes extraordinarily difficult. We have already seen that it is hard to equilibrate a water trimer from random values, given the magnitude of the randomness introduced into the system. Thus, by the same logic, it follows that a clathrate hydrate system would be equally challenging to obtain an equilibrium configuration on which to run simulations.
 
 \section{Conclusion}
+
 The DMC algorithm remains at the forefront of computational chemistry research given its ability to provide an approximation of a solution to the Shrodinger equation. Our work furthers the knowledge of the DMC algorithm by giving a unique and more efficient implementation leveraging NumPy. With this implementation, we investigated the water molecule and water trimer to show the influence of different simulation constants on the ZPE for a single water molecule. Our findings point to the necessary criteria needed to obtain accurate data from the simulation. 
-% Everything After this comes later
-%\section{Results and discussion}
-%
-%\subsection{Outline}
-%
-%The document layout should follow the style of the journal concerned.
-%Where appropriate, sections and subsections should be added in the
-%normal way. If the class options are set correctly, warnings will be
-%given if these should not be present.
-%
-%\subsection{References}
-%
-%The class makes various changes to the way that references are
-%handled.  The class loads \textsf{natbib}, and also the
-%appropriate bibliography style.  References can be made using
-%the normal method; the citation should be placed before any
-%punctuation, as the class will move it if using a superscript
-%citation style
-%\cite{Mena2000,Abernethy2003,Friedman-Hill2003,EuropeanCommission2008}.
-%The use of \textsf{natbib} allows the use of the various citation
-%commands of that package: \citeauthor{Abernethy2003} have shown
-%something, in \citeyear{Cotton1999}, or as given by
-%Ref.~\citenum{Mena2000}.  Long lists of authors will be
-%automatically truncated in most article formats, but not in
-%supplementary information or reviews \cite{Pople2003}. If you
-%encounter problems with the citation macros, please check that
-%your copy of \textsf{natbib} is up to date. The demonstration
-%database file \texttt{achemso-demo.bib} shows how to complete
-%entries correctly. Notice that ``\latin{et al.}'' is auto-formatted
-%using the \texttt{\textbackslash latin} command.
-%
-%Multiple citations to be combined into a list can be given as
-%a single citation.  This uses the \textsf{mciteplus} package
-%\cite{Johnson1972,*Arduengo1992,*Eisenstein2005,*Arduengo1994}.
-%Citations other than the first of the list should be indicated
-%with a star. If the \textsf{mciteplus} package is not installed,
-%the standard bibliography tools will still work but starred
-%references will be ignored. Individual references can be referred
-%to using \texttt{\textbackslash mciteSubRef}:
-%``ref.~\mciteSubRef{Eisenstein2005}''.
-%
-%The class also handles notes to be added to the bibliography.  These
-%should be given in place in the document \bibnote{This is a note.
-%The text will be moved the the references section.  The title of the
-%section will change to ``Notes and References''.}.  As with
-%citations, the text should be placed before punctuation.  A note is
-%also generated if a citation has an optional note.  This assumes that
-%the whole work has already been cited: odd numbering will result if
-%this is not the case \cite[p.~1]{Cotton1999}.
-%
-%\subsection{Floats}
-%
-%New float types are automatically set up by the class file.  The
-%means graphics are included as follows (Scheme~\ref{sch:example}).  As
-%illustrated, the float is ``here'' if possible.
-%\begin{scheme}
-%  Your scheme graphic would go here: \texttt{.eps} format\\
-%  for \LaTeX\, or \texttt{.pdf} (or \texttt{.png}) for pdf\LaTeX\\
-%  \textsc{ChemDraw} files are best saved as \texttt{.eps} files:\\
-%  these can be scaled without loss of quality, and can be\\
-%  converted to \texttt{.pdf} files easily using \texttt{eps2pdf}.\\
-%  %\includegraphics{graphic}
-%  \caption{An example scheme}
-%  \label{sch:example}
-%\end{scheme}
-%
-%\begin{figure}
-%  As well as the standard float types \texttt{table}\\
-%  and \texttt{figure}, the class also recognises\\
-%  \texttt{scheme}, \texttt{chart} and \texttt{graph}.
-%  \caption{An example figure}
-%  \label{fgr:example}
-%\end{figure}
-%
-%Charts, figures and schemes do not necessarily have to be labelled or
-%captioned.  However, tables should always have a title. It is
-%possible to include a number and label for a graphic without any
-%title, using an empty argument to the \texttt{\textbackslash caption}
-%macro.
-%
-%The use of the different floating environments is not required, but
-%it is intended to make document preparation easier for authors. In
-%general, you should place your graphics where they make logical
-%sense; the production process will move them if needed.
-%
-%\subsection{Math(s)}
-%
-%The \textsf{achemso} class does not load any particular additional
-%support for mathematics.  If packages such as \textsf{amsmath} are
-%required, they should be loaded in the preamble.  However,
-%the basic \LaTeX\ math(s) input should work correctly without
-%this.  Some inline material \( y = mx + c \) or $ 1 + 1 = 2 $
-%followed by some display. \[ A = \pi r^2 \]
-%
-%It is possible to label equations in the usual way (Eq.~\ref{eqn:example}).
-%\begin{equation}
-%  \frac{\mathrm{d}}{\mathrm{d}x} \, r^2 = 2r \label{eqn:example}
-%\end{equation}
-%This can also be used to have equations containing graphical
-%content. To align the equation number with the middle of the graphic,
-%rather than the bottom, a minipage may be used.
-%\begin{equation}
-%  \begin{minipage}[c]{0.80\linewidth}
-%    \centering
-%    As illustrated here, the width of \\
-%    the minipage needs to allow some  \\
-%    space for the number to fit in to.
-%    %\includegraphics{graphic}
-%  \end{minipage}
-%  \label{eqn:graphic}
-%\end{equation}
-%
-%\section{Experimental}
-%
-%The usual experimental details should appear here.  This could
-%include a table, which can be referenced as Table~\ref{tbl:example}.
-%Notice that the caption is positioned at the top of the table.
-%\begin{table}
-%  \caption{An example table}
-%  \label{tbl:example}
-%  \begin{tabular}{ll}
-%    \hline
-%    Header one  & Header two  \\
-%    \hline
-%    Entry one   & Entry two   \\
-%    Entry three & Entry four  \\
-%    Entry five  & Entry five  \\
-%    Entry seven & Entry eight \\
-%    \hline
-%  \end{tabular}
-%\end{table}
-%
-%Adding notes to tables can be complicated.  Perhaps the easiest
-%method is to generate these using the basic
-%\texttt{\textbackslash textsuperscript} and
-%\texttt{\textbackslash emph} macros, as illustrated (Table~\ref{tbl:notes}).
-%\begin{table}
-%  \caption{A table with notes}
-%  \label{tbl:notes}
-%  \begin{tabular}{ll}
-%    \hline
-%    Header one                            & Header two \\
-%    \hline
-%    Entry one\textsuperscript{\emph{a}}   & Entry two  \\
-%    Entry three\textsuperscript{\emph{b}} & Entry four \\
-%    \hline
-%  \end{tabular}
-%
-%  \textsuperscript{\emph{a}} Some text;
-%  \textsuperscript{\emph{b}} Some more text.
-%\end{table}
-%
-%The example file also loads the optional \textsf{mhchem} package, so
-%that formulas are easy to input: \texttt{\textbackslash ch\{H2SO4\}}
-%gives \ch{H2SO4}.  See the use in the bibliography file (when using
-%titles in the references section).
-%
-%The use of new commands should be limited to simple things which will
-%not interfere with the production process.  For example,
-%\texttt{\textbackslash mycommand} has been defined in this example,
-%to give italic, mono-spaced text: \mycommand{some text}.
-%
-%\section{Extra information when writing JACS Communications}
-%
-%When producing communications for \emph{J.~Am.\ Chem.\ Soc.}, the
-%class will automatically lay the text out in the style of the
-%journal. This gives a guide to the length of text that can be
-%accommodated in such a publication. There are some points to bear in
-%mind when preparing a JACS Communication in this way.  The layout
-%produced here is a \emph{model} for the published result, and the
-%outcome should be taken as a \emph{guide} to the final length. The
-%spacing and sizing of graphical content is an area where there is
-%some flexibility in the process.  You should not worry about the
-%space before and after graphics, which is set to give a guide to the
-%published size. This is very dependant on the final published layout.
-%
-%You should be able to use the same source to produce a JACS
-%Communication and a normal article.  For example, this demonstration
-%file will work with both \texttt{type=article} and
-%\texttt{type=communication}. Sections and any abstract are
-%automatically ignored, although you will get warnings to this effect.
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% The "Acknowledgement" section can be given in all manuscript
-%%% classes.  This should be given within the "acknowledgement"
-%%% environment, which will make the correct section or running title.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\begin{acknowledgement}
-%The authors thank Professor Lindsey Madison of Colby College for her time and expertise.
-%\end{acknowledgement}
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% The same is true for Supporting Information, which should use the
-%%% suppinfo environment.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\begin{suppinfo}
-%
-%A listing of the contents of each file supplied as Supporting Information
-%should be included. For instructions on what should be included in the
-%Supporting Information as well as how to prepare this material for
-%publications, refer to the journal's Instructions for Authors.
-%
-%The following files are available free of charge.
-%\begin{itemize}
-%  \item Filename: brief description
-%  \item Filename: brief description
-%\end{itemize}
-%
-%\end{suppinfo}
-%
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% The appropriate \bibliography command should be placed here.
 %%% Notice that the class file automatically sets \bibliographystyle
