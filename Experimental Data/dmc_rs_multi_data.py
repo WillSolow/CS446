@@ -28,7 +28,7 @@ zp20_walk1=[]
 zp20_walk5=[]
 zp20_walk10=[]
 
-pop_percent=[.9999, .9991, .9965, .9208, .7164]
+pop_percent=[]
 
 
 
