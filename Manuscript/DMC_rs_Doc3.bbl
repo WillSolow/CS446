@@ -8,7 +8,7 @@
 \providecommand*\mcitethebibliography{\thebibliography}
 \csname @ifundefined\endcsname{endmcitethebibliography}
   {\let\endmcitethebibliography\endthebibliography}{}
-\begin{mcitethebibliography}{20}
+\begin{mcitethebibliography}{21}
 \providecommand*\natexlab[1]{#1}
 \providecommand*\mciteSetBstSublistMode[1]{}
 \providecommand*\mciteSetBstMaxWidthForm[2]{}
@@ -36,8 +36,8 @@ Schrodinger,~E. An Undulatory Theory of the Mechanics of Atoms and Molecules.
 \bibitem[Goldman and Saykally(2004)Goldman, and Saykally]{Goldman2004}
 Goldman,~N.; Saykally,~R. Elucidating the role of many-body forces in liquid
   water. I. Simulations of water clusters on the VRT(ASP-W) potential surfaces.
-  \emph{Journal of Chemical Physics} \textbf{2004}, \emph{120}, 4777--4789,
-  cited By 53\relax
+  \emph{Journal of Chemical Physics} \textbf{2004}, \emph{120},
+  4777--4789\relax
 \mciteBstWouldAddEndPuncttrue
 \mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
 {\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
@@ -46,7 +46,7 @@ Goldman,~N.; Saykally,~R. Elucidating the role of many-body forces in liquid
   Csányi]{Gillan2013}
 Gillan,~M.; Alfè,~D.; Bartók,~A.; Csányi,~G. First-principles energetics of
   water clusters and ice: A many-body analysis. \emph{Journal of Chemical
-  Physics} \textbf{2013}, \emph{139}, cited By 31\relax
+  Physics} \textbf{2013}, \emph{139}\relax
 \mciteBstWouldAddEndPuncttrue
 \mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
 {\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
@@ -55,7 +55,7 @@ Gillan,~M.; Alfè,~D.; Bartók,~A.; Csányi,~G. First-principles energetics of
   Clary]{Liu1996}
 Liu,~K.; Brown,~M.; Carter,~C.; Saykally,~R.; Gregory,~J.; Clary,~D.
   Characterization of a cage form of the water hexamer. \emph{Nature}
-  \textbf{1996}, \emph{381}, 501--503, cited By 556\relax
+  \textbf{1996}, \emph{381}, 501--503\relax
 \mciteBstWouldAddEndPuncttrue
 \mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
 {\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
@@ -111,8 +111,7 @@ Reynolds,~P.~J.; Ceperley,~D.~M.; Alder,~B.~J.; Lester,~W.~A. Fixed‐node
 \EndOfBibitem
 \bibitem[Babin and Paesani(2013)Babin, and Paesani]{Babin2013}
 Babin,~V.; Paesani,~F. The curious case of the water hexamer: Cage vs. Prism.
-  \emph{Chemical Physics Letters} \textbf{2013}, \emph{580}, 1--8, cited By
-  32\relax
+  \emph{Chemical Physics Letters} \textbf{2013}, \emph{580}, 1--8\relax
 \mciteBstWouldAddEndPuncttrue
 \mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
 {\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
@@ -120,7 +119,7 @@ Babin,~V.; Paesani,~F. The curious case of the water hexamer: Cage vs. Prism.
 \bibitem[Severson and Buch(1999)Severson, and Buch]{Severson1999}
 Severson,~M.; Buch,~V. Quantum Monte Carlo simulation of intermolecular excited
   vibrational states in the cage water hexamer. \emph{Journal of Chemical
-  Physics} \textbf{1999}, \emph{111}, 10866--10875, cited By 40\relax
+  Physics} \textbf{1999}, \emph{111}, 10866--10875\relax
 \mciteBstWouldAddEndPuncttrue
 \mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
 {\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
@@ -130,7 +129,7 @@ Severson,~M.; Buch,~V. Quantum Monte Carlo simulation of intermolecular excited
 Mallory,~J.~D.; Brown,~S.~E.; Mandelshtam,~V.~A. Assessing the Performance of
   the Diffusion Monte Carlo Method As Applied to the Water Monomer, Dimer, and
   Hexamer. \emph{The Journal of Physical Chemistry A} \textbf{2015},
-  \emph{119}, 6504--6515, PMID: 26001418\relax
+  \emph{119}, 6504--6515\relax
 \mciteBstWouldAddEndPuncttrue
 \mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
 {\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
@@ -147,8 +146,14 @@ Umrigar,~C.~J.; Nightingale,~M.~P.; Runge,~K.~J. A diffusion Monte Carlo
 \bibitem[Gregory and Clary(1996)Gregory, and Clary]{Gregory1996}
 Gregory,~J.; Clary,~D. Structure of water clusters. The contribution of
   many-body forces, monomer relaxation, and vibrational zero-point energy.
-  \emph{Journal of Physical Chemistry} \textbf{1996}, \emph{100}, 18014--18022,
-  cited By 234\relax
+  \emph{Journal of Physical Chemistry} \textbf{1996}, \emph{100},
+  18014--18022\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Madison(2020)]{Madison2020}
+Madison,~L. Personal Communication, 2020\relax
 \mciteBstWouldAddEndPuncttrue
 \mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
 {\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
@@ -163,7 +168,7 @@ Stillinger,~F.~H. Theory and Molecular Models for Water. \emph{Bell
 \bibitem[Vihola \latin{et~al.}(2020)Vihola, Helske, and Franks]{Vihola2020}
 Vihola,~M.; Helske,~J.; Franks,~J. Importance sampling type estimators based on
   approximate marginal Markov chain Monte Carlo. \emph{Scandinavian Journal of
-  Statistics} \textbf{2020}, \emph{47}, 1339--1376, cited By 0\relax
+  Statistics} \textbf{2020}, \emph{47}, 1339--1376\relax
 \mciteBstWouldAddEndPuncttrue
 \mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
 {\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
