@@ -566,7 +566,7 @@ def sim_loop(init_walkers):
 num_walkers = ['1000_walker.npy', '5000_walker.npy', '10000_walker.npy']
 
 # dt values to test
-dt_values = [10, 5, 1, .5, .1, .05, .01]
+dt_values = [10, 5, 1, .5, .1]
 
 # number of times the average is taken over
 sim_times = [10,20]

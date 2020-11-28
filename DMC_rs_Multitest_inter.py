@@ -563,13 +563,13 @@ def sim_loop(init_walkers):
 # Main Testing Loop
 
 # Equilibrated walkers array
-num_walkers = ['10000_trimer.npy']
+num_walkers = ['1000_trimer.npy', '5000_trimer.npy','10000_trimer.npy']
 
 # dt values to test
-dt_values = [.1]
+dt_values = [5,1,.5,.1]
 
 # number of times the average is taken over
-sim_times = [20]
+sim_times = [10,20]
 
 # equilbration standard
 equilibrate = 1500
