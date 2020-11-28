@@ -5,9 +5,20 @@
 \usepackage{chemformula} 
 \usepackage[T1]{fontenc} 
 \usepackage{fixltx2e}
+\usepackage{float}
+
+\usepackage{caption}
+\usepackage{subcaption}
 
 \newcommand*\mycommand[1]{\texttt{\emph{#1}}}
 
+\newcommand*{\figuretitle}[1]{%
+    {\centering%   <--------  will only affect the title because of the grouping (by the
+    \textbf{#1}%              braces before \centering and behind \medskip). If you remove
+    \par\medskip}%            these braces the whole body of a {figure} env will be centered.
+}
+
+\captionsetup[figure]{labelformat=empty}
 
 \author{Will Solow}
 \email{whsolo22@colby.edu}
@@ -68,18 +79,18 @@ To implement the new model described above, the researchers chose to store the i
 
 In the simulation loop implementation, the researchers directly followed the pseudocode presented by the model. NumPy is able to operate on a large array of data simultaneously such that it was not necessary to use \textit{for loops} to access individual data points within the 4D array. The atoms in each walker were propagated by a pseudorandom number in the normal distribution of $\sqrt{\text{time step}/\text{atomic mass}}$. When studying the water molecule system, the researchers adopted the convention that the atom dimension of the 4D walker array would have the oxygen, hydrogen, hydrogen atoms in the same order each time. Given that each atom appeared in the same index in each walker in the 4D array, the NumPy tile function was used to broadcast the range of the normal distribution to each coordinate in the 4D array. This approach allowed for a one line propagation step within the simulation loop: 
 
-\begin{figure}
-  \includegraphics[width=\linewidth]{propagations.jpg}
+\begin{figure}[H]
   \caption{Propagations of Walkers}
+  \includegraphics[width=\linewidth]{propagations.jpg}
 \end{figure}
 
 Another point of interest in the implementation of the simulation loop was the walker replication and deletion step. Based on the potential energy of each walker compared to the overall reference energy of the system and a random threshold number, the walker was selected to be either replicated or deleted from the 4D array. The index of each such walker was converted into a one-dimensional array of booleans with a \textit{True} value indicating that the walker should remain in the final walker array. NumPy arrays supported boolean indexing, so the implementation returned only the walkers that were not deleted and a copy of the walkers that were replicated.
 
 The potential energy functions for the single water molecule and water trimer were perhaps the most interesting part of the simulation and were where the researchers could demonstrate the utility of NumPy. The researchers based the code on the potential energy functions provided by Professor Lindsey Madison. The researchers spent a significant amount of time understanding what the function did and brainstorming how to do those operations more efficiently in NumPy. The result was innovative yet unintuitive calculations that lent themselves to very efficient potential energy function calculations. For example, consider the line below within the water molecule intermolecular potential energy:
 
-\begin{figure}
-  \includegraphics[width=\linewidth]{distances.jpg}
+\begin{figure}[H]
   \caption{Intermolecular Distance Calculation}
+  \includegraphics[width=\linewidth]{distances.jpg}
 \end{figure}
 
 The key insight was that the input to the potential energy function was a 4D array of walkers. To calculate the intermolecular potential energy, the function compared the distances between the atoms of every distinct pair of water molecules in the system. The researchers first used the NumPy array indexing to obtain arrays that have the distinct pairs (pair\_a and pair\_b). Then, considered the arrays that have the distinct pairs, notice that matrix multiplication behaves very similarly to distance calculation in that the corresponding elements are multiplied pointwise and then summed. However, pointwise multiplication was not exactly what was desired given that the distance between the two vectors was the variable of interest. NumPy performs matrix multiplication by broadcasting the array to a higher dimension, performing pointwise multiplication, and then summing along the extra axes resulting in a smaller array of the correct size. This was exactly what the code demonstrated, and the resulting array had the following dimensions: number of walkers by number of distinct pairs by number of atoms by number of atoms, where each datapoint was the distance between the atoms.
@@ -100,7 +111,7 @@ This process was repeated for the intermolecular potential energy in the water t
 
 \section{Simulations}
 
-To investigate the ZPE of the water molecule and water trimer, the researchers employed the following strategy. Using the simulation loop, an equilibrated array of walkers was created and stored for later use. At the beginning of each trial, this equilibrated array of walkers was put through another equilibration phase with a duration based on the time step. A system in equilibrium will not deviate far from equilibrium; it will only move around slightly. This process served to randomize the start of our production phases to ensure that the data that was generated were from a random distribution of possible molecular system configurations.
+To investigate the ZPE of the water molecule and water trimer, the researchers employed the following strategy. Using the simulation loop, an equilibrated array of walkers was created and stored for later use. At the beginning of each trial, this equilibrated array of walkers was put through another equilibration phase with a duration based on the time step. A system in equilibrium will not deviate far from equilibrium; it will only move around slightly. This process served to randomize the start of our production phases to ensure that the data that was generated were from a random distribution of possible molecular system configurations. There are other methods to equilibrate a system such as choosing a number within a uniform distribution. This method was performed for the water molecule, and coordinates were chosen uniformly within the range [0,1). This was possible to perform with the water trimer as well\cite{Roinou2020}, however the researchers chose to work from a previously equilibrated array of walkers as the former method led to a large increase in the walker population before returning to the initial value, adding to the trial run time. 
 
 The researchers ran trials with timesteps of [10,5,1,0.5,0.1] with initial walker populations of [1000,5000,10000] over 10 or 20 production phases. In each trial, a walker array was equilibrated and then put through a series of production phases to determine the ZPE\textsubscript{G}. Over the 10 trials for each of these variables, an average of the ZPE\textsubscript{G} was calculated, labeled the ZPE\textsubscript{T}. Calculating the ZPE\textsubscript{T} in this case was not equivalent to calculating a ZPE\textsubscript{G} with 100 production phases. This was due to the fact that each ZPE\textsubscript{G} was calculated from one initial equilibration phase which the production phases are run from. Furthermore, the researchers were interested in the standard deviation of the ZPE\textsubscript{G} calculated as well, so by computing the ZPE\textsubscript{G} over the 10 trials, the researchers could quantify how the simulation constants affected both the variability in the ZPE\textsubscript{G} as well as its computed value.
 
@@ -111,14 +122,23 @@ Using the existing implementation of the intramolecular potential energy functio
 By decreasing the time step or by increasing the number of walkers, the ZPE\textsubscript{T} (the average of the ZPE\textsubscript{G} over 10 trials) increased between time steps of 10 to 1.0 and then plateaued at time steps lower than 1.0 (Figure 1A). However, note that at a time step of 10, the ZPE\textsubscript{T} was noticeably lower than the ZPE\textsubscript{T} produced by smaller timesteps. Until recently, with the exploration of the water molecule system, a time step of 10 was considered sufficiently small to produce accurate results but this was not consistent with our results. In contrast, at the smaller time steps (e.g., 0.1 and 0.5), the ZPE\textsubscript{T} stayed constant, implying that it was in a desirable range. This result supported our findings that smaller time steps should be used in the modelling of more complicated systems. 
 
 \begin{figure}
+\centering
+\figuretitle{Effects of Simulation Constants on Zero-Point Energy and Variability}
+\begin{subfigure}{.5\textwidth}
+  \centering
   \includegraphics[width=\linewidth]{fig_1A.jpg}
-  \caption{Figure 1A}
-  \label{fig:2A}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{fig_1B}
+\end{subfigure}
+\caption{Figure 1A: The Zero Point Energy (ZPE\textsubscript{T} plateaus below a time step of 1.0. Increasing the walkers above 5000 or increasing the number of production phases does not alter the ZPE\textsubscript{T}\\ 
+Figure 1B: The standard deviation of the Zero Point Energy}
 \end{figure}
 
 In addition to the calculated ZPE\textsubscript{T} of the system, the standard deviation of the ZPE\textsubscript{G} for each time step and walker population was investigated. While the overall average (the ZPE\textsubscript{T}) was important, a small variance was also desirable as it demonstrated that the simulation produced similar results consistently. In Figure 1B, we showed how the standard deviation consistently decreased with both an increase in walker population and an increase in the number of production phases over which the ZPE\textsubscript{G} was calculated. However, of interest was that a larger time step drastically decreased the standard deviation of the ZPE\textsubscript{G}, which will be highlighted in the Discussion. 
 
-\begin{figure}
+\begin{figure}[H]
   \includegraphics[width=\linewidth]{fig_1B.jpg}
   \caption{Figure 1B}
   \label{fig:}
@@ -126,7 +146,7 @@ In addition to the calculated ZPE\textsubscript{T} of the system, the standard d
 
 In Figure 3A, we show the equilibrium walker population at the end of the production phase compared to the ZPE\textsubscript{G} calculated. A retained walker population of 100\% is ideal. The percent of walkers retained at the end of the simulation remained virtually unchanged with more production phases or more walkers; thus, Figure 2 only shows the data for 10000 walkers over 20 production phases. We concluded that a decrease in time step is directly correlated to an increase in the remaining walker population. Furthermore, the connection between walker population and ZPE\textsubscript{T} was illuminated in that fewer remaining walkers resulted in a smaller ZPE\textsubscript{T}, which was assumed to be more inaccurate when modelling the water molecule system. 
 
-\begin{figure}
+\begin{figure}[H]
   \includegraphics[width=\linewidth]{fig_2.jpg}
   \caption{Figure 2}
   \label{fig:}
@@ -134,7 +154,7 @@ In Figure 3A, we show the equilibrium walker population at the end of the produc
 
 In contrast, Figure 3 demonstrated that a smaller time step was correlated with a larger standard deviation. That said, a smaller time step gave a presumably more accurate ZPE\textsubscript{T}, and combined with a convergence of the ZPE\textsubscript{T} calculated after a time step of 1.0, we saw that such a smaller time step was a necessary condition for calculating the correct ZPE\textsubscript{T} value. Note that the standard deviation was still minimal with a small time step, and can be lowered by adding production phases or more walkers. Typically, a smaller time step would be associated with more accurate results and a smaller variance. Here we saw more accurate results in a higher ZPE\textsubscript{T}, but also see the variance increase. Reasons for this finding was highlighted in the Discussion section.
 
-\begin{figure}
+\begin{figure}[H]
   \includegraphics[width=\linewidth]{fig_3.jpg}
   \caption{Figure 3}
   \label{fig:}

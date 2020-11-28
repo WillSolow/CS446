@@ -40,11 +40,14 @@ y = [1,2]
 fig = plt.figure(1)
 ax = fig.add_subplot(111, projection='3d')
 
-ax.axes.set_xticklabels(x1)
+
 ax.axes.set_xticks(x)
-ax.axes.set_yticklabels(y1)
+ax.axes.set_xticklabels(x1)
+
 ax.axes.set_yticks(y)
-#ax.axes.ticklabel_format('both','plain')
+ax.axes.set_yticklabels(y1)
+
+
 ax.plot(x,[1,1,1,1,1],std10_walk1,marker='o',label='1000 Walkers',color='red')
 ax.plot(x,[1,1,1,1,1],std10_walk5,marker='o',label='5000 Walkers',color='blue')
 ax.plot(x,[1,1,1,1,1],std10_walk10,marker='o',label='10000 Walkers',color='green')
@@ -60,10 +63,12 @@ ax.legend()
 fig = plt.figure(2)
 ax = fig.add_subplot(111,projection='3d')
 
-ax.axes.set_xticklabels(x1)
+
 ax.axes.set_xticks(x)
-ax.axes.set_yticklabels(y1)
+ax.axes.set_xticklabels(x1)
 ax.axes.set_yticks(y)
+ax.axes.set_yticklabels(y1)
+
 
 ax.plot(x,[1,1,1,1,1],zp10_walk1,marker='o',label='1000 Walkers',color='red')
 ax.plot(x,[1,1,1,1,1],zp10_walk5,marker='o',label='5000 Walkers',color='blue')
@@ -79,11 +84,47 @@ ax.set_zlabel('Zero-Point Energy')
 plt.title('Effects of Constants on Zero-Point Energy')
 ax.legend()
 
+
+
+
 fig = plt.figure(3)
 ax = fig.add_subplot(111,projection='3d')
 
-ax.axes.set_xticklabels(x1)
 ax.axes.set_xticks(x)
+ax.axes.set_xticklabels(x1)
+
+
+ax.plot(x,pop_percent,zp10_walk10,marker='o',color='red')
+
+ax.set_xlabel('Time step')
+ax.set_zlabel('Zero-Point Energy')
+ax.set_ylabel('Percent of Initial Walker Population')
+
+plt.title('Correlation Between Walker Population and Zero-Point Energy')
+
+
+
+
+fig = plt.figure(4)
+ax = fig.add_subplot(111,projection='3d')
+
+
+ax.axes.set_xticks(x)
+ax.axes.set_xticklabels(x1)
+
+
+x = [1,2,3,4,5]
+x1 = [.1,.5,1,5,10]
+
+std10_walk1=[0.00002573,0.00003331,0.00004462,0.00004517,0.00004853]
+std10_walk5=[0.00000838,0.00001599,0.00002555,0.00001871,0.00003091]
+std10_walk10=[0.00001148,0.00000875,0.00001498,0.00001858,.00002782]
+
+
+zp10_walk1=[0.061283425,0.061897123,0.062116094,0.062130088,0.062191604]
+zp10_walk5=[0.061240847,0.061859571,0.062070945,0.062070326,0.06207806]
+zp10_walk10=[0.061240559,0.061855164,0.062060804,0.062066651,0.062068792]
+
 
 ax.plot(x,std10_walk1,zp10_walk1,marker='o',label='1000 Walkers',color='red')
 ax.plot(x,std10_walk5,zp10_walk5,marker='o',label='5000 Walkers',color='blue')
@@ -95,18 +136,6 @@ ax.set_zlabel('Zero-Point Energy')
 plt.title('Effects of Time Step on Zero-Point Energy and Variability')
 ax.legend()
 
-fig = plt.figure(4)
-ax = fig.add_subplot(111,projection='3d')
-
-ax.axes.set_xticklabels(x1)
-ax.axes.set_xticks(x)
-ax.plot(x,pop_percent,zp10_walk10,marker='o',color='red')
-
-ax.set_xlabel('Time step')
-ax.set_zlabel('Zero-Point Energy')
-ax.set_ylabel('Percent of Initial Walker Population')
-
-plt.title('Correlation Between Walker Population and Zero-Point Energy')
 
 plt.show()
 

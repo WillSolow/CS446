@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 2.9.7300 64-bit) (preloaded format=pdflatex 2020.3.16)  27 NOV 2020 16:00
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 2.9.7300 64-bit) (preloaded format=pdflatex 2020.3.16)  27 NOV 2020 21:26
 entering extended mode
 **./DMC_rs_Doc3.tex
 (DMC_rs_Doc3.tex
@@ -643,6 +643,10 @@ Package fixltx2e Warning: fixltx2e is not required with releases after 2015
 (fixltx2e)                See the latexrelease package for details.
 
 Already applied: [0000/00/00] Old fixltx2e package on input line 53.
+) (C:\Users\wsolow\AppData\Roaming\MiKTeX\2.9\tex/latex/caption\subcaption.sty
+Package: subcaption 2020/08/23 v1.3g Sub-captions (AR)
+\c@subfigure=\count306
+\c@subtable=\count307
 ) (DMC_rs_Doc3.aux
 
 LaTeX Warning: Label `fig:' multiply defined.
@@ -653,20 +657,20 @@ LaTeX Warning: Label `fig:' multiply defined.
 )
 \openout1 = `DMC_rs_Doc3.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 25.
-LaTeX Font Info:    ... okay on input line 25.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 25.
-LaTeX Font Info:    ... okay on input line 25.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 25.
-LaTeX Font Info:    ... okay on input line 25.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 25.
-LaTeX Font Info:    ... okay on input line 25.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 25.
-LaTeX Font Info:    ... okay on input line 25.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 25.
-LaTeX Font Info:    ... okay on input line 25.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 25.
-LaTeX Font Info:    ... okay on input line 25.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 36.
+LaTeX Font Info:    ... okay on input line 36.
 \openout3 = `acs-DMC_rs_Doc3.bib'.
 
 
@@ -709,16 +713,16 @@ Package caption Info: float package is loaded.
 Package caption Info: End \AtBeginDocument code.
 ("C:\Program Files\MiKTeX 2.9\tex/context/base/mkii\supp-pdf.mkii"
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count306
+\scratchcounter=\count308
 \scratchdimen=\dimen310
 \scratchbox=\box69
-\nofMPsegments=\count307
-\nofMParguments=\count308
+\nofMPsegments=\count309
+\nofMParguments=\count310
 \everyMPshowfont=\toks43
-\MPscratchCnt=\count309
+\MPscratchCnt=\count311
 \MPscratchDim=\dimen311
-\MPnumerator=\count310
-\makeMPintoPDFobject=\count311
+\MPnumerator=\count312
+\makeMPintoPDFobject=\count313
 \everyMPtoPDFconversion=\toks44
 ) ("C:\Program Files\MiKTeX 2.9\tex/latex/epstopdf-pkg\epstopdf-base.sty"
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
@@ -726,8 +730,8 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 85.
 )
 ABD: EveryShipout initializing macros
-LaTeX Font Info:    Trying to load font information for T1+cmss on input line 2
-5.
+LaTeX Font Info:    Trying to load font information for T1+cmss on input line 3
+6.
 
 ("C:\Program Files\MiKTeX 2.9\tex/latex/base\t1cmss.fd"
 File: t1cmss.fd 2019/12/16 v2.5j Standard LaTeX font definitions
@@ -738,72 +742,86 @@ File: t1cmss.fd 2019/12/16 v2.5j Standard LaTeX font definitions
 <propagations.jpg, id=31, 695.59875pt x 51.94406pt>
 File: propagations.jpg Graphic file (type jpg)
 <use propagations.jpg>
-Package pdftex.def Info: propagations.jpg  used on input line 72.
+Package pdftex.def Info: propagations.jpg  used on input line 84.
 (pdftex.def)             Requested size: 469.75539pt x 35.07895pt.
 <distances.jpg, id=32, 645.91313pt x 34.62938pt>
 File: distances.jpg Graphic file (type jpg)
 <use distances.jpg>
-Package pdftex.def Info: distances.jpg  used on input line 81.
+Package pdftex.def Info: distances.jpg  used on input line 93.
 (pdftex.def)             Requested size: 469.75539pt x 25.18517pt.
- [6 <./propagations.jpg>] [7 <./distances.jpg>] [8] [9]
-<fig_1A.jpg, id=51, 581.92406pt x 524.71031pt>
+ [6 <./propagations.jpg>] [7 <./distances.jpg>] [8]
+
+Package natbib Warning: Citation `Roinou2020' on page 9 undefined on input line
+ 114.
+
+[9] [10]
+<fig_1A.jpg, id=55, 321.45094pt x 231.86626pt>
 File: fig_1A.jpg Graphic file (type jpg)
 <use fig_1A.jpg>
-Package pdftex.def Info: fig_1A.jpg  used on input line 114.
-(pdftex.def)             Requested size: 469.75539pt x 423.57986pt.
- [10] [11 <./fig_1A.jpg>]
-<fig_1B.jpg, id=58, 610.53094pt x 529.22719pt>
+Package pdftex.def Info: fig_1A.jpg  used on input line 129.
+(pdftex.def)             Requested size: 234.87769pt x 169.42369pt.
+<fig_1B.jpg, id=56, 307.1475pt x 234.1247pt>
 File: fig_1B.jpg Graphic file (type jpg)
 <use fig_1B.jpg>
-Package pdftex.def Info: fig_1B.jpg  used on input line 122.
-(pdftex.def)             Requested size: 469.75539pt x 407.21548pt.
- [12 <./fig_1B.jpg>]
-<fig_2.jpg, id=62, 642.14906pt x 527.72156pt>
+Package pdftex.def Info: fig_1B.jpg  used on input line 133.
+(pdftex.def)             Requested size: 234.87769pt x 179.03693pt.
+File: fig_1B.jpg Graphic file (type jpg)
+<use fig_1B.jpg>
+Package pdftex.def Info: fig_1B.jpg  used on input line 142.
+(pdftex.def)             Requested size: 469.75539pt x 358.09529pt.
+ [11 <./fig_1A.jpg> <./fig_1B.jpg>]
+<fig_2.jpg, id=61, 642.14906pt x 527.72156pt>
 File: fig_2.jpg Graphic file (type jpg)
 <use fig_2.jpg>
-Package pdftex.def Info: fig_2.jpg  used on input line 130.
+Package pdftex.def Info: fig_2.jpg  used on input line 150.
 (pdftex.def)             Requested size: 469.75539pt x 386.05489pt.
- [13 <./fig_2.jpg>]
-<fig_3.jpg, id=67, 614.295pt x 539.76656pt>
+ [12]
+<fig_3.jpg, id=65, 614.295pt x 539.76656pt>
 File: fig_3.jpg Graphic file (type jpg)
 <use fig_3.jpg>
-Package pdftex.def Info: fig_3.jpg  used on input line 138.
+Package pdftex.def Info: fig_3.jpg  used on input line 158.
 (pdftex.def)             Requested size: 469.75539pt x 412.76358pt.
- [14] [15 <./fig_3.jpg>] [16] [17] [18]
-(DMC_rs_Doc3.bbl [19] [20]) [21] (DMC_rs_Doc3.aux)
+ [13 <./fig_2.jpg>] [14 <./fig_3.jpg>] [15] [16] [17] [18] (DMC_rs_Doc3.bbl [19
+] [20])
+
+Package natbib Warning: There were undefined citations.
+
+[21] (DMC_rs_Doc3.aux)
 
 LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 17543 strings out of 481556
- 355689 string characters out of 2923631
- 587051 words of memory out of 3000000
- 32454 multiletter control sequences out of 15000+200000
- 549578 words of font info for 58 fonts, out of 3000000 for 9000
+ 17618 strings out of 481556
+ 356932 string characters out of 2923631
+ 592259 words of memory out of 3000000
+ 32526 multiletter control sequences out of 15000+200000
+ 550354 words of font info for 59 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 68i,8n,101p,1210b,502s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 68i,8n,101p,1219b,534s stack positions out of 5000i,500n,10000p,200000b,50000s
  <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600
 \ecbx1200.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappe
-n/ec/dpi600\ecbx1440.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljf
-our/jknappen/ec/dpi600\ecrm0800.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\f
-onts/pk/ljfour/jknappen/ec/dpi600\ecbx1728.pk> <C:\Users\wsolow\AppData\Local\M
-iKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1200.pk> <C:\Users\wsolow\AppD
-ata\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1095.pk> <C:\Users\
-wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1095.pk>
+n/ec/dpi600\ecbx0800.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljf
+our/jknappen/ec/dpi600\ecbx1440.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\f
+onts/pk/ljfour/jknappen/ec/dpi600\ecrm0800.pk> <C:\Users\wsolow\AppData\Local\M
+iKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1728.pk> <C:\Users\wsolow\AppD
+ata\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1200.pk> <C:\Users\
+wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1095.pk>
  <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\e
-css1200.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/
-ec/dpi600\ecti1200.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfou
-r/jknappen/ec/dpi600\ecss1440.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fon
-ts/pk/ljfour/jknappen/ec/dpi600\ecsx2074.pk><C:/Program Files/MiKTeX 2.9/fonts/
-type1/public/amsfonts/cm/cmex10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/pu
-blic/amsfonts/cm/cmmi12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/ams
-fonts/cm/cmr12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/
-cmr8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb
-><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
-Output written on DMC_rs_Doc3.pdf (21 pages, 517259 bytes).
+cbx1095.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/
+ec/dpi600\ecss1200.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfou
+r/jknappen/ec/dpi600\ecti1200.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fon
+ts/pk/ljfour/jknappen/ec/dpi600\ecss1440.pk> <C:\Users\wsolow\AppData\Local\MiK
+TeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecsx2074.pk><C:/Program Files/MiKTeX
+ 2.9/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Program Files/MiKTeX 2.9/fon
+ts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1
+/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/a
+msfonts/cm/cmr8.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm
+/cmsy10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy8.p
+fb>
+Output written on DMC_rs_Doc3.pdf (21 pages, 455356 bytes).
 PDF statistics:
- 474 PDF objects out of 1000 (max. 8388607)
+ 504 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  43 words of extra memory for PDF output out of 10000 (max. 10000000)
 
