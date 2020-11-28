@@ -81,7 +81,7 @@ In the simulation loop implementation, the researchers directly followed the pse
 
 \begin{figure}[H]
   \caption{Propagations of Walkers}
-  \includegraphics[width=\linewidth]{propagations.jpg}
+  \includegraphics[width=\linewidth]{figures/propagations.jpg}
 \end{figure}
 
 Another point of interest in the implementation of the simulation loop was the walker replication and deletion step. Based on the potential energy of each walker compared to the overall reference energy of the system and a random threshold number, the walker was selected to be either replicated or deleted from the 4D array. The index of each such walker was converted into a one-dimensional array of booleans with a \textit{True} value indicating that the walker should remain in the final walker array. NumPy arrays supported boolean indexing, so the implementation returned only the walkers that were not deleted and a copy of the walkers that were replicated.
@@ -90,7 +90,7 @@ The potential energy functions for the single water molecule and water trimer we
 
 \begin{figure}[H]
   \caption{Intermolecular Distance Calculation}
-  \includegraphics[width=\linewidth]{distances.jpg}
+  \includegraphics[width=\linewidth]{figures/distances.jpg}
 \end{figure}
 
 The key insight was that the input to the potential energy function was a 4D array of walkers. To calculate the intermolecular potential energy, the function compared the distances between the atoms of every distinct pair of water molecules in the system. The researchers first used the NumPy array indexing to obtain arrays that have the distinct pairs (pair\_a and pair\_b). Then, considered the arrays that have the distinct pairs, notice that matrix multiplication behaves very similarly to distance calculation in that the corresponding elements are multiplied pointwise and then summed. However, pointwise multiplication was not exactly what was desired given that the distance between the two vectors was the variable of interest. NumPy performs matrix multiplication by broadcasting the array to a higher dimension, performing pointwise multiplication, and then summing along the extra axes resulting in a smaller array of the correct size. This was exactly what the code demonstrated, and the resulting array had the following dimensions: number of walkers by number of distinct pairs by number of atoms by number of atoms, where each datapoint was the distance between the atoms.
@@ -115,52 +115,92 @@ To investigate the ZPE of the water molecule and water trimer, the researchers e
 
 The researchers ran trials with timesteps of [10,5,1,0.5,0.1] with initial walker populations of [1000,5000,10000] over 10 or 20 production phases. In each trial, a walker array was equilibrated and then put through a series of production phases to determine the ZPE\textsubscript{G}. Over the 10 trials for each of these variables, an average of the ZPE\textsubscript{G} was calculated, labeled the ZPE\textsubscript{T}. Calculating the ZPE\textsubscript{T} in this case was not equivalent to calculating a ZPE\textsubscript{G} with 100 production phases. This was due to the fact that each ZPE\textsubscript{G} was calculated from one initial equilibration phase which the production phases are run from. Furthermore, the researchers were interested in the standard deviation of the ZPE\textsubscript{G} calculated as well, so by computing the ZPE\textsubscript{G} over the 10 trials, the researchers could quantify how the simulation constants affected both the variability in the ZPE\textsubscript{G} as well as its computed value.
 
+Following with the water trimer, the researchers ran trials with timesteps of [5,1,0.5,0.1] with initial walker populations of [1000,5000,10000] over 10 or 20 production phases. Given the complexity of the water trimer system, a time step of 10 was omitted as it was not possible to equilibrate a system with so much movement ocurring at each iteration of the simulation loop. As with the water molecule trials, a walker array was equilibrated and then put through a series of production phases to determine the ZPE\textsubscript{G}, and data were collected.
+
 Using the existing implementation of the intramolecular potential energy function given by Professor Lindsey Madison, and the NumPy 4D array implementation described above, simulations were run and similar ZPE\textsubscript{R} values were obtained, further confirming the validation of the newer model. The run time for the simulations using both implementations of the potential energy function were recorded and compared by an empirical analysis over varying populations of walkers and simulation iterations. The time step was kept constant at 0.1, given that such a time step gave a walker population convergent to 99.99\% of initial value.
 
 \section{Results}
 
 By decreasing the time step or by increasing the number of walkers, the ZPE\textsubscript{T} (the average of the ZPE\textsubscript{G} over 10 trials) increased between time steps of 10 to 1.0 and then plateaued at time steps lower than 1.0 (Figure 1A). However, note that at a time step of 10, the ZPE\textsubscript{T} was noticeably lower than the ZPE\textsubscript{T} produced by smaller timesteps. Until recently, with the exploration of the water molecule system, a time step of 10 was considered sufficiently small to produce accurate results but this was not consistent with our results. In contrast, at the smaller time steps (e.g., 0.1 and 0.5), the ZPE\textsubscript{T} stayed constant, implying that it was in a desirable range. This result supported our findings that smaller time steps should be used in the modelling of more complicated systems. 
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \figuretitle{Effects of Simulation Constants on Zero-Point Energy and Variability}
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=\linewidth]{fig_1A.jpg}
+  \includegraphics[width=\linewidth]{figures/fig_1A.jpg}
 \end{subfigure}%
 \begin{subfigure}{.5\textwidth}
   \centering
-  \includegraphics[width=\linewidth]{fig_1B}
+  \includegraphics[width=\linewidth]{figures/fig_1B.jpg}
 \end{subfigure}
-\caption{Figure 1A: The Zero Point Energy (ZPE\textsubscript{T} plateaus below a time step of 1.0. Increasing the walkers above 5000 or increasing the number of production phases does not alter the ZPE\textsubscript{T}\\ 
-Figure 1B: The standard deviation of the Zero Point Energy}
+\caption{Figure 1A: The Zero Point Energy (ZPE\textsubscript{T} plateaus below a time step of 1.0. Increasing the walkers above 5000 or increasing the number of production phases does not alter the ZPE\textsubscript{T}.\\
+Figure 1B: The standard deviation of the Zero Point Energy decreases with an increase in a) timestep, b) walkers, c) production phases (10: solid line; 20: dashed line).}
 \end{figure}
 
 In addition to the calculated ZPE\textsubscript{T} of the system, the standard deviation of the ZPE\textsubscript{G} for each time step and walker population was investigated. While the overall average (the ZPE\textsubscript{T}) was important, a small variance was also desirable as it demonstrated that the simulation produced similar results consistently. In Figure 1B, we showed how the standard deviation consistently decreased with both an increase in walker population and an increase in the number of production phases over which the ZPE\textsubscript{G} was calculated. However, of interest was that a larger time step drastically decreased the standard deviation of the ZPE\textsubscript{G}, which will be highlighted in the Discussion. 
 
 \begin{figure}[H]
-  \includegraphics[width=\linewidth]{fig_1B.jpg}
-  \caption{Figure 1B}
-  \label{fig:}
+\centering
+\figuretitle{Effect of Time step on Walker Retention and Zero-Point Energy}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/fig_2A.jpg}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \includegraphics[width=\linewidth]{figures/fig_2B.jpg}
+\end{subfigure}
+\caption{Figure 2A: A decrease in time step corresponded to an increase in walker population retention and an increased Zero-Point Energy (ZPE\textsubscript{T}).\\ 
+Figure 2B: A larger time step resulted in a smaller standard deviation in Zero-Point Energy (ZPE\textsubscript{G}) and a lower ZPE\textsubscript{T} (results are only shown for 20 production phases).}
 \end{figure}
 
-In Figure 3A, we show the equilibrium walker population at the end of the production phase compared to the ZPE\textsubscript{G} calculated. A retained walker population of 100\% is ideal. The percent of walkers retained at the end of the simulation remained virtually unchanged with more production phases or more walkers; thus, Figure 2 only shows the data for 10000 walkers over 20 production phases. We concluded that a decrease in time step is directly correlated to an increase in the remaining walker population. Furthermore, the connection between walker population and ZPE\textsubscript{T} was illuminated in that fewer remaining walkers resulted in a smaller ZPE\textsubscript{T}, which was assumed to be more inaccurate when modelling the water molecule system. 
+In Figure 2A, we show the equilibrium walker population at the end of the production phase compared to the ZPE\textsubscript{G} calculated. A retained walker population of 100\% is ideal. The percent of walkers retained at the end of the simulation remained virtually unchanged with more production phases or more walkers; thus, Figure 2 only shows the data for 10000 walkers over 20 production phases. We concluded that a decrease in time step is directly correlated to an increase in the remaining walker population. Furthermore, the connection between walker population and ZPE\textsubscript{T} was illuminated in that fewer remaining walkers resulted in a smaller ZPE\textsubscript{T}, which was assumed to be more inaccurate when modelling the water molecule system. 
 
-\begin{figure}[H]
-  \includegraphics[width=\linewidth]{fig_2.jpg}
-  \caption{Figure 2}
-  \label{fig:}
-\end{figure}
+In contrast, Figure 2B demonstrated that a smaller time step was correlated with a larger standard deviation. That said, a smaller time step gave a presumably more accurate ZPE\textsubscript{T}, and combined with a convergence of the ZPE\textsubscript{T} calculated after a time step of 1.0, we saw that such a smaller time step was a necessary condition for calculating the correct ZPE\textsubscript{T} value. Note that the standard deviation was still minimal with a small time step, and can be lowered by adding production phases or more walkers. Typically, a smaller time step would be associated with more accurate results and a smaller variance. Here we saw more accurate results in a higher ZPE\textsubscript{T}, but also see the variance increase. Reasons for this finding was highlighted in the Discussion section.
 
-In contrast, Figure 3 demonstrated that a smaller time step was correlated with a larger standard deviation. That said, a smaller time step gave a presumably more accurate ZPE\textsubscript{T}, and combined with a convergence of the ZPE\textsubscript{T} calculated after a time step of 1.0, we saw that such a smaller time step was a necessary condition for calculating the correct ZPE\textsubscript{T} value. Note that the standard deviation was still minimal with a small time step, and can be lowered by adding production phases or more walkers. Typically, a smaller time step would be associated with more accurate results and a smaller variance. Here we saw more accurate results in a higher ZPE\textsubscript{T}, but also see the variance increase. Reasons for this finding was highlighted in the Discussion section.
+Moving to the water trimer, Figure 3A showed that decreasing the time step generally led to a decrease in the ZPE\textsubscript{T} calculated. The same plateau in ZPE\textsubscript{T} is not seen in the water trimer the same way that the ZPE\textsubscript{T} was presented in the single water molecule system. Likewise, a decrease in time step led to an increase in standard deviation, which follows a similar trend to the water molecule (Figure 3B). However, this increase is not as uniform over the number of walkers as expected, and further trials would be required to determine if any trend exists. 
 
-\begin{figure}[H]
-  \includegraphics[width=\linewidth]{fig_3.jpg}
-  \caption{Figure 3}
-  \label{fig:}
-\end{figure}
+%\begin{figure}[H]
+%\centering
+%\figuretitle{Effect of Time step on Walker Retention and Zero-Point Energy in the Water Trimer}
+%\begin{subfigure}{.5\textwidth}
+ % \centering
+  %\includegraphics[width=\linewidth]{figures/fig_3A.jpg}
+%\end{subfigure}%
+%\begin{subfigure}{.5\textwidth}
+ % \centering
+ % \includegraphics[width=\linewidth]{figures/fig_3B.jpg}
+%\end{subfigure}
+%\caption{Figure 3A The Zero Point Energy (ZPE\textsubscript{T} trends lower as time step is decreased.\\
+%Figure 3B: The standard deviation of the Zero Point Energy trends towards decreasing with an increase in a) timestep, b) walkers, c) production phases (10: solid line; 20: dashed line).}
+%\end{figure}
+
+Continuing the same analysis in the water trimer, Figure 4A demonstrates that an increase in time step leads to an increase in retained walker population. When compared with Figure 2A, we noted that a time step of 5 in the water trimer had roughly the same retained walker population as a time step of 10 in the water molecule, which supports the proposition that a smaller time step is needed when modeling more complicated molecular systems. Figure 4B demonstrates the same trend as Figure 2B, which strengthens the claim that standard deviation can be lowered by adding production phases or more walkers, regardless of the system. Moreover, we continued to see how a smaller time step introduces more variance into the system. 
+
+%\begin{figure}[H]
+%\centering
+%\figuretitle{Effect of Time step on Walker Retention and Zero-Point Energy in the Water Trimer}
+%\begin{subfigure}{.5\textwidth}
+ % \centering
+  %\includegraphics[width=\linewidth]{figures/fig_4A.jpg}
+%\end{subfigure}%
+%\begin{subfigure}{.5\textwidth}
+ % \centering
+ % \includegraphics[width=\linewidth]{figures/fig_4B.jpg}
+%\end{subfigure}
+%\caption{Figure 4A The Zero Point Energy (ZPE\textsubscript{T} trends lower as time step is decreased.\\
+%Figure 4B: The standard deviation of the Zero Point Energy trends towards decreasing with an increase in a) timestep, b) walkers, c) production phases (10: solid line; 20: dashed line).}
+%\end{figure}
 
 By incorporating the novel analytic model, the run times improved from 32 to 45 times faster than the existing model for simulating a single water model. Table 1 shows the rate at which the Solow-Rhomberg intramolecular potential energy function improved over the Madison intramolecular potential energy function. All simulations were run using the simulation loop generated by the researchers. Ten trials were run for each walker value and simulation duration to obtain an average. Notably, for 10000 walkers over 10000 time steps, the Solow-Rhomberg potential energy function yielded an average run time of 66 seconds while the Madison potential energy function yielded an average run time of 2644 seconds, giving an improvement rate of 39.75.
+
+\begin{figure}[H]
+\centering
+\figuretitle{Solow-Rhomberg Potential Energy Function Improvement Rate}
+\includegraphics[width=\linewidth]{figures/Table_1.jpg}
+\caption{Table 1}
+\end{figure}
 
 The efficiencies gained by using NumPy have implications for expanding the model to a water timer. To obtain a meaningful result from the water trimer takes around an hour. We would expect that more complicated molecular systems take longer given the extra computations required in the potential energy function and given that there are more atoms present in the system. As such, this run time improvement with the Solow-Rhomberg potential energy function only becomes more meaningful.
 
@@ -173,6 +213,10 @@ The importance of selecting the correct time step cannot be understated. With a 
 Our results demonstrated that a smaller time step led to a larger standard deviation in the ZPE\textsubscript{G} calculated. At first, this finding appears counterintuitive. However, in the simulation loop, the walkers were propagated in a normal distribution in the range of $\sqrt{\text{time step}/\text{mass}}$. A smaller time step meant that each atom in each walker could only move a smaller distance in each iteration of the simulation loop; this fact supports why the number of iterations needed to be normalized to the time step. In a complex molecular system like the water molecule, the length of both OH bonds and the HOH bond angle are enforced. With a larger time step, more motion occured at each iteration. Thus, it became easier for the walker to move outside an acceptable range from the reference energy, resulting in its deletion from the array. 
 
 The allowance of extra motion was exactly what we saw with a larger time step in that enough walkers always moved out of an acceptable range at each iteration, resulting in a walker population that did not converge to the initial population. With regard to the standard deviation, we saw that with a larger time step, the range over which walkers were likely to move is increased, allowing a larger portion of the walkers to move outside an acceptable range at each step. When the walkers are deleted, they no longer contribute to the reference energy, resulting in a lower standard deviation because the walkers remaining were more identical to in their atom configuration to each other. In contrast, with a smaller time step less motion occured at each iteration. As a result, the walkers were able to move to the edge of an acceptable reference energy value without being deleted from the walker array given that they could move in small increments towards a non-valid atom configuration. As such, a smaller time step actually created more variance in the system, which was what we would expect as we got closer to simulating continuous time within a molecular system. 
+
+The above trends seen in the water molecule were mostly replicated within the water trimer. These trends were not as uniform and some variance was seen within the data collected from the water trimer. The researchers could have expected this given how many more degrees of randomness the water trimer system has when compared to the water molecule system. Time permitting, it would have been interesting to investigate the water trimer with smaller time steps, to see if a plateau in the ZPE\textsubscript{T} occurred as it did in the water molecule. It was also interesting how the ZPE\textsubscript{T} appeared to have more randomness over the number of walkers than the water molecule, which again points to the complexity of the system. It is possible that a smaller time step could alleviate this variance. 
+
+Furthermore, the same expected convergence behaviour of the water trimer wave function was not seen the same way it was in the water molecule. Initial results showed that the water trimer could have non convergent oxygen-oxygen bond angles (expected convergence value would be 60 degrees, forming an equiangular triangle between the oxygen atoms), yet a convergent system and ZPE\textsubscript{G} were still obtained. This indicated that further simulations were needed before the researchers could safely conclude what the ZPE of the water trimer was. That said, the data collected from the water trimer still supported the conclusion that a smaller time step was necessary when modeling more complicated systems. This fact was especially apparent when the water trimer was unable to be equilibrated with a time step of 10.
 
 As mentioned in the modelling section, our implementation of the DMC algorithm heavily utilized the NumPy library. NumPy’s vectorization techniques with matrices allowed the computations to be divided and thus computed efficiently among the cores of the computer. Different hardware architectures allow for more compatibility with vectorization techniques, but even on an older laptop, we still saw a noticeable decrease in run time on the order of 40 times faster than a more traditional DMC implementation. At the core of NumPy, however, the implementation still had to loop over every value within the 4D array. This explains why the implementation was a constant time improvement, and not a linear time improvement or better. Ultimately, we did not do anything meaningfully different in the computation in the simulation loop, but we did the same process much faster. Even so, an improvement of 40 times should not be underestimated as it was the difference between hours and days when running lengthy trials, particularly when more walkers or production phases were added.
 

@@ -563,13 +563,13 @@ def sim_loop(init_walkers):
 # Main Testing Loop
 
 # Equilibrated walkers array
-num_walkers = ['1000_trimer.npy', '5000_trimer.npy', '10000_trimer.npy']
+num_walkers = ['10000_trimer.npy']
 
 # dt values to test
-dt_values = [5, .5, .05]
+dt_values = [.1]
 
 # number of times the average is taken over
-sim_times = [10,20]
+sim_times = [20]
 
 # equilbration standard
 equilibrate = 1500
@@ -639,6 +639,8 @@ for time_step in dt_values:
                 
                 tot_avg_walkers.append(np.mean(avg_walkers))
                 tot_avg_ref.append(ref_converge_num)
+                print('Ref', ref_converge_num)
+                print('Walk', np.mean(avg_walkers))
             
             print('\nReference Converge Nums: \n',tot_avg_ref)
             fl.write('\n\n')

@@ -2,4 +2,9 @@ This is BibTeX, Version 0.99dThe top-level auxiliary file: DMC_rs_Doc3.aux
 The style file: achemso.bst
 Database file #1: acs-DMC_rs_Doc3.bib
 Database file #2: rs_bib.bib
+I was expecting a `,' or a `}'---line 391 of file rs_bib.bib
+ : howpublished={Personal Communication}
+ :                                      ;
+I'm skipping whatever remains of this entry
 achemso 2020-07-21 v3.13b
+(There was 1 error message)
