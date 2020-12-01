@@ -81,7 +81,7 @@ dt = .1
 # If dt = 1.0, equilibration phase should be greater than 1500
 # If dt = 0.5, equilibration phase should be greater than 2000
 # If dt = 0.1, equilibration phase should be greater than 5000
-equilibration_phase = 5000
+equilibration_phase = 8000
 
 
 
@@ -89,7 +89,7 @@ equilibration_phase = 5000
 sim_length = 10000
 
 # Number of initial walkers
-n_walkers = 5000
+n_walkers = 10000
 
 # Number of time steps for rolling average calculation
 rolling_avg = 1000
@@ -157,9 +157,9 @@ reduced_mass = ((atomic_masses[0]+atomic_masses[1])*atomic_masses[2])/np.sum(ato
 # Initial 4D walker array
 # Returns a uniform distribution cenetered at the given bond length
 # Array axes are walkers, molecules, coordinates, and atoms
-#walkers = (np.random.rand(n_walkers, num_molecules, atomic_masses.shape[0], \
-#    coord_const) - .5) 
-walkers = np.load('5000_walker.npy')
+walkers = (np.random.rand(n_walkers, num_molecules, atomic_masses.shape[0], \
+    coord_const) - .5) 
+#walkers = np.load('5000_walker.npy')
 
 
 #######################################################################################
@@ -238,7 +238,7 @@ for i in range(sim_length):
     # in the system
     # Used to calculate the chance that a walker is deleted or replicated	
     thresholds = np.random.rand(walkers.shape[walker_axis])
-	
+    #thresholds = np.random.rand()
 	
 	# Calculates a probability for each walker that it is deleted
     # This is actually the probability that a walker is not deleted

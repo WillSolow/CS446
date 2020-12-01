@@ -8,7 +8,7 @@
 \providecommand*\mcitethebibliography{\thebibliography}
 \csname @ifundefined\endcsname{endmcitethebibliography}
   {\let\endmcitethebibliography\endthebibliography}{}
-\begin{mcitethebibliography}{22}
+\begin{mcitethebibliography}{21}
 \providecommand*\natexlab[1]{#1}
 \providecommand*\mciteSetBstSublistMode[1]{}
 \providecommand*\mciteSetBstMaxWidthForm[2]{}
@@ -26,13 +26,6 @@
   {\relax}
   {\relax}
 
-\bibitem[Schrodinger(1926)]{Schrodinger1926}
-Schrodinger,~E. An Undulatory Theory of the Mechanics of Atoms and Molecules.
-  \emph{The Physical Review} \textbf{1926}, \emph{28}\relax
-\mciteBstWouldAddEndPuncttrue
-\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
-{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
-\EndOfBibitem
 \bibitem[Goldman and Saykally(2004)Goldman, and Saykally]{Goldman2004}
 Goldman,~N.; Saykally,~R. Elucidating the role of many-body forces in liquid
   water. I. Simulations of water clusters on the VRT(ASP-W) potential surfaces.
@@ -165,8 +158,8 @@ Stillinger,~F.~H. Theory and Molecular Models for Water. \emph{Bell
 \mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
 {}{\mcitedefaultseppunct}\relax
 \EndOfBibitem
-\bibitem[Roinou()]{Roinou2020}
-Roinou,~C. Personal Communication\relax
+\bibitem[Roinou(2020)]{Roinou2020}
+Roinou,~C. Personal Communication, 2020\relax
 \mciteBstWouldAddEndPuncttrue
 \mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
 {\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax

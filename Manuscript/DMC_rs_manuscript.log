@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 2.9.7300 64-bit) (preloaded format=pdflatex 2020.3.16)  28 NOV 2020 15:53
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 2.9.7300 64-bit) (preloaded format=pdflatex 2020.3.16)  1 DEC 2020 10:07
 entering extended mode
-**./DMC_rs_Doc3.tex
-(DMC_rs_Doc3.tex
+**./DMC_rs_manuscript.tex
+(DMC_rs_manuscript.tex
 LaTeX2e <2020-02-02> patch level 2
 L3 programming layer <2020-02-14>
 (C:\Users\wsolow\AppData\Roaming\MiKTeX\2.9\tex/latex/achemso\achemso.cls
@@ -647,8 +647,8 @@ Already applied: [0000/00/00] Old fixltx2e package on input line 53.
 Package: subcaption 2020/08/23 v1.3g Sub-captions (AR)
 \c@subfigure=\count306
 \c@subtable=\count307
-) (DMC_rs_Doc3.aux)
-\openout1 = `DMC_rs_Doc3.aux'.
+) (DMC_rs_manuscript.aux)
+\openout1 = `DMC_rs_manuscript.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 36.
 LaTeX Font Info:    ... okay on input line 36.
@@ -664,7 +664,7 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 36.
 LaTeX Font Info:    ... okay on input line 36.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 36.
 LaTeX Font Info:    ... okay on input line 36.
-\openout3 = `acs-DMC_rs_Doc3.bib'.
+\openout3 = `acs-DMC_rs_manuscript.bib'.
 
 
 *geometry* driver: auto-detecting
@@ -764,44 +764,66 @@ File: figures/fig_2B.jpg Graphic file (type jpg)
 <use figures/fig_2B.jpg>
 Package pdftex.def Info: figures/fig_2B.jpg  used on input line 152.
 (pdftex.def)             Requested size: 234.87769pt x 165.79652pt.
- [12 <./figures/fig_2A.jpg> <./figures/fig_2B.jpg>] [13]
-<figures/Table_1.jpg, id=69, 493.845pt x 95.6072pt>
+ [12 <./figures/fig_2A.jpg> <./figures/fig_2B.jpg>]
+<figures/fig_3A.jpg, id=65, 286.82156pt x 206.27063pt>
+File: figures/fig_3A.jpg Graphic file (type jpg)
+<use figures/fig_3A.jpg>
+Package pdftex.def Info: figures/fig_3A.jpg  used on input line 169.
+(pdftex.def)             Requested size: 234.87769pt x 168.91953pt.
+<figures/fig_3B.jpg, id=66, 293.59688pt x 211.54031pt>
+File: figures/fig_3B.jpg Graphic file (type jpg)
+<use figures/fig_3B.jpg>
+Package pdftex.def Info: figures/fig_3B.jpg  used on input line 173.
+(pdftex.def)             Requested size: 234.87769pt x 169.23247pt.
+ [13 <./figures/fig_3A.jpg> <./figures/fig_3B.jpg>]
+<figures/fig_4A.jpg, id=71, 301.125pt x 194.22563pt>
+File: figures/fig_4A.jpg Graphic file (type jpg)
+<use figures/fig_4A.jpg>
+Package pdftex.def Info: figures/fig_4A.jpg  used on input line 185.
+(pdftex.def)             Requested size: 234.87769pt x 151.5013pt.
+<figures/fig_4B.jpg, id=72, 304.13625pt x 209.28188pt>
+File: figures/fig_4B.jpg Graphic file (type jpg)
+<use figures/fig_4B.jpg>
+Package pdftex.def Info: figures/fig_4B.jpg  used on input line 189.
+(pdftex.def)             Requested size: 234.87769pt x 161.62653pt.
+<figures/Table_1.jpg, id=73, 493.845pt x 95.6072pt>
 File: figures/Table_1.jpg Graphic file (type jpg)
 <use figures/Table_1.jpg>
-Package pdftex.def Info: figures/Table_1.jpg  used on input line 202.
+Package pdftex.def Info: figures/Table_1.jpg  used on input line 200.
 (pdftex.def)             Requested size: 469.75539pt x 90.94301pt.
- [14 <./figures/Table_1.jpg>] [15] [16] [17] [18] (DMC_rs_Doc3.bbl
-[19] [20]) [21] (DMC_rs_Doc3.aux) ) 
+ [14 <./figures/fig_4A.jpg> <./figures/fig_4B.jpg>] [15 <./figures/Table_1.jpg>
+] [16] [17] [18]
+[19] (DMC_rs_manuscript.bbl [20] [21]) [22] (DMC_rs_manuscript.aux) ) 
 Here is how much of TeX's memory you used:
- 17622 strings out of 481556
- 357320 string characters out of 2923631
- 592259 words of memory out of 3000000
- 32529 multiletter control sequences out of 15000+200000
+ 17642 strings out of 481556
+ 357785 string characters out of 2923631
+ 592265 words of memory out of 3000000
+ 32545 multiletter control sequences out of 15000+200000
  549578 words of font info for 58 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 68i,8n,101p,1325b,530s stack positions out of 5000i,500n,10000p,200000b,50000s
- <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\f
-onts/pk/ljfour/jknappen/ec/dpi600\ecbx1200.pk> <C:\Users\wsolow\AppData\Local\M
-iKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1440.pk> <C:\Users\wsolow\AppD
-ata\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm0800.pk> <C:\Users\
-wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1728.pk>
- <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\e
-crm1200.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/
-ec/dpi600\ecrm1095.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfou
-r/jknappen/ec/dpi600\ecbx1095.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fon
-ts/pk/ljfour/jknappen/ec/dpi600\ecss1200.pk> <C:\Users\wsolow\AppData\Local\MiK
-TeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecti1200.pk> <C:\Users\wsolow\AppDat
-a\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecss1440.pk> <C:\Users\ws
-olow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecsx2074.pk><C
-:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/Progra
-m Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Program Files/
-MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX 2.
-9/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Program Files/MiKTeX 2.9/fonts/ty
-pe1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/publ
-ic/amsfonts/cm/cmsy8.pfb>
-Output written on DMC_rs_Doc3.pdf (21 pages, 420130 bytes).
+ 68i,8n,101p,1332b,530s stack positions out of 5000i,500n,10000p,200000b,50000s
+ <C:\Users
+\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1200.pk
+> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\
+ecbx1440.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen
+/ec/dpi600\ecrm0800.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfo
+ur/jknappen/ec/dpi600\ecbx1728.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fo
+nts/pk/ljfour/jknappen/ec/dpi600\ecrm1200.pk> <C:\Users\wsolow\AppData\Local\Mi
+KTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecrm1095.pk> <C:\Users\wsolow\AppDa
+ta\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecbx1095.pk> <C:\Users\w
+solow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ecss1200.pk> 
+<C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/ec/dpi600\ec
+ti1200.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour/jknappen/e
+c/dpi600\ecss1440.pk> <C:\Users\wsolow\AppData\Local\MiKTeX\2.9\fonts/pk/ljfour
+/jknappen/ec/dpi600\ecsx2074.pk><C:/Program Files/MiKTeX 2.9/fonts/type1/public
+/amsfonts/cm/cmex10.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfont
+s/cm/cmmi12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr
+12.pfb><C:/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:
+/Program Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program
+ Files/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
+Output written on DMC_rs_manuscript.pdf (22 pages, 526904 bytes).
 PDF statistics:
- 513 PDF objects out of 1000 (max. 8388607)
+ 522 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
- 48 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 68 words of extra memory for PDF output out of 10000 (max. 10000000)
 
