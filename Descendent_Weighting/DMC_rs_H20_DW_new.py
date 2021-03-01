@@ -64,7 +64,6 @@ dt = 1
 equilibriation_phase = 1500
 
 
-
 # Number of time steps in a simulation
 sim_length = 1000
 
@@ -114,8 +113,6 @@ walkers = (np.random.rand(n_walkers, num_molecules, lib.atomic_masses.shape[0], 
 # Equilibriate Walkers
 walkers = lib.sim_loop(walkers,equilibriation_phase,dt)['w']
 	
-	
-	
 # Simulation loop
 sim_out = lib.sim_loop(walkers,sim_length,dt,prop_interval)
 walkers, reference_energy, num_walkers, snapshots = [sim_out[k] for k in 'wrns']
@@ -123,20 +120,26 @@ walkers, reference_energy, num_walkers, snapshots = [sim_out[k] for k in 'wrns']
 ################################################################################
 # Output - DW
 
-#TODO go find the goddam docs
-# avoid figure clashes
+#TODO avoid figure clashes
 
 
 # Uncomment the below line to avoid graphing 
 # sys.exit(0)
 
+# For every snapshot produced in the main simulation loop
+# Run a (usually shorter) simulation keeping track of descendants
+# These ancestor weights directly weight each walker when plotted
+# In the histogram of positions
 for i,walkers in enumerate(snapshots):
-    print(f'Snapshot" {i}')
+    # print(f'Snapshot: {i}')
+
+    # Run each %prop-reps% simulations on each snapshot and average 
+    # Producing a histogram for that snapshot based on a larger dataset
     ancestor_weights = np.mean(np.stack( \
             [lib.sim_loop(snapshots[i],prop_steps,dt,do_dw=True)['a'] \
             for j in range(prop_reps)],axis=-1),axis=1)
 
-   #  print(ancestor_weights.shape)
+    # print(ancestor_weights.shape)
 
     # Calculate the distance between one of the OH vectors
     # Used in the histogram and wave function plot	
@@ -276,5 +279,4 @@ plt.ylabel('Density of Walkers')
 plt.title('Density of Walker Oxygen Angles')
 
 plt.show()
-
 
