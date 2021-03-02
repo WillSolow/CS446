@@ -21,6 +21,7 @@
 # Imports
 import numpy as np
 import DMC_rs_lib as lib
+import DMC_rs_print_xyz_lib as out
 import matplotlib.pyplot as plt
 import scipy.integrate as integrate
 import time
@@ -117,10 +118,12 @@ walkers = lib.sim_loop(walkers,equilibriation_phase,dt)['w']
 sim_out = lib.sim_loop(walkers,sim_length,dt,prop_interval)
 walkers, reference_energy, num_walkers, snapshots = [sim_out[k] for k in 'wrns']
 
+
 ################################################################################
 # Output - DW
 
 #TODO avoid figure clashes
+#TODO change output listcomp to support xyz printing
 
 
 # Uncomment the below line to avoid graphing 
@@ -140,6 +143,7 @@ for i,walkers in enumerate(snapshots):
             for j in range(prop_reps)],axis=-1),axis=1)
 
     # print(ancestor_weights.shape)
+
 
     # Calculate the distance between one of the OH vectors
     # Used in the histogram and wave function plot	
