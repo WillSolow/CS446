@@ -155,6 +155,8 @@ for i,walkers in enumerate(snapshots):
     plt.xlabel('CO Bond Length')
     plt.ylabel('Density')
     plt.title(f'Density of CO Bond Length at Snapshot {i*prop_interval}')
+    np.save('CO_DW_snap_'+str(i)+'.npy',walkers)
+    out.write_array('CO_DW_snap_'+str(i),ancestors=ancestor_weights,atoms=['C','O'])
 
 
 plt.show()
