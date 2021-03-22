@@ -73,3 +73,41 @@ def write_array(filename,ext='xyz',**kwargs):
         wlk = np.load(filename+'.npy')
         fl.write(print_arr(wlk,ext,**kwargs))
 
+#########################################################################################
+# Read XYZ Methods
+#TODO: COMMENT THE SHIT OUT OF THESE
+
+def unpack(l):
+    try:
+        return int(l[0])
+    except:
+        try:
+            return float(l[0])
+        except:
+            return l[0]
+
+def tokenize_xyz(filename):
+    '''
+    Output: [[n_atoms],[comment],[Atom,xpos,ypos,zpos],...,[Atom,xpos,ypos,zpos]]
+    for each walker
+    '''
+    filename = filename.strip('./').split('.')[0]
+    with open(filename+'.xyz','r') as fi:
+        tokens = fi.read().strip().split('\n\n')
+        wlk_proto = [t.strip().split('\n') for t in tokens]
+        wlk_atoms = [[s.split('\t') for s in w] for w in wlk_proto]
+        return wlk_atoms
+
+def read_xyz(filename):
+    wlk = tokenize_xyz(filename)
+    walkers_out = []
+    comments_out = []
+    for w in wlk:
+        n_atoms = unpack(w[0])
+        comment = unpack(w[1])
+        atoms = [a[1:] for a in w[2:]]
+        z = [atoms[i::n_atoms] for i in range(n_atoms)]
+        walker = list(zip(*z))
+        walkers_out.append(walker)
+        comments_out.append(comment)
+    return {'w':np.array(walkers_out),'c':comments_out}

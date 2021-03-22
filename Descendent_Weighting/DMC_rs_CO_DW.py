@@ -151,6 +151,7 @@ for i,walkers in enumerate(snapshots):
     x = np.arange(CO_lengths.min(), CO_lengths.max(), step = .001)
 
     plt.hist(CO_lengths,weights=ancestor_weights,bins=n_bins,density=True)
+    #TODO maybe square this function?
     plt.plot(x, lib.norm_constant*np.exp(-((x-lib.eq_bond_length)**2)*np.sqrt(lib.kCO*lib.reduced_mass)/2), label = 'Wave Function')
     plt.xlabel('CO Bond Length')
     plt.ylabel('Density')
