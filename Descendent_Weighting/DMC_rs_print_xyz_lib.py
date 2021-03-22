@@ -95,7 +95,7 @@ def tokenize_xyz(filename):
     with open(filename+'.xyz','r') as fi:
         tokens = fi.read().strip().split('\n\n')
         wlk_proto = [t.strip().split('\n') for t in tokens]
-        wlk_atoms = [[s.split('\t') for s in w] for w in wlk_proto]
+        wlk_atoms = [[s.split() for s in w] for w in wlk_proto]
         return wlk_atoms
 
 def read_xyz(filename):
@@ -110,4 +110,4 @@ def read_xyz(filename):
         walker = list(zip(*z))
         walkers_out.append(walker)
         comments_out.append(comment)
-    return {'w':np.array(walkers_out),'c':comments_out}
+    return {'w':np.array(walkers_out).astype(np.float64),'c':comments_out}
