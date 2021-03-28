@@ -105,17 +105,14 @@ num_molecules = 1
 # one walker in the system.
 filename = 'm_water.xyz'
 
-# Input num_atoms by 3 array
-# Broadcasts to n_walkers by num_molecules by num_atoms by 3
-# Used to make initialization easier given it is a difficult process
-def gen_walker_array(walker): 
+print(out.gen_walker_array(filename))
+sys.exit(0)
 
 
 # Initial 4D walker array
 # Returns a uniform distribution cenetered at the given bond length
 # Array axes are walkers, molecules, atoms, coordinates
-walkers = (np.random.rand(n_walkers, num_molecules, lib.atomic_masses.shape[0], \
-    lib.coord_const) - .5) 
+walkers = (np.random.rand(n_walkers, num_molecules, lib.atomic_masses.shape[0],lib.coord_const) - .5) 
 #walkers = np.load('5000_walker.npy')
 
 
