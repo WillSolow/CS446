@@ -304,7 +304,7 @@ def sim_loop(walkers,sim_length,dt,dw_save=0,do_dw=False):
         # Calculate the Reference Energy
         # Energy is calculated based on the average of all potential energies of walkers.
         # Is adjusted by a statistical value to account for large or small walker populations.
-        reference_energy[i] = np.mean( intra_pe(walkers) ) \
+        reference_energy[i] = np.mean( total_pe(walkers) ) \
             + (1.0 - (walkers.shape[walker_axis] / n_walkers) ) / ( 2.0*dt )
                     
         # Current number of walkers

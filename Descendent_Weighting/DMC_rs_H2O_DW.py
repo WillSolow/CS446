@@ -55,7 +55,7 @@ print('Seed used: ' + str(seed))
 # Time step 
 # Used to calculate the distance an atom moves in a time step
 # Smaller time step means less movement in a given time step
-dt = 1
+dt = .1
 
 
 # Length of the equilibriation phase in time steps. The below data is for the water molecule
@@ -86,11 +86,11 @@ n_bins = 50
 prop_interval = 100
 
 # Time period for which walkers are propogated during DW simulation loop
-prop_period = 100
+prop_period = 20
 prop_steps = int(prop_period / dt)
 
 # Number of times we run DW simulation loop
-prop_reps = 10
+prop_reps = 5
 
 ####################################################################################
 # Molecule Model Constants
@@ -98,21 +98,32 @@ prop_reps = 10
 
 # Number of molecules in each walker
 # Used to initialize the walker array
-num_molecules = 1
+num_molecules = 3
 
 # Filename (string)
 # Used to initialize system. Should be a .xyz filename with the xyz positions of 
 # one walker in the system.
-filename = 'm_water.xyz'
+filename = 'm_trimer.xyz'
 
-print(out.gen_walker_array(filename))
-sys.exit(0)
+# If using WebMO intitialization, uncomment this line below
+# Reads in a .xyz file of a 1 walker system and broadcasts to n_walker array with 
+# some amount of propagation simulate some randomness but not so much that the system
+# cannot equilibrate
+
+# Propagation amount
+prop_amount = .1
+walkers, num_molecules = out.gen_walker_array(filename, n_walkers, prop_amount)
+print(walkers.shape)
 
 
+# Uncomment the code below if doing an initialization within a random range
 # Initial 4D walker array
 # Returns a uniform distribution cenetered at the given bond length
 # Array axes are walkers, molecules, atoms, coordinates
-walkers = (np.random.rand(n_walkers, num_molecules, lib.atomic_masses.shape[0],lib.coord_const) - .5) 
+#walkers = (np.random.rand(n_walkers, num_molecules, lib.atomic_masses.shape[0],lib.coord_const) - .5) 
+
+
+# Uncomment this line if loading in an already equliibrated walker array
 #walkers = np.load('5000_walker.npy')
 
 
@@ -155,13 +166,42 @@ for i,walkers in enumerate(snapshots):
 
     # Calculate the distance between one of the OH vectors
     # Used in the histogram and wave function plot	
-    OH_positions = np.linalg.norm(walkers[:,0,0]-walkers[:,0,1], axis = 1)
+    #OH_positions = np.linalg.norm(walkers[:,0,0]-walkers[:,0,1], axis = 1)
+
+    oxy = walkers[:,:,0]
+    oxy_vec_10 = oxy[:,1]-oxy[:,0]
+    oxy_vec_20 = oxy[:,2]-oxy[:,0]
+    oxy_vec_21 = oxy[:,2]-oxy[:,1]
+    oxy_ln_10 = np.linalg.norm(oxy_vec_10, axis=1)
+    oxy_ln_20 = np.linalg.norm(oxy_vec_20, axis=1)
+    oxy_ln_21 = np.linalg.norm(oxy_vec_21, axis=1)
+
+    o_ang_1 = (180/np.pi)*np.arccos(np.sum(oxy_vec_10*oxy_vec_20, axis=1) / \
+          (oxy_ln_10*oxy_ln_20))
+    o_ang_2 = (180/np.pi)*np.arccos(np.sum(-oxy_vec_10*oxy_vec_21, axis=1) / \
+          (oxy_ln_10*oxy_ln_21))
+    o_ang_3 = (180/np.pi)*np.arccos(np.sum(-oxy_vec_20*-oxy_vec_21, axis=1) / \
+          (oxy_ln_20*oxy_ln_21))
+
+    o_angles = np.concatenate((o_ang_1,o_ang_2,o_ang_3),axis=0)
 
     plt.figure(i)
+
+    # Uncomment below for OOO angles
+    
+    plt.hist(o_angles,weights=np.tile(ancestor_weights,3),bins=n_bins,density=True)
+    plt.xlabel('Walker Oxygen Bond Angle')
+    plt.ylabel('Density')
+    plt.title(f'Density of Oxygen Bond Angles at Snapshot {i*prop_interval}')
+    
+
+    # Uncomment below for OH bond
+    '''
     plt.hist(OH_positions,weights=ancestor_weights,bins=n_bins,density=True)
     plt.xlabel('Walker OH Bond Length')
     plt.ylabel('Density')
     plt.title(f'Density of OH Bond Length at Snapshot {i*prop_interval}')
+    '''
 
 
 plt.show()

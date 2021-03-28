@@ -112,3 +112,19 @@ def read_xyz(filename):
         comments_out.append(comment)
     return {'w':np.array(walkers_out).astype(np.float64),'c':comments_out}
 
+
+# Input filename of xyz file
+# Broadcasts to n_walkers by num_molecules by num_atoms by 3
+# Used to make initialization easier given it is a difficult process
+def gen_walker_array(filename, n_walkers, prop_amount):
+    # Read in the xyz file. Returns a 1 by num_molecules by num atoms by 3
+    walk = read_xyz(filename)['w']
+    _, num_molecules, num_atoms, _, = walk.shape
+
+    # Broadcasts walkers to the shape given by the number of walkers
+    walkers = np.broadcast_to(walk[0], (n_walkers,num_molecules,num_atoms,3)) + \
+        np.random.uniform(-prop_amount, prop_amount, (n_walkers,num_molecules,num_atoms,3))
+    
+
+    return walkers, num_molecules
+
