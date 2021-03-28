@@ -111,3 +111,4 @@ def read_xyz(filename):
         walkers_out.append(walker)
         comments_out.append(comment)
     return {'w':np.array(walkers_out).astype(np.float64),'c':comments_out}
+

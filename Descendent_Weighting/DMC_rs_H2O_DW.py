@@ -100,6 +100,11 @@ prop_reps = 10
 # Used to initialize the walker array
 num_molecules = 1
 
+# Filename (string)
+# Used to initialize system. Should be a .xyz filename with the xyz positions of 
+# one walker in the system.
+filename = 'm_water.xyz'
+
 # Initial 4D walker array
 # Returns a uniform distribution cenetered at the given bond length
 # Array axes are walkers, molecules, coordinates, and atoms
