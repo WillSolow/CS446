@@ -66,7 +66,7 @@ equilibriation_phase = 1500
 
 
 # Number of time steps in a simulation
-sim_length = 1000
+sim_length = 5000
 
 # Number of initial walkers
 n_walkers = 1000
@@ -83,7 +83,7 @@ n_bins = 50
 # Descendent Weighting Constants
 
 # Interval at which we save `snapshots' of the walkers for use in DW simulation
-prop_interval = 100
+prop_interval = 500
 
 # Time period for which walkers are propogated during DW simulation loop
 prop_period = 20
@@ -98,12 +98,12 @@ prop_reps = 5
 
 # Number of molecules in each walker
 # Used to initialize the walker array
-num_molecules = 4
+num_molecules = 3
 
 # Filename (string)
 # Used to initialize system. Should be a .xyz filename with the xyz positions of 
 # one walker in the system.
-filename = 'm_tetramer.xyz'
+filename = 'm_trimer.xyz'
 
 # If using WebMO intitialization, uncomment this line below
 # Reads in a .xyz file of a 1 walker system and broadcasts to n_walker array with 
@@ -111,7 +111,7 @@ filename = 'm_tetramer.xyz'
 # cannot equilibrate
 
 # Propagation amount
-prop_amount = .1
+prop_amount = .5
 walkers, num_molecules = out.gen_walker_array(filename, n_walkers, prop_amount)
 print(walkers.shape)
 
@@ -152,70 +152,69 @@ walkers, reference_energy, num_walkers, snapshots = [sim_out[k] for k in 'wrns']
 # These ancestor weights directly weight each walker when plotted
 # In the histogram of positions
 for i,walkers in enumerate(snapshots):
-      # print(f'Snapshot: {i}')
+    # print(f'Snapshot: {i}')
 
-     # Run each %prop-reps% simulations on each snapshot and average 
-     # Producing a histogram for that snapshot based on a larger dataset
-      ancestor_weights = np.mean(np.stack( \
-            [lib.sim_loop(snapshots[i],prop_steps,dt,do_dw=True)['a'] \
-            for j in range(prop_reps)],axis=-1),axis=1)
+    # Run each %prop-reps% simulations on each snapshot and average 
+    # Producing a histogram for that snapshot based on a larger dataset
+    ancestor_weights = np.mean(np.stack( \
+        [lib.sim_loop(snapshots[i],prop_steps,dt,do_dw=True)['a'] \
+        for j in range(prop_reps)],axis=-1),axis=1)
 
-      # print(ancestor_weights.shape)
-
-
-      # Calculate the distance between one of the OH vectors
-      # Used in the histogram and wave function plot	
-      #OH_positions = np.linalg.norm(walkers[:,0,0]-walkers[:,0,1], axis = 1)
-
-      # Uncomment below for tetramer
-'''
-      oxy = wlakers[:,:,0]
-      oxy_vec_10 = oxy[:,1]-oxy[:,0]
-      oxy_vec_20 = oxy[:,2]-oxy[:,0]
-      oxy_vec_30 = oxy[:,3]-oxy[:,0]
-
-      oxy_ln_10 = np.linalg.norm(oxy_vec_10, axis=1)
-      oxy_ln_20 = np.linalg.norm(oxy_vec_20, axis=1)
-      oxy_ln_30 = np.linalg.norm(oxy_vec_30, axis=1)
-
-      o_ang_1 = (180/np.pi)*np.arccos(np.sum(oxy_vec_10*oxy_vec_20, axis=1) / \
-          (oxy_ln_10*oxy_ln_20))
-      o_ang_2 = (180/np.pi)*np.arccos(np.sum(-oxy_vec_10*oxy_vec_30, axis=1) / \
-          (oxy_ln_10*oxy_ln_30))
-      o_ang_3 = (180/np.pi)*np.arccos(np.sum(-oxy_vec_10*-oxy_vec_30, axis=1) / \
-          (oxy_ln_10*oxy_ln_30))
-      '''
+    # print(ancestor_weights.shape)
 
 
-      # Uncomment below for OOO angles
-      '''
-      oxy = walkers[:,:,0]
-      oxy_vec_10 = oxy[:,1]-oxy[:,0]
-      oxy_vec_20 = oxy[:,2]-oxy[:,0]
-      oxy_vec_21 = oxy[:,2]-oxy[:,1]
-      oxy_ln_10 = np.linalg.norm(oxy_vec_10, axis=1)
-      oxy_ln_20 = np.linalg.norm(oxy_vec_20, axis=1)
-      oxy_ln_21 = np.linalg.norm(oxy_vec_21, axis=1)
+    # Calculate the distance between one of the OH vectors
+    # Used in the histogram and wave function plot	
+    #OH_positions = np.linalg.norm(walkers[:,0,0]-walkers[:,0,1], axis = 1)
 
-      o_ang_1 = (180/np.pi)*np.arccos(np.sum(oxy_vec_10*oxy_vec_20, axis=1) / \
-          (oxy_ln_10*oxy_ln_20))
-      o_ang_2 = (180/np.pi)*np.arccos(np.sum(-oxy_vec_10*oxy_vec_21, axis=1) / \
-          (oxy_ln_10*oxy_ln_21))
-      o_ang_3 = (180/np.pi)*np.arccos(np.sum(-oxy_vec_20*-oxy_vec_21, axis=1) / \
-          (oxy_ln_20*oxy_ln_21))
+    # Uncomment below for tetramer
+    '''
+    oxy = wlakers[:,:,0]
+    oxy_vec_10 = oxy[:,1]-oxy[:,0]
+    oxy_vec_20 = oxy[:,2]-oxy[:,0]
+    oxy_vec_30 = oxy[:,3]-oxy[:,0]
 
-      '''
-      o_angles = np.concatenate((o_ang_1,o_ang_2,o_ang_3),axis=0)
+    oxy_ln_10 = np.linalg.norm(oxy_vec_10, axis=1)
+    oxy_ln_20 = np.linalg.norm(oxy_vec_20, axis=1)
+    oxy_ln_30 = np.linalg.norm(oxy_vec_30, axis=1)
+
+    o_ang_1 = (180/np.pi)*np.arccos(np.sum(oxy_vec_10*oxy_vec_20, axis=1) / \
+        (oxy_ln_10*oxy_ln_20))
+    o_ang_2 = (180/np.pi)*np.arccos(np.sum(-oxy_vec_10*oxy_vec_30, axis=1) / \
+        (oxy_ln_10*oxy_ln_30))
+    o_ang_3 = (180/np.pi)*np.arccos(np.sum(-oxy_vec_10*-oxy_vec_30, axis=1) / \
+        (oxy_ln_10*oxy_ln_30))
+    '''
 
 
-      plt.figure(i)
+    # Uncomment below for OOO angles
+    oxy = walkers[:,:,0]
+    oxy_vec_10 = oxy[:,1]-oxy[:,0]
+    oxy_vec_20 = oxy[:,2]-oxy[:,0]
+    oxy_vec_21 = oxy[:,2]-oxy[:,1]
+    oxy_ln_10 = np.linalg.norm(oxy_vec_10, axis=1)
+    oxy_ln_20 = np.linalg.norm(oxy_vec_20, axis=1)
+    oxy_ln_21 = np.linalg.norm(oxy_vec_21, axis=1)
 
-      # Uncomment below for OOO angles
+    o_ang_1 = (180/np.pi)*np.arccos(np.sum(oxy_vec_10*oxy_vec_20, axis=1) / \
+        (oxy_ln_10*oxy_ln_20))
+    o_ang_2 = (180/np.pi)*np.arccos(np.sum(-oxy_vec_10*oxy_vec_21, axis=1) / \
+            (oxy_ln_10*oxy_ln_21))
+    o_ang_3 = (180/np.pi)*np.arccos(np.sum(-oxy_vec_20*-oxy_vec_21, axis=1) / \
+        (oxy_ln_20*oxy_ln_21))
+
+      
+    o_angles = np.concatenate((o_ang_1,o_ang_2,o_ang_3),axis=0)
+
+
+    plt.figure(i)
+
+    # Uncomment below for OOO angles
     
-      plt.hist(o_angles,weights=np.tile(ancestor_weights,4),bins=n_bins,density=True)
-      plt.xlabel('Walker Oxygen Bond Angle')
-      plt.ylabel('Density')
-      plt.title(f'Density of Oxygen Bond Angles at Snapshot {i*prop_interval}')
+    plt.hist(o_angles,weights=np.tile(ancestor_weights,3),bins=n_bins,density=True)
+    plt.xlabel('Walker Oxygen Bond Angle')
+    plt.ylabel('Density')
+    plt.title(f'Density of Oxygen Bond Angles at Snapshot {i*prop_interval}')
     
 
     # Uncomment below for OH bond
