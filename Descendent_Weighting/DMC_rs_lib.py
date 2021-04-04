@@ -275,7 +275,7 @@ def total_pe(x):
 #   'n': num_walkers at each time step. 1d array
 #   's': snapshots. python list of walker 4D arrays
 #   'a': ancestor_weights of each walker at sim end. 1d array
-def sim_loop(walkers,sim_length,dt,dw_save=0,do_dw=False):
+def sim_loop(walkers,sim_length,dt,wf_save=0,dw_save=0,do_dw=False):
 
     # Extract initial size constants from walkers array
     n_walkers, num_molecules, n_atoms, coord_const = walkers.shape 
@@ -284,6 +284,11 @@ def sim_loop(walkers,sim_length,dt,dw_save=0,do_dw=False):
     # Views of the walker array at various times during the simulation
     # Used for Descendent Weighting calculations
     snapshots = []
+
+    # Wave function snapshots
+    # Views of the walker array at various times during the simulation
+    # Used to calculate a smoother wave function
+    wave_func_snapshots = []
 
     # DW indexing array: initially just a list from 0 up to num_walkers - 1
     dw_indices = np.arange(walkers.shape[0])
@@ -296,6 +301,10 @@ def sim_loop(walkers,sim_length,dt,dw_save=0,do_dw=False):
     reference_energy = np.zeros(sim_length)
     
     for i in range(sim_length):
+
+        # Wave funciton snapshot saving
+        if wf_save > 0 and i % wf_save == 0:
+            wave_func_snapshots.append(np.copy(walkers))
 
         # DW saving
         if dw_save > 0 and i % dw_save == 0:
@@ -408,4 +417,4 @@ def sim_loop(walkers,sim_length,dt,dw_save=0,do_dw=False):
 
     # All possible returns
     # To access a particular output: sim_loop(...)['w|r|n|s|a']
-    return {'w':walkers, 'r':reference_energy, 'n':num_walkers, 's':snapshots, 'a':ancestor_weights}
+    return {'w':walkers, 'r':reference_energy, 'n':num_walkers, 'f':wave_func_snapshots, 's':snapshots, 'a':ancestor_weights}
