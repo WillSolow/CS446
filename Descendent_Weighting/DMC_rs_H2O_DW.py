@@ -115,7 +115,7 @@ filename = 'm_trimer.xyz'
 
 # Propagation amount
 prop_amount = .5
-walkers, num_molecules = out.gen_walker_array(filename, n_walkers, prop_amount)
+walkers, num_molecules = out.gen_walker_array(filename, n_walkers, prop_amount, num_molecules)
 
 
 # Uncomment the code below if doing an initialization within a random range
