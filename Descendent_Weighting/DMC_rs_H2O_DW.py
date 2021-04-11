@@ -66,7 +66,7 @@ equilibriation_phase = 2000
 
 
 # Number of time steps in a simulation
-sim_length = 80000
+sim_length = 120000
 
 # Number of initial walkers
 n_walkers = 1000
@@ -114,7 +114,7 @@ filename = 'm_trimer.xyz'
 # cannot equilibrate
 
 # Propagation amount
-prop_amount = .5
+prop_amount = .25
 walkers, num_molecules = out.gen_walker_array(filename, n_walkers, prop_amount)
 
 
