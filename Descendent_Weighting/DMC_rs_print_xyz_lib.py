@@ -23,7 +23,7 @@ def print_xyz(walkers, ancestors = None, atoms = ['O','H','H'], \
            comment: string --> comment for that walker
            coord_cnst: int --> number of coordinate dimensions (usually 3 for XYZ)
     Output: string --> for each walker:
-    nAtoms
+    nAtoms*nMol
     ### Comment ###
     Atom0    X0   Y0   Z0
     Atom1    X1   Y1   Z1
@@ -34,7 +34,7 @@ def print_xyz(walkers, ancestors = None, atoms = ['O','H','H'], \
     tb = '\t'
     nl = '\n'
     return '\n\n'.join( [ (
-        f'{walkers.shape[2]}\n{ancestors[i] if ancestors is not None else comment}\n'
+        f'{walkers.shape[2]*walkers.shape[1]}\n{ancestors[i] if ancestors is not None else comment}\n'
         f'''{nl.join( [atoms[c % walkers.shape[2]] + tb 
             + tb.join( [f"{el:.8f}" for el in row] ) 
             for c,row in enumerate( walkers[i,...].reshape((-1,coord_cnst)) )] )}'''
@@ -98,12 +98,12 @@ def tokenize_xyz(filename):
         wlk_atoms = [[s.split() for s in w] for w in wlk_proto]
         return wlk_atoms
 
-def read_xyz(filename):
+def read_xyz(filename,nMol = 3):
     wlk = tokenize_xyz(filename)
     walkers_out = []
     comments_out = []
     for w in wlk:
-        n_atoms = unpack(w[0])
+        n_atoms = unpack(w[0])//nMol
         comment = unpack(w[1])
         atoms = [a[1:] for a in w[2:]]
         z = [atoms[i::n_atoms] for i in range(n_atoms)]
@@ -116,9 +116,9 @@ def read_xyz(filename):
 # Input filename of xyz file
 # Broadcasts to n_walkers by num_molecules by num_atoms by 3
 # Used to make initialization easier given it is a difficult process
-def gen_walker_array(filename, n_walkers, prop_amount):
+def gen_walker_array(filename, n_walkers, prop_amount, n_molecules = 3):
     # Read in the xyz file. Returns a 1 by num_molecules by num atoms by 3
-    walk = read_xyz(filename)['w']
+    walk = read_xyz(filename,n_molecules)['w']
     _, num_molecules, num_atoms, _, = walk.shape
 
     # Broadcasts walkers to the shape given by the number of walkers
