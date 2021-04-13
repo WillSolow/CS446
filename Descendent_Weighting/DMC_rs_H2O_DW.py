@@ -55,7 +55,7 @@ print('Seed used: ' + str(seed))
 # Time step 
 # Used to calculate the distance an atom moves in a time step
 # Smaller time step means less movement in a given time step
-dt = 1
+dt = .1
 
 
 # Length of the equilibriation phase in time steps. The below data is for the water molecule
