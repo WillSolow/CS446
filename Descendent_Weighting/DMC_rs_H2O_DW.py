@@ -137,7 +137,7 @@ walkers = lib.sim_loop(walkers,equilibriation_phase,dt)['w']
 
 wave_func_out = lib.sim_loop(walkers,sim_length,dt,wf_save=wave_func_interval)['f']
 
-np.save(f'dt{dt}_simwave{sim_length}_walk{n_walkers}',wave_func_out)
+np.save(f'dt{dt}_sim{sim_length}_walk{n_walkers}',wave_func_out)
 
 sys.exit(0)
 
@@ -152,57 +152,6 @@ walkers, reference_energy, num_walkers, snapshots = [sim_out[k] for k in 'wrns']
 
 #TODO avoid figure clashes
 #TODO change output listcomp to support xyz printing
-
-o_ang_1 = []
-o_ang_2 = []
-o_ang_3 = []
-# Loop over all wave function snapshots and calculate the oxygen angles
-for i in range(len(wave_func_out)):
-    oxy = wave_func_out[i][:,:,0]
-    oxy_vec_10 = oxy[:,1]-oxy[:,0]
-    oxy_vec_20 = oxy[:,2]-oxy[:,0]
-    oxy_vec_21 = oxy[:,2]-oxy[:,1]
-    oxy_ln_10 = np.linalg.norm(oxy_vec_10, axis=1)
-    oxy_ln_20 = np.linalg.norm(oxy_vec_20, axis=1)
-    oxy_ln_21 = np.linalg.norm(oxy_vec_21, axis=1)
-
-    o1 = (180/np.pi)*np.arccos(np.sum(oxy_vec_10*oxy_vec_20, axis=1) / \
-        (oxy_ln_10*oxy_ln_20))
-    o2 = (180/np.pi)*np.arccos(np.sum(-oxy_vec_10*oxy_vec_21, axis=1) / \
-            (oxy_ln_10*oxy_ln_21))
-    o3 = (180/np.pi)*np.arccos(np.sum(-oxy_vec_20*-oxy_vec_21, axis=1) / \
-        (oxy_ln_20*oxy_ln_21))
-    
-    o_ang_1 = np.concatenate((o_ang_1,o1),axis=0)
-    o_ang_2 = np.concatenate((o_ang_2,o2),axis=0)
-    o_ang_3 = np.concatenate((o_ang_3,o3),axis=0)
-
-plt.figure(1)
-plt.hist(o_ang_1,bins=n_bins,density=True)
-plt.xlabel('Walker Oxygen Bond Angle')
-plt.ylabel('Density')
-plt.title(f'Density of Oxygen Angle 1')
-
-plt.figure(2)
-plt.hist(o_ang_2,bins=n_bins,density=True)
-plt.xlabel('Walker Oxygen Bond Angle')
-plt.ylabel('Density')
-plt.title(f'Density of Oxygen Angle 2')
-
-plt.figure(3)
-plt.hist(o_ang_3,bins=n_bins,density=True)
-plt.xlabel('Walker Oxygen Bond Angle')
-plt.ylabel('Density')
-plt.title(f'Density of Oxygen Angle 3')
-
-plt.figure(4)
-plt.hist(np.concatenate((o_ang_1,o_ang_2,o_ang_3),axis=0),bins=n_bins,density=True)
-plt.xlabel('Walker Oxygen Bond Angle')
-plt.ylabel('Density')
-plt.title('Density of all Oxygen Angles')
-
-plt.show()
-
 
 # Uncomment the below line to avoid graphing for DW 
 sys.exit(0)
@@ -227,24 +176,6 @@ for i,walkers in enumerate(snapshots):
     # Used in the histogram and wave function plot	
     #OH_positions = np.linalg.norm(walkers[:,0,0]-walkers[:,0,1], axis = 1)
 
-    # Uncomment below for tetramer
-    '''
-    oxy = wlakers[:,:,0]
-    oxy_vec_10 = oxy[:,1]-oxy[:,0]
-    oxy_vec_20 = oxy[:,2]-oxy[:,0]
-    oxy_vec_30 = oxy[:,3]-oxy[:,0]
-
-    oxy_ln_10 = np.linalg.norm(oxy_vec_10, axis=1)
-    oxy_ln_20 = np.linalg.norm(oxy_vec_20, axis=1)
-    oxy_ln_30 = np.linalg.norm(oxy_vec_30, axis=1)
-
-    o_ang_1 = (180/np.pi)*np.arccos(np.sum(oxy_vec_10*oxy_vec_20, axis=1) / \
-        (oxy_ln_10*oxy_ln_20))
-    o_ang_2 = (180/np.pi)*np.arccos(np.sum(-oxy_vec_10*oxy_vec_30, axis=1) / \
-        (oxy_ln_10*oxy_ln_30))
-    o_ang_3 = (180/np.pi)*np.arccos(np.sum(-oxy_vec_10*-oxy_vec_30, axis=1) / \
-        (oxy_ln_10*oxy_ln_30))
-    '''
 
 
     # Uncomment below for OOO angles
