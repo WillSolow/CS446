@@ -66,7 +66,7 @@ equilibriation_phase = 2000
 
 
 # Number of time steps in a simulation
-sim_length = 120000
+sim_length = 10000
 
 # Number of initial walkers
 n_walkers = 1000
@@ -136,6 +136,10 @@ walkers, num_molecules = out.gen_walker_array(filename, n_walkers, prop_amount, 
 walkers = lib.sim_loop(walkers,equilibriation_phase,dt)['w']	
 
 wave_func_out = lib.sim_loop(walkers,sim_length,dt,wf_save=wave_func_interval)['f']
+
+np.save(f'dt{dt}_simwave{sim_length}_walk{n_walkers}',wave_func_out)
+
+sys.exit(0)
 
 # Simulation loop for descentdent weighting
 '''
