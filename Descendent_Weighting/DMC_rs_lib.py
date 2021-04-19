@@ -275,7 +275,7 @@ def total_pe(x):
 #   'n': num_walkers at each time step. 1d array
 #   's': snapshots. python list of walker 4D arrays
 #   'a': ancestor_weights of each walker at sim end. 1d array
-def sim_loop(walkers,sim_length,dt,wf_save=0,dw_save=0,do_dw=False):
+def sim_loop(walkers,sim_length,dt,wf_save=0,dw_save=0,do_dw=False,output_filename='sim1'):
 
     # Extract initial size constants from walkers array
     n_walkers, num_molecules, n_atoms, coord_const = walkers.shape 
@@ -305,6 +305,12 @@ def sim_loop(walkers,sim_length,dt,wf_save=0,dw_save=0,do_dw=False):
         # Wave funciton snapshot saving
         if wf_save > 0 and i % wf_save == 0:
             wave_func_snapshots.append(np.copy(walkers))
+
+            # Only store lists of size 100
+            if len(wave_func_snapshots) >= 10:
+                num = (i % wf_save) % 100
+                np.save(f'{output_filename}_{num}',wave_func_snapshots)
+                wave_func_snapshots = []
 
         # DW saving
         if dw_save > 0 and i % dw_save == 0:

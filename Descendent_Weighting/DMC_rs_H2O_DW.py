@@ -82,6 +82,26 @@ wave_func_interval = 1000
 n_bins = 50
 
 
+#######################################################################################
+# Import Simulation Constants from the command line
+
+# Only run if all inputted constants are available
+if len(sys.argv) < 6:
+    print('\n\nUsage: DMC_rs_H2O_DW.py dt sim_length n_walkers wave_func_interval filename')
+    print(f'\nDefault is: \ndt: {dt} \nsim_length: {sim_length}\nn_walkers: {n_walkers}\nwave_func_interval: {wave_func_interval}\n\n')
+    sys.exit(0)
+
+# Assign simulation constants
+dt = float(sys.argv[1])
+sim_length = int(sys.argv[2])
+n_walkers = int(sys.argv[3])
+wave_func_interval = int(sys.argv[4])
+output_filename = sys.argv[5]
+
+print(f'\n\nAssigned values are: \ndt: {dt} \nsim_length: {sim_length}\nn_walkers: {n_walkers}\nwave_func_interval: {wave_func_interval}\n\n')
+
+
+
 ####################################################################################
 # Descendent Weighting Constants
 
@@ -134,14 +154,18 @@ walkers, num_molecules = out.gen_walker_array(filename, n_walkers, prop_amount, 
 
 start = time.time()
 # Equilibriate Walkers
-walkers = lib.sim_loop(walkers,equilibriation_phase,dt)['w']	
+print('starting eq step')
+walkers = lib.sim_loop(walkers,equilibriation_phase,dt)['w']
+print('finished eq step')	
 
-wave_func_out = lib.sim_loop(walkers,sim_length,dt,wf_save=wave_func_interval)['f']
+lib.sim_loop(walkers,sim_length,dt,wf_save=wave_func_interval,output_filename=output_filename)
 
-np.save(f'dt{dt}_sim{sim_length}_walk{n_walkers}',wave_func_out)
+#np.save(f'dt{dt}_sim{sim_length}_walk{n_walkers}',wave_func_out)
 
 print(f'Total time: {time.time()-start:.1f}')
 sys.exit(0)
+
+
 
 # Simulation loop for descentdent weighting
 '''
@@ -151,7 +175,7 @@ walkers, reference_energy, num_walkers, snapshots = [sim_out[k] for k in 'wrns']
 
 ################################################################################
 # Output - DW
-
+'''
 #TODO avoid figure clashes
 #TODO change output listcomp to support xyz printing
 
@@ -211,12 +235,14 @@ for i,walkers in enumerate(snapshots):
     
 
     # Uncomment below for OH bond
-    '''
-    plt.hist(OH_positions,weights=ancestor_weights,bins=n_bins,density=True)
-    plt.xlabel('Walker OH Bond Length')
-    plt.ylabel('Density')
-    plt.title(f'Density of OH Bond Length at Snapshot {i*prop_interval}')
-    '''
+    
+    #plt.hist(OH_positions,weights=ancestor_weights,bins=n_bins,density=True)
+    #plt.xlabel('Walker OH Bond Length')
+    #plt.ylabel('Density')
+    #plt.title(f'Density of OH Bond Length at Snapshot {i*prop_interval}')
+    
 
 
 plt.show()
+
+'''
