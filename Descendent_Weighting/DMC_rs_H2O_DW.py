@@ -62,7 +62,7 @@ dt = .1
 # If dt = 1.0, equilibriation phase should be greater than 1500
 # If dt = 0.5, equilibriation phase should be greater than 2000
 # If dt = 0.1, equilibriation phase should be greater than 5000
-equilibriation_phase = 2000
+equilibriation_phase = 10000
 
 
 # Number of time steps in a simulation
@@ -154,9 +154,7 @@ walkers, num_molecules = out.gen_walker_array(filename, n_walkers, prop_amount, 
 
 start = time.time()
 # Equilibriate Walkers
-print('starting eq step')
 walkers = lib.sim_loop(walkers,equilibriation_phase,dt)['w']
-print('finished eq step')	
 
 lib.sim_loop(walkers,sim_length,dt,wf_save=wave_func_interval,output_filename=output_filename)
 

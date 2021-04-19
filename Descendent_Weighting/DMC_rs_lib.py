@@ -294,27 +294,19 @@ def sim_loop(walkers,sim_length,dt,wf_save=0,dw_save=0,do_dw=False,output_filena
     dw_indices = np.arange(walkers.shape[0])
 
 
-    # Create array to store the number of walkers at each time step
+    # Create ndarray to store the number of walkers at each time step
     num_walkers = np.zeros(sim_length)
     
-    # Create array to store the reference energy at each time step
+    # Create ndarray to store the reference energy at each time step
     reference_energy = np.zeros(sim_length)
+
+    # Create array to store snapshotted number of walkers
+    walker_snapshot = []
+
+    # Create array to store snapshotted reference energy
+    ref_snapshot = []
     
     for i in range(sim_length):
-
-        # Wave funciton snapshot saving
-        if wf_save > 0 and i % wf_save == 0:
-            wave_func_snapshots.append(np.copy(walkers))
-
-            # Only store lists of size 100
-            if len(wave_func_snapshots) >= 10:
-                num = (i % wf_save) % 100
-                np.save(f'{output_filename}_{num}',wave_func_snapshots)
-                wave_func_snapshots = []
-
-        # DW saving
-        if dw_save > 0 and i % dw_save == 0:
-            snapshots.append(np.copy(walkers))
 
         # Calculate the Reference Energy
         # Energy is calculated based on the average of all potential energies of walkers.
@@ -324,9 +316,25 @@ def sim_loop(walkers,sim_length,dt,wf_save=0,dw_save=0,do_dw=False,output_filena
                     
         # Current number of walkers
         num_walkers[i] = walkers.shape[walker_axis]
-        #print('Num walkers: ', num_walkers[i])
 
-            
+
+        # Wave funciton snapshot saving
+        if wf_save > 0 and i % wf_save == 0:
+            wave_func_snapshots.append(np.copy(walkers))
+            walker_snapshot.append(num_walkers[i])
+            ref_snapshot.append(reference_energy[i-1000:i])
+
+            # Only store lists of size 100
+            if len(wave_func_snapshots) >= 100:
+                num = int(i / (wf_save*100))
+                np.save(f'{output_filename}_{num}',wave_func_snapshots)
+                wave_func_snapshots = []
+
+        # DW saving
+        if dw_save > 0 and i % dw_save == 0:
+            snapshots.append(np.copy(walkers))
+
+ 
         # Propagates each coordinate of each atom in each molecule of each walker within a normal
         # distribution given by the atomic mass of each atom.
         # Returns a 4D array in the shape of walkers with the standard deviation depending on the
@@ -420,6 +428,10 @@ def sim_loop(walkers,sim_length,dt,wf_save=0,dw_save=0,do_dw=False,output_filena
     # as an ancestor
     # Returns empty if DW wasn't enabled
     ancestor_weights = np.bincount(dw_indices,minlength=n_walkers) if do_dw else []
+
+    # Save the reference energy and num walkers arrays
+    np.save(f'{output_filename}_numwalkers',walker_snapshot)
+    np.save(f'{output_filename}_refenergy',ref_snapshot)
 
     # All possible returns
     # To access a particular output: sim_loop(...)['w|r|n|s|a']
