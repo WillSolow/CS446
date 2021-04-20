@@ -322,7 +322,7 @@ def sim_loop(walkers,sim_length,dt,wf_save=0,dw_save=0,do_dw=False,output_filena
         if wf_save > 0 and i % wf_save == 0:
             wave_func_snapshots.append(np.copy(walkers))
             walker_snapshot.append(num_walkers[i])
-            ref_snapshot.append(reference_energy[i-1000:i])
+            ref_snapshot.append(reference_energy[i])
 
             # Only store lists of size 100
             if len(wave_func_snapshots) >= 100:
