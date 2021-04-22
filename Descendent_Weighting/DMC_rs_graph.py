@@ -49,10 +49,7 @@ def plot_wave_functions(filename,num_files):
 # should equate to almost the same thing
 def rm_outliers(o1,o2,o3,k):
     o1_ind = np.argsort(o1)
-    print(o1.shape)
     o1 = o1[o1_ind[k:-k]]
-    print(o1.shape)
-    print('\n\n')
 
     o2_ind = np.argsort(o2)
     o2 = o2[o2_ind[k:-k]]
@@ -87,7 +84,7 @@ def oxy_ang(filename):
         o3 = (180/np.pi)*np.arccos(np.sum(-oxy_vec_20*-oxy_vec_21, axis=1) / \
             (oxy_ln_20*oxy_ln_21))
 
-        o1, o2, o3 = rm_outliers(o1, o2, o3)
+        o1, o2, o3 = rm_outliers(o1, o2, o3,10)
 
         o_ang_1 = np.concatenate((o_ang_1,o1),axis=0)
         o_ang_2 = np.concatenate((o_ang_2,o2),axis=0)
