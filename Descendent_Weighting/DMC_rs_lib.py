@@ -436,3 +436,22 @@ def sim_loop(walkers,sim_length,dt,wf_save=0,dw_save=0,do_dw=False,output_filena
     # All possible returns
     # To access a particular output: sim_loop(...)['w|r|n|s|a']
     return {'w':walkers, 'r':reference_energy, 'n':num_walkers, 'f':wave_func_snapshots, 's':snapshots, 'a':ancestor_weights}
+
+#######################################################################################
+# Output
+
+# Create individual normalized histograms for given list of walker arrays, then average them
+# Note: this doesn't quite create a normed histogram, but it ought to be a good approximation
+# Inputs: wlk_list : python list of 4d walker arrays, bounds : min and max for histograms, n_bins : number of hist bins
+# Returns: the bins as LEFT edges for a bar plot (rightmost is excluded), average heights of the hist bins
+# To graph the average histogram:
+# plt.bar(align='edge', width=1.5, **avg_hist(list_of_walker_arrays))
+def avg_hist(wlk_list, bounds=(35,100), n_bins=50):
+    # Bins are evenly spaced between the endpoints, which are included
+    bin_xs = np.linspace(bounds[0],bounds[1],n_bins)
+    # A NORMALIZED histogram with the SAME bins for each walker array
+    gross_heights = np.array([np.histogram(w,bins=bin_xs,density=True)[0] for w in wlk_list])
+    # Take mean of hists along 0 axis to produce just one, remove right endpoint of bins to
+    # compatibilitiy with plt.bar()
+    return {'x':bin_xs[:-1],'height':np.mean(gross_heights,axis=0)}
+
