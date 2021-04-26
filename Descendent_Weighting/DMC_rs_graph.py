@@ -9,8 +9,14 @@
 import numpy as np
 import sys
 import matplotlib.pyplot as plt
+import DMC_rs_lib as lib
 
 n_bins = 50
+
+def avg_hist(filename):
+    walk = np.load(filename,allow_pickle=True)
+    plt.bar(align='edge', width=1.5, **lib.avg_hist(walk))
+    plt.show()
 
 def plot_wave_functions(filename,num_files):
     total_o = []
@@ -151,8 +157,11 @@ def plot_h_dist(filename):
 
 
 if __name__ == '__main__':
+    avg_hist(sys.argv[1])
+    '''
     if len(sys.argv) < 3:
         print('Usage: dmc_rs_graph.py filename num_files')
         sys.exit(0)
     plot_wave_functions(sys.argv[1],int(sys.argv[2]))
     #plot_h_dist(sys.argv[1])
+    '''

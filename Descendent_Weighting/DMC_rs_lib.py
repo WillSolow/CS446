@@ -450,7 +450,32 @@ def avg_hist(wlk_list, bounds=(35,100), n_bins=50):
     # Bins are evenly spaced between the endpoints, which are included
     bin_xs = np.linspace(bounds[0],bounds[1],n_bins)
     # A NORMALIZED histogram with the SAME bins for each walker array
-    gross_heights = np.array([np.histogram(w,bins=bin_xs,density=True)[0] for w in wlk_list])
+
+    gross_heights = []
+    for w in wlk_list:
+        oxy = w[:,:,0]
+        oxy_vec_10 = oxy[:,1]-oxy[:,0]
+        oxy_vec_20 = oxy[:,2]-oxy[:,0]
+        oxy_vec_21 = oxy[:,2]-oxy[:,1]
+        oxy_ln_10 = np.linalg.norm(oxy_vec_10, axis=1)
+        oxy_ln_20 = np.linalg.norm(oxy_vec_20, axis=1)
+        oxy_ln_21 = np.linalg.norm(oxy_vec_21, axis=1)
+
+        o1 = (180/np.pi)*np.arccos(np.sum(oxy_vec_10*oxy_vec_20, axis=1) / \
+            (oxy_ln_10*oxy_ln_20))
+        o2 = (180/np.pi)*np.arccos(np.sum(-oxy_vec_10*oxy_vec_21, axis=1) / \
+            (oxy_ln_10*oxy_ln_21))
+        o3 = (180/np.pi)*np.arccos(np.sum(-oxy_vec_20*-oxy_vec_21, axis=1) / \
+            (oxy_ln_20*oxy_ln_21))
+
+        #o1, o2, o3 = rm_outliers(o1, o2, o3,1)
+
+        o_angs = np.concatenate((o1,o2,o3),axis=0)
+        gross_heights.append(np.histogram(o_angs,bins=bin_xs,density=True)[0])
+
+    gross_heights = np.array(gross_heights)
+
+    #gross_heights = np.array([np.histogram(w,bins=bin_xs,density=True)[0] for w in wlk_list])
     # Take mean of hists along 0 axis to produce just one, remove right endpoint of bins to
     # compatibilitiy with plt.bar()
     return {'x':bin_xs[:-1],'height':np.mean(gross_heights,axis=0)}
