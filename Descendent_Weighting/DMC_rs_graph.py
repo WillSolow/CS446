@@ -13,9 +13,40 @@ import DMC_rs_lib as lib
 
 n_bins = 50
 
-def avg_hist(filename):
-    walk = np.load(filename,allow_pickle=True)
-    plt.bar(align='edge', width=1.5, **lib.avg_hist(walk))
+def avg_hist_2(filename,num_files):
+    for i in range(num_files):
+        walk = np.load(filename+f'_{i}.npy',allow_pickle=True)
+        plt.figure(i)
+        plt.xlabel('Walker Oxygen Bond Angle')
+        plt.ylabel('Density')
+        plt.title(f'Wave Function of Oxygen Angles at {i+1} million steps')
+        plt.bar(align='edge', width=1.5, **lib.avg_hist(walk))
+
+    plt.show()
+def avg_hist(filename,num_files):
+    walkers = []
+    for i in range(num_files):
+        walk = np.load(filename+f'_{i}.npy',allow_pickle=True)
+        for j in range(len(walk)):
+            walkers.append(walk[j])
+        plt.figure(i)
+        plt.xlabel('Walker Oxygen Bond Angle')
+        plt.ylabel('Density')
+        plt.title(f'Wave Function of Oxygen Angles after {i+1} million steps')
+        plt.bar(align='edge', width=1.5, **lib.avg_hist(walkers))
+    plt.show()
+
+def plot_wave_functions_2(filename,num_files):
+    for i in range(num_files):
+        o1, o2, o3 = oxy_ang(filename+f'_{i}.npy')
+
+        total_o = np.concatenate((o1,o2,o3),axis=0)
+        plt.figure(i)
+        plt.hist(total_o,bins=n_bins,density=True)
+        plt.xlabel('Walker Oxygen Bond Angle')
+        plt.ylabel('Density')
+        plt.title(f'Wave Function of Oxygen Angles at {i+1} million steps')
+
     plt.show()
 
 def plot_wave_functions(filename,num_files):
@@ -90,7 +121,7 @@ def oxy_ang(filename):
         o3 = (180/np.pi)*np.arccos(np.sum(-oxy_vec_20*-oxy_vec_21, axis=1) / \
             (oxy_ln_20*oxy_ln_21))
 
-        o1, o2, o3 = rm_outliers(o1, o2, o3,1)
+        #o1, o2, o3 = rm_outliers(o1, o2, o3,1)
 
         o_ang_1 = np.concatenate((o_ang_1,o1),axis=0)
         o_ang_2 = np.concatenate((o_ang_2,o2),axis=0)
@@ -121,7 +152,34 @@ def oxy_ang(filename):
     return o_ang_1, o_ang_2, o_ang_3
     
 
-def plot_h_dist(filename):
+def plot_h_dist_2(filename,num_files):
+
+    for i in range(num_files):
+        h_dist = calc_h_dist(filename+f'_{i}.npy')
+
+        plt.figure(i)
+        plt.hist(h_dist,bins=n_bins,density=True)
+        plt.xlabel('Hydrogen Distance from Oxygen Plane')
+        plt.ylabel('Density')
+        plt.title(f'H Dist Wave Function at {i+1} million time steps')
+
+    plt.show()
+
+def plot_h_dist(filename,num_files):
+    total_h = []
+    for i in range(num_files):
+        h_dist = calc_h_dist(filename+f'_{i}.npy')
+
+        total_h = np.concatenate((total_h,h_dist),axis=0)
+
+        plt.figure(i)
+        plt.hist(total_h,bins=n_bins,density=True)
+        plt.xlabel('Hydrogen Distance from Oxygen Plane')
+        plt.ylabel('Density')
+        plt.title(f'H Dist Wave Function after {i+1} million time steps')
+    plt.show()
+
+def calc_h_dist(filename):
     wave_func_out = np.load(filename,allow_pickle=True)
 
     h_dist = []
@@ -144,24 +202,22 @@ def plot_h_dist(filename):
         
         h_dist = np.concatenate((h_dist,dp.flatten()),axis=0)
 
-    plt.figure(5)
-    plt.hist(h_dist,bins=n_bins,density=True)
-    plt.xlabel('Hydrogen Distance from Oxygen Plane')
-    plt.ylabel('Density')
-    plt.title('Density of All Hydrogen Distances')
-    plt.show()
-
-
-
+    return h_dist
 
 
 
 if __name__ == '__main__':
-    avg_hist(sys.argv[1])
+    #avg_hist_2(sys.argv[1],int(sys.argv[2]))
+    #avg_hist(sys.argv[1],int(sys.argv[2]))
+    #plot_wave_functions(sys.argv[1],int(sys.argv[2]))
+    #plot_wave_functions_2(sys.argv[1],int(sys.argv[2]))
+
+    plot_h_dist_2(sys.argv[1],int(sys.argv[2]))
+    plot_h_dist(sys.argv[1],int(sys.argv[2]))
     '''
     if len(sys.argv) < 3:
         print('Usage: dmc_rs_graph.py filename num_files')
         sys.exit(0)
     plot_wave_functions(sys.argv[1],int(sys.argv[2]))
-    #plot_h_dist(sys.argv[1])
+    plot_h_dist(sys.argv[1])
     '''
