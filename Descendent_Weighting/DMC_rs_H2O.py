@@ -2,7 +2,9 @@
 # CS446 Spring 2021
 # Diffusion Monte Carlo (DMC) Simulation w/ Descendent Weighting
 # Script Style
-# Last Updated 02/28/2021
+# Last Updated 4/27/2021
+
+# This file has been running all the big sims on NSCC with command line input
 
 # This program runs a Diffusion Monte Carlo simulation to find an approximation for the
 # ground state energy of a system of molecules. In this particular implementation, a 4D

@@ -446,13 +446,14 @@ def sim_loop(walkers,sim_length,dt,wf_save=0,dw_save=0,do_dw=False,output_filena
 # Returns: the bins as LEFT edges for a bar plot (rightmost is excluded), average heights of the hist bins
 # To graph the average histogram:
 # plt.bar(align='edge', width=1.5, **avg_hist(list_of_walker_arrays))
-def avg_hist(wlk_list, bounds=(35,100), n_bins=50):
+def avg_hist(wlk_list, dw_list=None,bounds=(35,100), n_bins=50):
     # Bins are evenly spaced between the endpoints, which are included
     bin_xs = np.linspace(bounds[0],bounds[1],n_bins)
     # A NORMALIZED histogram with the SAME bins for each walker array
 
     gross_heights = []
-    for w in wlk_list:
+    #for w in wlk_list:
+    for i,w in enumerate(wlk_list):
         oxy = w[:,:,0]
         oxy_vec_10 = oxy[:,1]-oxy[:,0]
         oxy_vec_20 = oxy[:,2]-oxy[:,0]
@@ -471,7 +472,10 @@ def avg_hist(wlk_list, bounds=(35,100), n_bins=50):
         #o1, o2, o3 = rm_outliers(o1, o2, o3,1)
 
         o_angs = np.concatenate((o1,o2,o3),axis=0)
-        gross_heights.append(np.histogram(o_angs,bins=bin_xs,density=True)[0])
+        if dw_list is None:
+            gross_heights.append(np.histogram(o_angs,bins=bin_xs,density=True)[0])
+        else:
+            gross_heights.append(np.histogram(o_angs,bins=bin_xs,density=True,weights=dw_list[i]))
 
     gross_heights = np.array(gross_heights)
 

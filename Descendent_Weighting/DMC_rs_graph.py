@@ -204,6 +204,35 @@ def calc_h_dist(filename):
 
     return h_dist
 
+def graph_dw(filename,num_files):
+    for i in range(num_files):
+        o1, o2, o3 = oxy_ang(filename+f'_{i}.npy')
+        total_o = np.concatenate((o1,o2,o3),axis=0)
+        dw_weights = np.load(filename+f'_{i}_dw.npy',allow_pickle=True)
+
+        weights = []
+        for j in range(len(dw_weights)):
+            weights = np.concatenate((weights,dw_weights[j]),axis=0)
+
+        plt.figure(i)
+        plt.hist(total_o,bins=n_bins,density=True,weights=np.tile(weights,3))
+        plt.xlabel('Walker Oxygen Bond Angle')
+        plt.ylabel('Density')
+        plt.title(f'DW Wave Function of Oxygen Angles at {i+1} million steps')
+    
+    plt.show()
+
+def graph_dw_avg(filename,num_files):
+    for i in range(num_files):
+        walk = np.load(filename+f'_{i}.npy',allow_pickle=True)
+        dw_weights = np.load(filename+f'_{i}_dw.npy',allow_pickle=True)
+        plt.figure(i)
+        plt.xlabel('Walker Oxygen Bond Angle')
+        plt.ylabel('Density')
+        plt.title(f'DW Wave Function of Oxygen Angles at {i+1} million steps')
+        plt.bar(align='edge', width=1.5, **lib.avg_hist(walk,dw_list=dw_weights))
+    plt.show()
+
 
 
 if __name__ == '__main__':
@@ -212,8 +241,10 @@ if __name__ == '__main__':
     #plot_wave_functions(sys.argv[1],int(sys.argv[2]))
     #plot_wave_functions_2(sys.argv[1],int(sys.argv[2]))
 
-    plot_h_dist_2(sys.argv[1],int(sys.argv[2]))
-    plot_h_dist(sys.argv[1],int(sys.argv[2]))
+    #plot_h_dist_2(sys.argv[1],int(sys.argv[2]))
+    #plot_h_dist(sys.argv[1],int(sys.argv[2]))
+
+    graph_dw(sys.argv[1],int(sys.argv[2]))
     '''
     if len(sys.argv) < 3:
         print('Usage: dmc_rs_graph.py filename num_files')
