@@ -472,10 +472,11 @@ def avg_hist(wlk_list, dw_list=None,bounds=(35,100), n_bins=50):
         #o1, o2, o3 = rm_outliers(o1, o2, o3,1)
 
         o_angs = np.concatenate((o1,o2,o3),axis=0)
+
         if dw_list is None:
             gross_heights.append(np.histogram(o_angs,bins=bin_xs,density=True)[0])
         else:
-            gross_heights.append(np.histogram(o_angs,bins=bin_xs,density=True,weights=dw_list[i]))
+            gross_heights.append(np.histogram(o_angs,bins=bin_xs,density=True,weights=np.tile(dw_list[i],3))[0])
 
     gross_heights = np.array(gross_heights)
 

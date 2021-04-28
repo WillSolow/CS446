@@ -188,19 +188,21 @@ walkers, reference_energy, num_walkers, snapshots = [sim_out[k] for k in 'wrns']
 # Run a (usually shorter) simulation keeping track of descendants
 # These ancestor weights directly weight each walker when plotted
 # In the histogram of positions
+for k in range(3,8):
+    filepath = f'sim{k}/sim{k}_'+output_filename
+    print(f'Loading file: {filepath}.npy')
+    snapshots = np.load(filepath+'.npy',allow_pickle=True)
+    ancestor_weights = []
+    for i,walkers in enumerate(snapshots):
+        print(f'Snapshot: {i}')
 
-snapshots = np.load(output_filename+'.npy',allow_pickle=True)
-ancestor_weights = []
-for i,walkers in enumerate(snapshots):
-    print(f'Snapshot: {i}')
+        # Run each %prop-reps% simulations on each snapshot and average 
+        # Producing a histogram for that snapshot based on a larger dataset
+        ancestor_weights.append(np.mean(np.stack( \
+            [lib.sim_loop(snapshots[i],prop_steps,dt,do_dw=True)['a'] \
+            for j in range(prop_reps)],axis=-1),axis=1))
 
-    # Run each %prop-reps% simulations on each snapshot and average 
-    # Producing a histogram for that snapshot based on a larger dataset
-    ancestor_weights.append(np.mean(np.stack( \
-        [lib.sim_loop(snapshots[i],prop_steps,dt,do_dw=True)['a'] \
-        for j in range(prop_reps)],axis=-1),axis=1))
-
-np.save(output_filename+'_dw',ancestor_weights)
+    np.save(filepath+'_dw',ancestor_weights)
     # print(ancestor_weights.shape)
 
 

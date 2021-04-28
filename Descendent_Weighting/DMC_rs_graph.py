@@ -20,9 +20,10 @@ def avg_hist_2(filename,num_files):
         plt.xlabel('Walker Oxygen Bond Angle')
         plt.ylabel('Density')
         plt.title(f'Wave Function of Oxygen Angles at {i+1} million steps')
-        plt.bar(align='edge', width=1.5, **lib.avg_hist(walk))
+        plt.bar(align='edge', width=1.5, linewidth=0, **lib.avg_hist(walk),alpha=.6)
 
-    plt.show()
+    #plt.show()
+
 def avg_hist(filename,num_files):
     walkers = []
     for i in range(num_files):
@@ -42,12 +43,12 @@ def plot_wave_functions_2(filename,num_files):
 
         total_o = np.concatenate((o1,o2,o3),axis=0)
         plt.figure(i)
-        plt.hist(total_o,bins=n_bins,density=True)
+        plt.hist(total_o,bins=n_bins,density=True,alpha=.6)
         plt.xlabel('Walker Oxygen Bond Angle')
         plt.ylabel('Density')
         plt.title(f'Wave Function of Oxygen Angles at {i+1} million steps')
 
-    plt.show()
+    #plt.show()
 
 def plot_wave_functions(filename,num_files):
     total_o = []
@@ -215,7 +216,7 @@ def graph_dw(filename,num_files):
             weights = np.concatenate((weights,dw_weights[j]),axis=0)
 
         plt.figure(i)
-        plt.hist(total_o,bins=n_bins,density=True,weights=np.tile(weights,3))
+        plt.hist(total_o,bins=n_bins,density=True,weights=np.tile(weights,3),alpha=.6)
         plt.xlabel('Walker Oxygen Bond Angle')
         plt.ylabel('Density')
         plt.title(f'DW Wave Function of Oxygen Angles at {i+1} million steps')
@@ -230,21 +231,22 @@ def graph_dw_avg(filename,num_files):
         plt.xlabel('Walker Oxygen Bond Angle')
         plt.ylabel('Density')
         plt.title(f'DW Wave Function of Oxygen Angles at {i+1} million steps')
-        plt.bar(align='edge', width=1.5, **lib.avg_hist(walk,dw_list=dw_weights))
+        plt.bar(align='edge', width=1.5, linewidth=0,**lib.avg_hist(walk,dw_list=dw_weights),alpha=.6)
     plt.show()
 
 
 
 if __name__ == '__main__':
     #avg_hist_2(sys.argv[1],int(sys.argv[2]))
-    #avg_hist(sys.argv[1],int(sys.argv[2]))
+    avg_hist(sys.argv[1],int(sys.argv[2]))
     #plot_wave_functions(sys.argv[1],int(sys.argv[2]))
     #plot_wave_functions_2(sys.argv[1],int(sys.argv[2]))
 
     #plot_h_dist_2(sys.argv[1],int(sys.argv[2]))
     #plot_h_dist(sys.argv[1],int(sys.argv[2]))
 
-    graph_dw(sys.argv[1],int(sys.argv[2]))
+    #graph_dw(sys.argv[1],int(sys.argv[2]))
+    #graph_dw_avg(sys.argv[1],int(sys.argv[2]))
     '''
     if len(sys.argv) < 3:
         print('Usage: dmc_rs_graph.py filename num_files')
