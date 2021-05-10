@@ -15,19 +15,19 @@ n_bins = 50
 
 def avg_hist_2(filename,num_files):
     for i in range(num_files):
-        walk = np.load(filename+f'_{i}.npy',allow_pickle=True)
+        walk = np.load(f'{filename}/{filename}_{i}.npy',allow_pickle=True)
         plt.figure(i)
         plt.xlabel('Walker Oxygen Bond Angle')
         plt.ylabel('Density')
         plt.title(f'Wave Function of Oxygen Angles at {i+1} million steps')
         plt.bar(align='edge', width=1.5, linewidth=0, **lib.avg_hist(walk),alpha=.6)
 
-    #plt.show()
+    plt.show()
 
 def avg_hist(filename,num_files):
     walkers = []
     for i in range(num_files):
-        walk = np.load(filename+f'_{i}.npy',allow_pickle=True)
+        walk = np.load(f'{filename}/{filename}_{i}.npy',allow_pickle=True)
         for j in range(len(walk)):
             walkers.append(walk[j])
         plt.figure(i)
@@ -39,7 +39,7 @@ def avg_hist(filename,num_files):
 
 def plot_wave_functions_2(filename,num_files):
     for i in range(num_files):
-        o1, o2, o3 = oxy_ang(filename+f'_{i}.npy')
+        o1, o2, o3 = oxy_ang(f'{filename}/{filename}_{i}.npy')
 
         total_o = np.concatenate((o1,o2,o3),axis=0)
         plt.figure(i)
@@ -48,12 +48,12 @@ def plot_wave_functions_2(filename,num_files):
         plt.ylabel('Density')
         plt.title(f'Wave Function of Oxygen Angles at {i+1} million steps')
 
-    #plt.show()
+    plt.show()
 
 def plot_wave_functions(filename,num_files):
     total_o = []
     for i in range(num_files):
-        o1, o2, o3 = oxy_ang(filename+f'_{i}.npy')
+        o1, o2, o3 = oxy_ang(f'{filename}/{filename}_{i}.npy')
         '''
         plt.figure(1)
         plt.hist(o_ang_1,bins=n_bins,density=True)
@@ -156,7 +156,7 @@ def oxy_ang(filename):
 def plot_h_dist_2(filename,num_files):
 
     for i in range(num_files):
-        h_dist = calc_h_dist(filename+f'_{i}.npy')
+        h_dist = calc_h_dist(filename)
 
         plt.figure(i)
         plt.hist(h_dist,bins=n_bins,density=True)
@@ -169,7 +169,7 @@ def plot_h_dist_2(filename,num_files):
 def plot_h_dist(filename,num_files):
     total_h = []
     for i in range(num_files):
-        h_dist = calc_h_dist(filename+f'_{i}.npy')
+        h_dist = calc_h_dist(filename)
 
         total_h = np.concatenate((total_h,h_dist),axis=0)
 
@@ -181,7 +181,7 @@ def plot_h_dist(filename,num_files):
     plt.show()
 
 def calc_h_dist(filename):
-    wave_func_out = np.load(filename,allow_pickle=True)
+    wave_func_out = np.load(f'{filename}/{filename}_{i}.npy',allow_pickle=True)
 
     h_dist = []
     for i in range(len(wave_func_out)):
@@ -207,9 +207,9 @@ def calc_h_dist(filename):
 
 def graph_dw(filename,num_files):
     for i in range(num_files):
-        o1, o2, o3 = oxy_ang(filename+f'_{i}.npy')
+        o1, o2, o3 = oxy_ang(f'{filename}/{filename}_{i}.npy')
         total_o = np.concatenate((o1,o2,o3),axis=0)
-        dw_weights = np.load(filename+f'_{i}_dw.npy',allow_pickle=True)
+        dw_weights = np.load(f'{filename}/{filename}_{i}_dw.npy',allow_pickle=True)
 
         weights = []
         for j in range(len(dw_weights)):
@@ -225,8 +225,8 @@ def graph_dw(filename,num_files):
 
 def graph_dw_avg(filename,num_files):
     for i in range(num_files):
-        walk = np.load(filename+f'_{i}.npy',allow_pickle=True)
-        dw_weights = np.load(filename+f'_{i}_dw.npy',allow_pickle=True)
+        walk = np.load(f'{filename}/{filename}_{i}.npy',allow_pickle=True)
+        dw_weights = np.load(f'{filename}/{filename}_{i}_dw.npy',allow_pickle=True)
         plt.figure(i)
         plt.xlabel('Walker Oxygen Bond Angle')
         plt.ylabel('Density')
@@ -234,11 +234,68 @@ def graph_dw_avg(filename,num_files):
         plt.bar(align='edge', width=1.5, linewidth=0,**lib.avg_hist(walk,dw_list=dw_weights),alpha=.6)
     plt.show()
 
+def plot_ref_energy(filename):
+    filepath = f'{filename}/{filename}_refenergy.npy'
+    ref_energy = np.load(filepath,allow_pickle=True)
+    for i in range(10):
+        plt.figure(i)
+        avg_ref = np.mean(ref_energy[100*i:100*(i+1)])
+        plt.plot(np.arange(1000000*i,1000000*(i+1),10000),ref_energy[100*i:100*(i+1)],label='Ref Energy')
+        plt.plot(np.arange(1000000*i,1000000*(i+1),10000),np.tile(avg_ref,100),label=f'Avg Ref Energy: {avg_ref:06f}')
+        plt.xlabel('Simulation Time Step')
+        plt.ylabel('Reference Energy')
+        plt.legend()
+        plt.title(f'Reference energy between {i} and {i+1} million time steps')
+
+    plt.figure(10)
+    plt.plot(np.arange(0,10000000,10000),ref_energy,label='Ref Energy')
+    plt.plot(np.arange(0,10000000,10000),np.tile(np.mean(ref_energy),1000),label=f'Avg Ref Energy: {np.mean(ref_energy):.06f}')
+    plt.xlabel('Simulation Time Step')
+    plt.ylabel('Reference Energy')
+    plt.title(f'Reference energy across all 10 million time steps')
+    plt.legend()
+    plt.show()
+
+def check_dw(filename, num):
+    dw_weights = np.load(f'{filename}/{filename}_{num}_dw.npy',allow_pickle=True)
+    walkers = np.load(f'{filename}/{filename}_{num}.npy',allow_pickle=True)
+    print(dw_weights.shape)
+    for i in range(20):
+
+        oxy = walkers[i][:,:,0]
+        oxy_vec_10 = oxy[:,1]-oxy[:,0]
+        oxy_vec_20 = oxy[:,2]-oxy[:,0]
+        oxy_vec_21 = oxy[:,2]-oxy[:,1]
+        oxy_ln_10 = np.linalg.norm(oxy_vec_10, axis=1)
+        oxy_ln_20 = np.linalg.norm(oxy_vec_20, axis=1)
+        oxy_ln_21 = np.linalg.norm(oxy_vec_21, axis=1)
+
+        o1 = (180/np.pi)*np.arccos(np.sum(oxy_vec_10*oxy_vec_20, axis=1) / \
+            (oxy_ln_10*oxy_ln_20))
+        o2 = (180/np.pi)*np.arccos(np.sum(-oxy_vec_10*oxy_vec_21, axis=1) / \
+            (oxy_ln_10*oxy_ln_21))
+        o3 = (180/np.pi)*np.arccos(np.sum(-oxy_vec_20*-oxy_vec_21, axis=1) / \
+            (oxy_ln_20*oxy_ln_21))
+
+
+        weight = dw_weights[i]
+        print(weight.shape)
+        print('Median: ',np.median(weight))
+        print('Mean: ',np.mean(weight))
+        print('Num of 0: ',np.sum(weight==0))
+        print('\n\n')
+        plt.figure(i)
+        plt.hist(np.concatenate((o1,o2,o3),axis=0),bins=n_bins,density=True,alpha=.6)
+        plt.hist(np.concatenate((o1,o2,o3),axis=0),bins=n_bins,density=True,weights=np.tile(weight,3),alpha=.6)
+
+    plt.show()
+
+
 
 
 if __name__ == '__main__':
     #avg_hist_2(sys.argv[1],int(sys.argv[2]))
-    avg_hist(sys.argv[1],int(sys.argv[2]))
+    #avg_hist(sys.argv[1],int(sys.argv[2]))
     #plot_wave_functions(sys.argv[1],int(sys.argv[2]))
     #plot_wave_functions_2(sys.argv[1],int(sys.argv[2]))
 
@@ -247,6 +304,11 @@ if __name__ == '__main__':
 
     #graph_dw(sys.argv[1],int(sys.argv[2]))
     #graph_dw_avg(sys.argv[1],int(sys.argv[2]))
+
+    #plot_ref_energy(sys.argv[1])
+
+    check_dw(sys.argv[1],int(sys.argv[2]))
+
     '''
     if len(sys.argv) < 3:
         print('Usage: dmc_rs_graph.py filename num_files')

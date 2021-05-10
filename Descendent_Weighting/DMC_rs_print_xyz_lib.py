@@ -128,3 +128,15 @@ def gen_walker_array(filename, n_walkers, prop_amount, n_molecules = 3):
 
     return walkers, num_molecules
 
+
+if __name__ == '__main__':
+    wlk1 = np.load('sim5/sim5_4.npy',allow_pickle=True)
+    wlk2 = np.load('sim5/sim5_5.npy',allow_pickle=True)
+
+    for i in range(100):
+        with open (f'sim5/xyz_4/sim5_4_{i}.xyz','w') as f:
+            f.write(print_xyz(wlk1[i],comment=''))
+
+        with open(f'sim5/xyz_5/sim5_5_{i}.xyz','w') as f:
+            f.write(print_xyz(wlk2[i],comment=''))
+ 
