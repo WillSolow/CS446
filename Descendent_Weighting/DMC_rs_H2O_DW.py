@@ -93,7 +93,7 @@ n_bins = 50
 prop_interval = 500
 
 # Time period for which walkers are propogated during DW simulation loop
-prop_period = 20
+prop_period = 100
 prop_steps = int(prop_period / dt)
 
 # Number of times we run DW simulation loop
@@ -188,8 +188,8 @@ walkers, reference_energy, num_walkers, snapshots = [sim_out[k] for k in 'wrns']
 # Run a (usually shorter) simulation keeping track of descendants
 # These ancestor weights directly weight each walker when plotted
 # In the histogram of positions
-for k in range(3,8):
-    filepath = f'sim{k}/sim{k}_'+output_filename
+for k in range(10):
+    filepath = f'{output_filename}/{output_filename}_{k}'
     print(f'Loading file: {filepath}.npy')
     snapshots = np.load(filepath+'.npy',allow_pickle=True)
     ancestor_weights = []
