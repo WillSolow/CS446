@@ -13,6 +13,71 @@ import DMC_rs_lib as lib
 
 n_bins = 50
 
+
+def intra_bond_length2(filename,num_files):
+    for i in range(num_files):
+        walk = np.load(f'{filename}/{filename}_{i}.npy',allow_pickle=True)
+
+        OH_positions1 = np.linalg.norm(walk[:,0,0]-walk[:,0,1], axis = 2)
+        OH_positions2 = np.linalg.norm(walk[:,1,0]-walk[:,1,1], axis = 2)
+        OH_positions3 = np.linalg.norm(walk[:,2,0]-walk[:,2,1], axis = 2)
+
+        total_oh = np.concatenate((OH_positions1,OH_positions2,OH_positions3),axis=0)
+
+        plt.figure(i)
+        plt.xlabel('Walker OH Bond Length')
+        plt.ylabel('Density')
+        plt.title(f'Wave Function of Oxygen ANgles at {i+1} million steps')
+        plt.hist(total_oh,bins=n_bins,density=True,alpha=.6)
+
+def intra_bond_angle2(filename,num_files):
+    for i in range(num_files):
+        total_hoh = hoh_ang(f'{filename}/{filename}_{i}.npy')
+
+        plt.figure(i)
+        plt.xlabel('Walker Intra HOH Bond Angle')
+        plt.ylabel('Density')
+        plt.title(f'Wave Function of HOH angle at {i+1} million steps')
+        plt.hist(total_hoh,bins=n_bins,density=True,alpha=.6)
+    plt.show()
+
+def intra_bond_angle(filename,num_files):
+    total_hoh = []
+    for i in range(num_files):
+        hoh = hoh_ang(f'{filename}/{filename}_{i}.npy')
+        total_hoh = np.concatenate((total_hoh,hoh),axis=0)
+
+        plt.figure(i)
+        plt.hist(total_hoh,bins=n_bins,density=True)
+        plt.xlabel('Walker Intra HOH Bond Angle')
+        plt.ylabel('Density')
+        plt.title(f'Wave Function of HOH Angles after {i+1} million steps')
+
+    plt.show()
+
+def hoh_ang(filename):
+    walk = np.load(filename,allow_pickle=True)
+    total_hoh =[]
+    for i in range(len(walk)):
+        walkers = walk[i]
+        for j in range(3):
+            wlks = walkers[:,j]
+
+            oh1_vec = wlks[:,1] - wlks[:,0]
+            oh2_vec = wlks[:,2] - wlks[:,0]
+
+            oh1_dist = np.linalg.norm(oh1_vec,axis=1)
+            oh2_dist = np.linalg.norm(oh2_vec,axis=1)
+
+            hoh = (180/np.pi)*np.arccos(np.sum(oh1_vec*-oh2_vec,axis=1) / \
+                (oh1_dist*oh2_dist))
+
+            total_hoh = np.concatenate((total_hoh,hoh),axis=0)
+    
+    return total_hoh
+
+
+
 def avg_hist_2(filename,num_files):
     for i in range(num_files):
         walk = np.load(f'{filename}/{filename}_{i}.npy',allow_pickle=True)
@@ -285,11 +350,34 @@ def check_dw(filename, num):
         print('Num of 0: ',np.sum(weight==0))
         print('\n\n')
         plt.figure(i)
-        plt.hist(np.concatenate((o1,o2,o3),axis=0),bins=n_bins,density=True,alpha=.6)
-        plt.hist(np.concatenate((o1,o2,o3),axis=0),bins=n_bins,density=True,weights=np.tile(weight,3),alpha=.6)
+        plt.hist(o1,bins=n_bins,density=True,alpha=.6)
+        plt.hist(o1,bins=n_bins,density=True,weights=weight,alpha=.6)
+        #plt.hist(np.concatenate((o1,o2,o3),axis=0),bins=n_bins,density=True,alpha=.6)
+        #plt.hist(np.concatenate((o1,o2,o3),axis=0),bins=n_bins,density=True,weights=np.tile(weight,3),alpha=.6)
 
     plt.show()
 
+def dw_weights_analysis(filename, num):
+    dw_weights = np.load(f'{filename}/{filename}_{num}_dw.npy',allow_pickle=True)
+
+    tot_weight = []
+    for i in range(1):
+        weight = dw_weights[i]
+        tot_weight = np.concatenate((tot_weight,weight),axis=0)
+        print(weight.shape)
+        print('Median: ',np.median(weight))
+        print('Mean: ',np.mean(weight))
+        print('Num of 0: ',np.sum(weight==0))
+        print('Num in (0,1]: ',np.sum( (weight <= 1) * (weight > 0)))
+        print('Num in (1,5]: ',np.sum( (weight <= 5) * (weight > 1)))
+        print('Num in (5,10]: ',np.sum( (weight <= 10) * (weight > 5)))
+        print('Num in (10,20]: ',np.sum( (weight <= 20) * (weight > 10)))
+        print('Num in (20,50]:',np.sum( (weight <= 50) * (weight > 20)))
+        print('Num greater than 50:',np.sum(weight > 50))
+        print('\n\n')
+
+    plt.hist(tot_weight,bins=n_bins)
+    plt.show()
 
 
 
@@ -307,8 +395,11 @@ if __name__ == '__main__':
 
     #plot_ref_energy(sys.argv[1])
 
-    check_dw(sys.argv[1],int(sys.argv[2]))
+    #check_dw(sys.argv[1],int(sys.argv[2]))
+    dw_weights_analysis(sys.argv[1],int(sys.argv[2]))
 
+    #intra_bond_angle2(sys.argv[1],int(sys.argv[2]))
+    #intra_bond_angle(sys.argv[1],int(sys.argv[2]))
     '''
     if len(sys.argv) < 3:
         print('Usage: dmc_rs_graph.py filename num_files')

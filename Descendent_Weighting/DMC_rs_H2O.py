@@ -11,7 +11,7 @@
 # array is utilized as a main data structure for storing the coordinates of each atom 
 # in each molecule in each walker. 
 
-# To Run: Navigate to file in terminal directory and type 'python dmc_rs_4D_H2O.py'
+# To Run: Navigate to file in terminal directory and type 'python dmc_rs_H2O.py'
 
 # We add Descendent Weighting: a process for producing more balanced histograms
 # TODO: doc this further
