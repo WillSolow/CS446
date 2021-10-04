@@ -35,6 +35,8 @@ q_oxygen = -.84
 q_hydrogen = .42
 
 # Coulomb's Constant
+# Removed as of 7/26/21 due to corresponce with Prof Madison
+# See line 123
 coulomb_const = 1.0 / (4.0*np.pi)
 
 
@@ -118,8 +120,9 @@ atomic_charges = np.array([q_oxygen, q_hydrogen, q_hydrogen])
 # Create an array of the charges 
 # Computes the product of the charges as the atom charges are multiplied 
 # together in accordance with Coulomb's Law.
+# Removed coulomb const as of 7/26/21
 coulombic_charges = (np.transpose(atomic_charges[np.newaxis]) \
-                    @ atomic_charges[np.newaxis])  * coulomb_const
+                    @ atomic_charges[np.newaxis])  #* coulomb_const
 
 
 # Input: 4D Array of walkers
