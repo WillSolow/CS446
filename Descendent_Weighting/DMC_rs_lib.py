@@ -126,6 +126,8 @@ coulombic_charges = (np.transpose(atomic_charges[np.newaxis]) \
 
 
 # Input: 4D Array of walkers
+# Dimensions of (n_walkers, n_molecules, n_atoms, coordinates)
+#       n_atoms and coordinates are always both 3
 # Output: 1D Array of intramolecular potential energies for each walker
 # Calculates the potential energy of a walker based on the distance of bond lengths and 
 # bond angles from equilibrium

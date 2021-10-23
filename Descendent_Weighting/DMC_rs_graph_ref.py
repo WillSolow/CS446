@@ -299,8 +299,8 @@ def graph_dw_avg(filename,filename2,num_files):
         plt.bar(align='edge', width=1.5, linewidth=0,**lib.avg_hist(walk,dw_list=dw_weights),alpha=.6)
     plt.show()
 
-def plot_ref_energy(filename,filename2):
-    filepath = f'{filename}/{filename2}_refenergy.npy'
+def plot_ref_energy(filename,filename2,filename3):
+    filepath = f'{filename}/{filename2}/{filename3}_refenergy.npy'
     ref_energy = np.load(filepath,allow_pickle=True)
     for i in range(10):
         plt.figure(i)
@@ -311,7 +311,7 @@ def plot_ref_energy(filename,filename2):
         plt.ylabel('Reference Energy')
         plt.legend()
         plt.title(f'Reference energy after {i+1} million time steps')
-        plt.savefig(f'{filename}/RE_{filename}_{i}')
+        plt.savefig(f'{filename}/{filename2}/RE_{filename2}_{i}')
 
     '''
     plt.figure(10)
@@ -411,8 +411,8 @@ if __name__ == '__main__':
     #avg_hist(sys.argv[1],int(sys.argv[2]))
     #avg_hist_2(sys.argv[1],int(sys.argv[2]))
 
-    plot_wave_functions(sys.argv[1],sys.argv[2],int(sys.argv[3]))
-    plot_ref_energy(sys.argv[1],sys.argv[2])
+    #plot_wave_functions(sys.argv[1],sys.argv[2],int(sys.argv[3]))
+    plot_ref_energy(sys.argv[1],sys.argv[2], sys.argv[3])
     #plot_wave_functions_2(sys.argv[1],int(sys.argv[2]))
 
     #plot_h_dist_2(sys.argv[1],int(sys.argv[2]))
