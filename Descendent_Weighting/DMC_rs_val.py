@@ -23,8 +23,14 @@ num_mol = int(sys.argv[2])
 # load the walker array
 walk_array = np.load(filename+'.npy')
 
+print(walk_array)
+
+np.save(filename+'_20',walk_array[:20])
+
 # reshape the walker array
 walk_reshape = np.reshape(walk_array, (walk_array.shape[0], num_mol, 3, 3))
+
+print(walk_reshape)
 
 intra_PE = lib.intra_pe(walk_reshape)
 if num_mol > 1:
