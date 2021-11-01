@@ -134,8 +134,7 @@ coulombic_charges = (np.transpose(atomic_charges[np.newaxis]) \
 def intra_pe(x):
     # Return the two OH vectors
     # Used to calculate the bond lengths and angle in a molecule
-    OH_vectors = x[:,:,np.newaxis,0]-x[:,:,1:]
-    print(OH_vectors)
+    OH_vectors = x[:,:,1:] - x[:,:,np.newaxis,0]
 	
     # Returns the lengths of each OH bond vector for each molecule 
     # in each walker. 
@@ -144,7 +143,7 @@ def intra_pe(x):
     # Calculates the bond angle in the HOH bond
     # Computes the arccosine of the dot product between the two vectors, by normalizing the
     # vectors to magnitude of 1
-    angle = np.arccos(np.sum(OH_vectors[:,:,0]*OH_vectors[:,:,1], axis=2) \
+    angle = np.arccos(np.sum(OH_vectors[:,:,0] * OH_vectors[:,:,1], axis=2) \
 	        / np.prod(lengths, axis=2))
 			
     # Calculates the potential energies based on the magnitude vector and bond angle
