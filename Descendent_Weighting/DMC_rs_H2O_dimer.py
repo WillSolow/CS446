@@ -88,10 +88,12 @@ n_bins = 50
 # Import Simulation Constants from the command line
 
 # Only run if all inputted constants are available
+
 if len(sys.argv) < 6:
     print('\n\nUsage: DMC_rs_H2O_DW.py dt sim_length n_walkers wave_func_interval filename')
     print(f'\nDefault is: \ndt: {dt} \nsim_length: {sim_length}\nn_walkers: {n_walkers}\nwave_func_interval: {wave_func_interval}\n\n')
     sys.exit(0)
+
 
 # Assign simulation constants
 dt = float(sys.argv[1])
@@ -156,13 +158,30 @@ walkers, num_molecules = out.gen_walker_array(filename, n_walkers, prop_amount, 
 
 start = time.time()
 # Equilibriate Walkers
-walkers = lib.sim_loop(walkers,equilibriation_phase,dt)['w']
+#walkers = lib.sim_loop(walkers,equilibriation_phase,dt)['w']
 
-lib.sim_loop(walkers,sim_length,dt,wf_save=wave_func_interval,output_filename=output_filename)
+ref_energy = lib.sim_loop(walkers,sim_length,dt,wf_save=wave_func_interval,output_filename=output_filename)['r']
 
-#np.save(f'dt{dt}_sim{sim_length}_walk{n_walkers}',wave_func_out)
+ref_total = []
 
-print(f'Total time: {time.time()-start:.1f}')
+for i in range(10):
+    np.savetxt(f'{output_filename}_ref_{(i+1)*1000}', [ref_energy[(i+1)*1000], np.mean(ref_energy[i*1000:(i+1)*1000]), np.mean(ref_energy[int(((i+1)*1000)/2):(i+1)*1000])])
+    ref_total.append(np.mean(ref_energy[(i+1)*1000]))
+    ref_total.append(np.mean(ref_energy[i*1000:(i+1)*1000]))
+
+for i in range(20):
+    if (i+1)*50000 == sim_length:
+        np.savetxt(f'{output_filename}_ref_{(i+1)*50000}', [ref_energy[(i+1)*50000-1], np.mean(ref_energy[i*50000:(i+1)*50000]), np.mean(ref_energy[int(((i+1)*50000)/2):(i+1)*50000])])
+        ref_total.append(np.mean(ref_energy[(i+1)*50000-1]))
+        ref_total.append(np.mean(ref_energy[i*50000:(i+1)*50000]))
+    else:   
+        np.savetxt(f'{output_filename}_ref_{(i+1)*50000}', [ref_energy[(i+1)*50000], np.mean(ref_energy[i*50000:(i+1)*50000]), np.mean(ref_energy[int(((i+1)*50000)/2):(i+1)*50000])])
+        ref_total.append(np.mean(ref_energy[(i+1)*50000]))
+        ref_total.append(np.mean(ref_energy[i*50000:(i+1)*50000]))
+
+np.savetxt(f'{output_filename}_ref_total', ref_total)
+np.save(f'{output_filename}_ref_array', ref_energy)
+
 sys.exit(0)
 
 

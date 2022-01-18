@@ -125,12 +125,12 @@ prop_reps = 5
 
 # Number of molecules in each walker
 # Used to initialize the walker array
-num_molecules = 3
+num_molecules = 4
 
 # Filename (string)
 # Used to initialize system. Should be a .xyz filename with the xyz positions of 
 # one walker in the system.
-filename = 'm_trimer.xyz'
+filename = 'm_tetramer.xyz'
 
 # If using WebMO intitialization, uncomment this line below
 # Reads in a .xyz file of a 1 walker system and broadcasts to n_walker array with 
@@ -138,9 +138,10 @@ filename = 'm_trimer.xyz'
 # cannot equilibrate
 
 # Propagation amount
-prop_amount = .5
-walkers, num_molecules = out.gen_walker_array(filename, n_walkers, prop_amount, num_molecules)
-
+prop_amount = 5
+walkers = np.random.uniform(-prop_amount, prop_amount, (n_walkers, num_molecules, 3, 3))
+#walkers = np.load('r_tetramer.npy', allow_pickle = True)
+#walkers, num_molecules = out.gen_walker_array(filename, n_walkers, prop_amount, num_molecules)
 
 # Uncomment the code below if doing an initialization within a random range
 # Initial 4D walker array

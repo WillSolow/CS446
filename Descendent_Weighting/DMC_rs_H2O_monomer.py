@@ -89,7 +89,7 @@ n_bins = 50
 
 # Only run if all inputted constants are available
 
-if len(sys.argv) < 4:
+if len(sys.argv) < 6:
     print('\n\nUsage: DMC_rs_H2O_DW.py dt sim_length n_walkers wave_func_interval filename')
     print(f'\nDefault is: \ndt: {dt} \nsim_length: {sim_length}\nn_walkers: {n_walkers}\nwave_func_interval: {wave_func_interval}\n\n')
     sys.exit(0)
@@ -125,12 +125,12 @@ prop_reps = 5
 
 # Number of molecules in each walker
 # Used to initialize the walker array
-num_molecules = 3
+num_molecules = 1
 
 # Filename (string)
 # Used to initialize system. Should be a .xyz filename with the xyz positions of 
 # one walker in the system.
-filename = 'm_trimer.xyz'
+filename = 'm_monomer.xyz'
 
 # If using WebMO intitialization, uncomment this line below
 # Reads in a .xyz file of a 1 walker system and broadcasts to n_walker array with 
@@ -181,9 +181,6 @@ for i in range(20):
 
 np.savetxt(f'{output_filename}_ref_total', ref_total)
 np.save(f'{output_filename}_ref_array', ref_energy)
-
-#np.savetxt(f'{output_filename}_cr_ref',[np.mean(ref_energy[int(sim_length/2):sim_length])])
-#np.save(f'dt{dt}_sim{sim_length}_walk{n_walkers}',wave_func_out)
 
 sys.exit(0)
 
